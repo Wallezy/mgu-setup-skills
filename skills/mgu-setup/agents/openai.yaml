@@ -1,0 +1,4 @@
+interface:
+  display_name: "MGU Setup / 车机安装"
+  short_description: "Owner-authorized MGU SSH, Store and HUD setup"
+  default_prompt: "Use $mgu-setup to inspect my environment and current head-unit state, then guide the authorized setup or recovery in my language."

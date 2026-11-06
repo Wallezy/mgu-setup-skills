@@ -1,0 +1,33 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.9"
+      - name: Validate documentation and license
+        run: python tools/check_repository.py
+      - name: Test local environment helper
+        run: python -m unittest discover -s tests -v
+      - name: Exercise local-only inspection
+        run: python skills/mgu-setup/scripts/check_environment.py --profile inspect --json
+      - name: Package standalone skill
+        run: python tools/package_skill.py
