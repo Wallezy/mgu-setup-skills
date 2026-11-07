@@ -117,6 +117,14 @@ Windows 可使用目标 Python 环境，例如 `py -3`。检查通过不代表�
 
 Skill 指令、翻译或辅助脚本问题可在[本仓库反馈](https://github.com/Wallezy/mgu-setup-skills/issues/new/choose)。上游软件缺陷应标明对应组件并关联上游 issue，不能假定 skill 能直接修复。
 
+## 微信联系
+
+欢迎交流 MGU 安装和使用经验。使用微信扫一扫识别下方小程序码，交流时可备注「MGU」。
+
+<img src="skills/mgu-setup/assets/wechat-code.png" alt="Walle 的微信小程序码" width="300">
+
+[查看原图](skills/mgu-setup/assets/wechat-code.png) · [联系方式说明](skills/mgu-setup/references/contact.md)
+
 ## 开发与打包
 
 仓库校验不需要额外安装 Python 包：

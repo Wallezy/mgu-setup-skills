@@ -127,6 +127,15 @@ This project coordinates existing tools and documents practical experience. It i
 
 Report skill instructions, translations and helper defects [here](https://github.com/Wallezy/mgu-setup-skills/issues/new/choose). For an upstream software defect, identify the responsible component and link the upstream issue instead of assuming the skill can repair it.
 
+## WeChat
+
+Connect with Walle to discuss MGU setup and usage. Use WeChat to scan the mini
+program code below; mention “MGU” when getting in touch.
+
+<img src="skills/mgu-setup/assets/wechat-code.png" alt="Walle's WeChat mini program code" width="300">
+
+[Full-size image](skills/mgu-setup/assets/wechat-code.png) · [Contact details](skills/mgu-setup/references/contact.md)
+
 ## Development
 
 No additional Python packages are required for repository validation:

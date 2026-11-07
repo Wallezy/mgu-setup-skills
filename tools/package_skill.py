@@ -14,7 +14,9 @@ def main():
     files = sorted(
         p for p in skill.rglob("*")
         if p.is_file() and "__pycache__" not in p.parts
-        and (p.name == "LICENSE" or p.suffix in (".md", ".py", ".yaml", ".json"))
+        and (p.name == "LICENSE" or p.suffix in (".md", ".py", ".yaml", ".json")
+             or (p.relative_to(skill).parts[0] == "assets"
+                 and p.suffix.lower() in (".png", ".jpg", ".jpeg", ".webp", ".svg")))
     )
     dist = ROOT / "dist"
     dist.mkdir(exist_ok=True)
