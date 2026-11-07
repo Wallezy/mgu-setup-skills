@@ -13,6 +13,7 @@ Execute the user's requested work with current upstream tools and observed vehic
 For planned root setup, installation or updates, use this order:
 
 1. Inspect the task and local prerequisites. Prepare missing runtimes/dependencies in an isolated environment where appropriate; respect machine permissions. Run the environment helper with that same interpreter and the relevant profile.
+   Select the network preference from [network-mirrors.md](references/network-mirrors.md) before downloading. Domestic-first uses Gitee for source and the configured OSS catalogs for packages; upstream-first uses official GitHub. Auto tries official catalogs first. Never infer location from language or silently replace a selected version during fallback.
 2. Download the inspected upstream tool/installer and the requested published packages plus their complete declared dependency set into a private local staging directory outside this repository. Use the official `usb-repo` workflow for Store/app artifacts. For first root, verify the selected architecture's required upstream assets locally without redistributing them.
 3. Verify origin, versions, sizes and supplied checksums; record local SHA-256 values and archive readability. A locally computed hash alone is not proof of origin. Reuse a verified cache instead of downloading it again.
 4. Inspect the connected vehicle read-only, choose the applicable target/architecture, and verify backup coverage, stable power and existing access. Read-only identification may occur earlier when needed to select resources. If the target changes, repeat resource selection and compatibility checks.
@@ -32,6 +33,7 @@ For read-only diagnosis, do not require unrelated installation downloads. For re
 - Failure, downgrade, rollback or removal: also read [recovery.md](references/recovery.md).
 - Platform claims, historical lessons or source review: [evidence.md](references/evidence.md).
 - Record work using [session-record.md](references/session-record.md), outside the public repository.
+- Source selection, OSS downloads and mirror acceptance: [network-mirrors.md](references/network-mirrors.md).
 
 ## Select from actual state
 

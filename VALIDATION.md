@@ -1,8 +1,8 @@
 # Validation / 验证
 
-The local helper must remain a local-only report: no package installation, network access, vehicle access or configuration writes. Skill validation checks packaging, not vehicle compatibility.
+The environment helper must remain a local-only report: no package installation, network access, vehicle access or configuration writes. The separate mirror helper downloads HTTPS resources and saves source preferences locally; it never contacts a vehicle. Skill validation checks packaging, not vehicle compatibility.
 
-本地辅助脚本只生成环境报告，不安装依赖、不联网、不连车、不改配置。Skill 校验不证明车辆兼容。
+环境检查脚本只生成本地报告，不安装依赖、不联网、不连车、不改配置。独立的镜像脚本可下载 HTTPS 资源和保存本地源偏好，不连接车辆。Skill 校验不证明车辆兼容。
 
 ## Repeatable local checks
 
@@ -50,3 +50,22 @@ These are review scenarios, not claims that each was executed on hardware or by 
 - No vehicle action was performed while authoring this skill.
 
 以上验证仅针对本次文档包与辅助脚本；本机完整环境检查因缺少 cryptography 返回未齐备，属于预期结果。
+
+## OSS distribution acceptance: 2026-11-07
+
+- Public root: `https://walle-jenkins.oss-cn-beijing.aliyuncs.com/mgu/`.
+- The root manifest was fetched anonymously over certificate-verified HTTPS. Its SHA-256 matches the locally prepared snapshot: `0b318cb11e22f90ba51892986f66cf6221b26b5f69b5ebfdf6cec05d32ed2a88`.
+- All 22 indexed files (43,442,484 bytes) were downloaded from OSS into a fresh acceptance directory and checked against that manifest. The ten component packages also match their catalogs' original upstream sizes and SHA-256 values.
+- Both catalogs passed schema and cross-repository dependency checks; artifact URLs resolve within the OSS catalogs rather than GitHub.
+- The pinned, unmodified upstream installer read both OSS catalog URLs directly with Node.js and downloaded all ten components into its official USB repository layout. The domestic-first planner selected OSS successfully. The shared preference remains `auto`.
+- Twelve local tests cover environment checks, corrupt files, missing dependencies, invalid paths, failed downloads, source fallback and pinned version/hash mismatches.
+- Validation does not establish worldwide reachability, in-car TLS support, installation success or HUD video output. No vehicle operation was performed.
+- Cache headers rechecked after the owner's OSS metadata update: the root manifest and `idrive-apps/catalog.json` return `Cache-Control: no-cache`; `mgu-store/catalog.json` has no explicit Cache-Control header in that response.
+
+## Owner-supplied photos: 2026-11-07
+
+Four owner-supplied photos are published in [the showcase](docs/SHOWCASE.md).
+They show the app entries, the Store, display-target settings, and actual HUD
+map output on the owner's iDrive 7. They are visual evidence from that setup,
+not another installation test, frame-rate measurements or a broader compatibility
+claim. The photos have no GPS EXIF tag. They are copied without pixel edits.

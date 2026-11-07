@@ -72,6 +72,8 @@ node mgu-install.js first-install --from <准备目录>/mgu-repo/mgu-store --ide
 
 ## 5. 离线资源与网络
 
+先按 [网络源流程](network-mirrors.md)读取源偏好和 [地址配置](network-sources.json)。国内优先使用 Gitee 源码与已配置的 OSS 安装资源；官方优先使用下方 GitHub 示例。镜像不是 `gitee:` 类型的更新源。切换下载路径时保持所选版本和 SHA-256。
+
 分别测试电脑和车机更新服务。GitHub API 可用不代表发布资源可下载，须检查所需资源和哈希。热点连通不代表 GitHub 可达。
 
 优先使用官方离线流程，先创建目标目录：

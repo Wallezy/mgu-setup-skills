@@ -9,6 +9,16 @@
 
 它让 AI **调用上游工具完成已授权的工作，再检查和记录结果**。它本身不是固件刷写工具，也不承诺所有故障都能自动恢复。
 
+## 实车效果
+
+| 应用入口 | 应用商店 |
+| --- | --- |
+| ![车机内的应用商店与 Waze 仪表盘显示入口](docs/images/app-entries.jpg) | ![车机应用商店界面](docs/images/store.jpg) |
+| **仪表盘与 HUD 设置** | **HUD 地图显示** |
+| ![仪表盘地图与显示位置选择](docs/images/cluster-and-hud.jpg) | ![车辆停稳时的 HUD 地图实拍](docs/images/hud-map.jpg) |
+
+以上为车主提供的同一次 iDrive 7 安装实拍，展示应用入口、商店界面、显示位置设置及 HUD 实际画面。照片不代表所有车型、手机和地图应用都能达到相同效果，也不能用于判断帧率；HUD 仍属实验性功能。[查看完整效果图](docs/SHOWCASE.md)。
+
 ## 使用方法
 
 1. 在仓库页面选择 **Code → Download ZIP** 下载，或使用 Git：
@@ -44,6 +54,14 @@ AI 应在授权范围内实际操作，不应只输出教程。车机屏幕观�
 AI 只准备本次需要的工具、安装包和依赖，保存在仓库之外，记录版本与哈希，并复用已验证的缓存。为了选对架构，可以提前只读识别车辆。环境依赖、所需资源或必要备份不齐时，不进入对应写入步骤。
 
 环境脚本负责报告问题，AI 在选定环境中准备缺失依赖并重新检查。这是 agent 执行流程，不是单独的一键刷写程序。本地资源通过官方首次安装传输或商店/USB/更新路径交付车机；文件下载到电脑不等于车机已具备离线安装条件。只读诊断和故障恢复不要求下载无关应用。
+
+## 官方源与国内镜像
+
+同一份 Skill 支持 `upstream-first`（优先官方 GitHub）、`domestic-first`（优先 Gitee 源码与 OSS 资源）和 `auto`（默认先检查官方，再检查 OSS）。不根据语言或 IP 猜测用户位置。选定版本后，回退下载路径也必须保持版本和哈希一致。
+
+国内 Skill 镜像：[Gitee / walle7/mgu-setup-skills](https://gitee.com/walle7/mgu-setup-skills)。商店、应用和 SSH 源码镜像及 OSS 根地址见 [网络源配置](skills/mgu-setup/references/network-sources.json)。当前 OSS 快照于 2026 年 11 月 7 日通过匿名 HTTPS 下载及完整哈希验收，记录见 [验证说明](VALIDATION.md)。共享配置默认保持 `auto`，国内用户可保存为 `domestic-first`。
+
+资源准备、上传顺序和验收方法见 [国内镜像维护说明](docs/DOMESTIC-MIRROR.md)。车端后续更新源仍需通过商店界面添加，不会因为首次安装使用本地包就自动切换。
 
 ## 功能范围
 
@@ -86,6 +104,8 @@ Windows 可使用目标 Python 环境，例如 `py -3`。检查通过不代表�
 - [会话记录](skills/mgu-setup/references/session-record.md)：操作前后留档。
 - [验证场景](VALIDATION.md)：推广前的验证要求。
 - [贡献指南](CONTRIBUTING.md)：翻译、测试和脱敏后的兼容性反馈。
+- [国内镜像与 OSS](docs/DOMESTIC-MIRROR.md)：Gitee 代码同步、安装资源分发与源选择。
+- [实车效果图](docs/SHOWCASE.md)：应用入口、商店、仪表盘和 HUD 实拍。
 
 ## 上游项目
 

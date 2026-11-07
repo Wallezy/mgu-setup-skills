@@ -26,7 +26,7 @@ jobs:
           python-version: "3.9"
       - name: Validate documentation and license
         run: python tools/check_repository.py
-      - name: Test local environment helper
+      - name: Test environment and mirror helpers
         run: python -m unittest discover -s tests -v
       - name: Exercise local-only inspection
         run: python skills/mgu-setup/scripts/check_environment.py --profile inspect --json

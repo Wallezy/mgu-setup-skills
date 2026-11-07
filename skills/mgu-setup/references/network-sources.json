@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "oss_base_url": "https://walle-jenkins.oss-cn-beijing.aliyuncs.com/mgu/",
+  "preference": "auto",
+  "source_policy": "Choose domestic, upstream or verified-local explicitly; preserve the selected versions and hashes across retries.",
+  "repositories": {
+    "mgu-setup-skills": {
+      "upstream": "https://github.com/Wallezy/mgu-setup-skills",
+      "domestic": "https://gitee.com/walle7/mgu-setup-skills"
+    },
+    "mgu-store": {
+      "upstream": "https://github.com/robertnisipeanu/mgu-store",
+      "domestic": "https://gitee.com/walle7/mgu-store",
+      "catalog": "mgu-store/catalog.json"
+    },
+    "idrive-apps": {
+      "upstream": "https://github.com/robertnisipeanu/idrive-apps",
+      "domestic": "https://gitee.com/walle7/idrive-apps",
+      "catalog": "idrive-apps/catalog.json"
+    },
+    "idrive7-8-ssh-root": {
+      "upstream": "https://github.com/cauliflowermossgrape/idrive7-8-ssh-root",
+      "domestic": "https://gitee.com/walle7/idrive7-8-ssh-root"
+    }
+  }
+}

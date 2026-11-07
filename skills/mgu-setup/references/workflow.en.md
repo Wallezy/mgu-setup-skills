@@ -72,6 +72,11 @@ For a missing Store tile, compare actual app registration, manager state and til
 
 ## 5. Offline resources and network diagnosis
 
+Select the preference using [network sources](network-mirrors.md) and
+[configuration](network-sources.json). Domestic-first uses Gitee source and
+configured OSS packages; the examples below use official GitHub. There is no
+`gitee:` updater source type. Fallback preserves selected versions and SHA-256.
+
 Test computer access and HU updater access separately. GitHub API access does not prove release-asset access; test the required artifact and hash. A connected hotspot does not imply GitHub reachability.
 
 Prefer official offline preparation. Create the destination folder first:

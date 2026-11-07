@@ -9,6 +9,18 @@ A bilingual agent skill for owner-authorized BMW MGU setup and maintenance: envi
 
 The skill guides an agent to **perform authorized work with upstream tools**, inspect the result and produce a session record. It is not a firmware flasher or a promise of automatic recovery from every failure.
 
+## On the owner's iDrive 7
+
+| App entries | Store |
+| --- | --- |
+| ![Store and Waze on cluster entries](docs/images/app-entries.jpg) | ![Store interface on the head unit](docs/images/store.jpg) |
+| **Cluster and HUD settings** | **HUD map output** |
+| ![Cluster map and the display target selector](docs/images/cluster-and-hud.jpg) | ![Map rendered on the HUD while parked](docs/images/hud-map.jpg) |
+
+Photos supplied by the owner show one iDrive 7 installation, including actual
+HUD output. They do not establish compatibility or frame rate for other cars,
+phones or map apps. HUD remains experimental. [Full-size gallery / 实车效果图](docs/SHOWCASE.md).
+
 ## Use
 
 1. Get this repository using **Code → Download ZIP**, or clone it:
@@ -60,6 +72,22 @@ The environment helper reports problems; the agent prepares missing dependencies
 | Failure diagnosis | Network, authentication, coding, missing tiles and startup failures |
 | Handoff | Record versions, checks, temporary settings and remaining owner actions |
 
+## Official and domestic sources
+
+One skill supports `upstream-first` (official GitHub), `domestic-first`
+(Gitee source and OSS packages), and `auto` (official catalogs first, then
+configured OSS). Location is not inferred from language or IP. Fallback
+preserves selected versions and hashes.
+
+The configured OSS snapshot passed public HTTPS download and hash acceptance
+on November 7, 2026; see the [validation record](VALIDATION.md). The shared
+default remains `auto`; users can save `domestic-first` as their preference.
+The [Gitee skill mirror](https://gitee.com/walle7/mgu-setup-skills),
+[source configuration](skills/mgu-setup/references/network-sources.json),
+[mirror maintenance guide](docs/DOMESTIC-MIRROR.md) and standalone
+[source workflow](skills/mgu-setup/references/network-mirrors.md) describe
+the two download paths.
+
 ## Platforms and evidence
 
 Upstream source workflows target Windows, macOS and Linux. Source SSH setup requires Python 3.9+, `cryptography` and OpenSSH. Direct Store installation uses Node.js 18+ and OpenSSH; current upstream wrappers offer runtime preparation, so inspect requirements before choosing a route.
@@ -86,6 +114,8 @@ Use `--profile store` for direct Store installation prerequisites, `--profile ro
 - [Session record / 会话记录](skills/mgu-setup/references/session-record.md).
 - [Validation scenarios / 验证场景](VALIDATION.md).
 - [Contributing](CONTRIBUTING.md): translations, tests and sanitized compatibility reports.
+- [Photos / 实车效果图](docs/SHOWCASE.md): app entries, Store, cluster and HUD.
+- [Domestic mirrors / 国内镜像](docs/DOMESTIC-MIRROR.md): source preferences, preparation and OSS publishing.
 
 ## Upstream projects
 
