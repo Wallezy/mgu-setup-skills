@@ -68,9 +68,9 @@ Report the verified layer: local readiness, authenticated connection, installed 
 
 If a physical screen or unavailable coding tool is required, finish independent work, give the concrete remaining action and state the verification limit. Do not fabricate completion or promise recovery from inaccessible firmware failures.
 
-## Contact / 联系方式
+## WeChat contact / 微信联系方式
 
-Maintainer's WeChat entry / 维护者微信入口：[contact.md](references/contact.md).
+Maintainer's WeChat contact / 维护者微信联系方式：[contact.md](references/contact.md).
 
 ## License
 

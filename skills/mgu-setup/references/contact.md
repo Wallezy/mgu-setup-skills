@@ -1,10 +1,10 @@
-# 微信联系 / WeChat
+# 微信联系方式 / WeChat contact
 
-欢迎交流 MGU 安装和使用经验。使用微信扫一扫识别下方小程序码，交流时可备注「MGU」。
+欢迎交流 MGU 安装和使用经验。微信扫一扫下方图片，联系时请备注「MGU」。
 
-Connect with Walle to discuss MGU setup and usage. Use WeChat to scan the mini
-program code below; mention “MGU” when getting in touch.
+Connect with Walle to discuss MGU setup and usage. Scan the image below with
+WeChat to get in touch; please mention “MGU”.
 
-<img src="../assets/wechat-code.png" alt="Walle 的微信小程序码 / WeChat mini program code" width="300">
+<img src="../assets/wechat-code.png" alt="Walle 的微信联系方式 / WeChat contact" width="300">
 
 [查看原图 / Open full-size image](../assets/wechat-code.png)
