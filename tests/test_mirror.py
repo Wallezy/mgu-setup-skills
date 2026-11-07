@@ -117,6 +117,43 @@ class MirrorTests(unittest.TestCase):
             self.assertEqual(plan["selected_source"], "domestic")
             self.assertEqual(plan["failed_attempts"][0]["source"], "upstream")
 
+    def test_catalog_timeout_falls_back_without_weakening_package_downloads(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            self.make_bundle(root)
+            commands = []
+
+            def curl(command, **kwargs):
+                commands.append(command)
+                url = command[-1]
+                if "api.github.com" in url:
+                    return type("Result", (), {"returncode": 28, "stderr": "timeout"})()
+                destination = pathlib.Path(command[command.index("--output") + 1])
+                relative = url.split("https://mirror.example/", 1)[1]
+                destination.write_bytes((root / relative).read_bytes())
+                return type("Result", (), {"returncode": 0})()
+
+            with patch.object(M.shutil, "which", return_value="/curl"), patch.object(
+                    M.subprocess, "run", side_effect=curl):
+                plan = M.plan_sources({"oss_base_url": "https://mirror.example/", "preference": "auto"})
+                self.assertEqual(plan["selected_source"], "domestic")
+                self.assertIn("timeout", plan["failed_attempts"][0]["reason"])
+                self.assertEqual(len(commands), 4)
+                for command in commands:
+                    self.assertLessEqual(int(command[command.index("--max-time") + 1]), 20)
+                    self.assertEqual(command[command.index("--retry") + 1], "0")
+
+                target = root / "downloaded-package"
+                url = "https://mirror.example/mgu-store/packages/mgu-deploy.tgz"
+                M.download(url, target, 7, hashlib.sha256(b"package").hexdigest())
+                self.assertEqual(target.read_bytes(), b"package")
+                command = commands[-1]
+                self.assertEqual(command[command.index("--max-time") + 1], "180")
+                self.assertEqual(command[command.index("--retry") + 1], "2")
+                with self.assertRaisesRegex(ValueError, "mismatch"):
+                    M.download(url, target, 7, "a" * 64)
+                self.assertEqual(target.read_bytes(), b"package")
+
 
 if __name__ == "__main__":
     unittest.main()

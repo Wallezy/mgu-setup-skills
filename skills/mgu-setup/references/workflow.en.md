@@ -64,6 +64,8 @@ node mgu-install.js first-install --from <prepared-folder>/mgu-repo/mgu-store --
 
 Use the locally prepared, verified catalog from section 5. If choosing an online updater path for later apps, retain the verified local artifacts and confirm the HU can access the same intended release; do not silently change versions between preparation and install.
 
+The inspected installer supports rerunning and keeps newer installed components. `first-install --from` can also refresh a compatible Store bundle over ENET from local packages, without physical USB or HU internet. Check current health and release scope first; it does not update arbitrary third-party apps.
+
 Use observed host/port options if discovery chooses the wrong path. Reuse a working interface-bound relay if needed, without hard-coding a case-study port. Inspect SSH argument ordering and effective host-key behavior in the selected installer.
 
 The installer uses published artifacts, catalog size/hash checks and their deploy tool. Capture exit status/logs; reconcile partial success and actual versions.
@@ -107,6 +109,8 @@ No video can mean patch disabled, restart pending, no phone secondary stream, HU
 For latency, map service 0.9.2 onward adds frame assembly, decoder buffering and H.264 diagnostics. Additional logging is not a frame-rate improvement; cluster-render 0.4.2 raises layer capacity without raising video bandwidth.
 
 ## 7. Update, downgrade and remove
+
+For a working Store, follow [maintenance updates](maintenance-update.md): reuse local resources/private records, inventory installed versions, then choose missing downloads and the actual transfer path. A computer-side offline folder, an HU USB source and an OSS network source are distinct; do not silently choose network installation after preparing local packages.
 
 Record current versions and known-good resources, refresh published catalogs, check dependencies and request only chosen updates. Let the updater resolve requirements, perform necessary restart and verify versions afterwards. Do not falsify version fields to bypass checks.
 

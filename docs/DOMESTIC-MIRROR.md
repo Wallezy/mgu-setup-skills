@@ -74,4 +74,21 @@ python skills/mgu-setup/scripts/mirror_resources.py fetch --base-url <实际HTTP
 
 两个目录与根清单分开上传，发布窗口内避免安装或更新，上传完再执行远端验收。新资源本地准备成功不代表线上更新完成，也不代表已经实车测试。
 
-镜像维护脚本不上传 OSS、不提交仓库、不执行车端安装。它可由维护者手动执行，或接入有独立权限控制的定时任务/CI。自动任务运行凭据由所选平台保存，不能放入 Skill、JSON、日志或公开下载目录。
+`prepare_oss.py` 只准备本地资源。需要自动上传时，使用下方独立的维护者工具；它不提交仓库，也不执行车端安装。
+
+## 授权后的 CLI 自动同步 / Authorized CLI synchronization
+
+仓库提供 `tools/sync_oss.py`，使用维护者安装的官方 ossutil v2。凭据通过仓库外的专用 ossutil 配置文件读取；POSIX 系统要求配置权限仅当前用户可读。不要把 AccessKey 写进命令行参数、自动任务提示、仓库或报告。
+
+```text
+python tools/sync_oss.py --ossutil <ossutil可执行文件> --config <仓库外私有配置> --destination oss://<bucket>/<prefix> --base-url https://<bucket>.oss-<region>.aliyuncs.com/<prefix>/ --work-dir <仓库外运行记录目录> --cache <仓库外下载缓存> --publish
+```
+
+- 省略 `--publish` 只准备、比较和验证，不上传；`--prepared <目录>` 可使用已准备快照，但必须仍与官方发布目录一致。
+- 每次读取并校验线上快照，再检查两个官方发布目录。版本和目录一致、缓存头正确时报告 `unchanged`，不重新上传。
+- 先上传变化的版本化资源并下载验收，再更新固定路径文件，最后更新根清单。固定路径使用 `no-cache`，带哈希/提交号资源使用长期缓存；不删除旧包、不修改 ACL 或桶策略。
+- 完成后重新下载全部清单文件，校验 SHA-256、依赖与缓存头。发布中失败则尝试恢复此前验证过的可变文件和清单，验收回滚结果；不删除已上传但未被引用的新包。
+- 工作目录使用独占锁，防止本机任务重叠。进程意外终止留下锁时，先确认没有运行中的同步，再人工处理；不自动忽略锁。
+- 每次保存 `plan.json`、`result.json`；成功后更新 `latest-success.json`。发布不是多对象原子操作，执行期间避免安装；多个维护者应协调发布窗口。
+
+可由本机定时任务或 CI 在明确授权后调用。任务只自动同步这个镜像目标，验证后再提出 Skill 适配建议；提交代码、发布评论和操作车辆属于不同授权。CLI 与私有配置需在执行机器上可用。独立 Skill 压缩包不包含仓库 `tools/` 或凭据。

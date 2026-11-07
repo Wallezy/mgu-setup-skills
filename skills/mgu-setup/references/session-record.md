@@ -32,12 +32,16 @@ Copy this template to a private directory outside the repository. Omit secrets a
 - Requested operation and selected architecture / 操作范围与所选架构:
 - Environment profile, interpreter and result / 环境检查模式、解释器及结果:
 - Private staging directory / 本地私有资源目录:
+- Reused snapshot, installer and verified-package manifest paths / 复用快照、安装器及已校验包清单路径:
+- Missing/changed resources only; latest-release freshness separately / 仅缺失或变化资源；最新版本查询状态单独记录:
+- Frozen execution manifest and lock time: current/target versions, source/origin, catalog revision, hashes, dependencies / 锁定执行清单及时间：当前/目标版本、来源归属、目录提交、哈希与依赖:
 - Tools/artifacts/dependencies, source revision, sizes, source checksums and local hashes / 工具安装包依赖、来源提交、长度、来源校验值和本地哈希:
 - Archive validation and completeness / 归档检查与资源完整性:
 - Vehicle identity/firmware matches prepared resources / 车辆身份及固件是否匹配资源:
 - Backup coverage and power confirmed / 备份范围及供电是否满足:
 - Transfer route: bootstrap ENET / physical USB / supported updater / other documented route.
 - 传输方式：首次安装 ENET／实体 USB／受支持更新服务／其他文档支持路径。
+- Where the HU actually reads each package; network requirement and evidence / 车机实际从哪里读取包；联网要求及依据:
 - Ready to perform this operation: yes/no, with missing prerequisites / 是否可开始本次操作、缺失项:
 
 | Step / 步骤 | Source/version/hash / 来源版本哈希 | Result/exit code / 结果退出码 | Recovery route / 恢复路径 |
@@ -54,6 +58,8 @@ Copy this template to a private directory outside the repository. Omit secrets a
 - Deferred verification and pending restart / 延迟检查与待重启:
 - Phone stream, cluster/HUD output and navigation app / 手机流与实际显示:
 - Frame rate measurement, if any; otherwise “not measured” / 帧率未测则明确:
+- Update acceptance vs optional navigation/visual testing; reason for any restart / 更新验收与导航实显分开；重启原因:
+- Phase durations: preparation, install, required restart, verification / 各阶段耗时：准备、安装、必要重启、验收:
 
 ## Cleanup and next action / 清理与下一步
 

@@ -83,3 +83,20 @@ claim. The photos have no GPS EXIF tag. They are copied without pixel edits.
 - The built-in GitHub update source remains a network dependency; this work does not introduce a domestic-only network mode or claim emulator/vehicle validation.
 
 新版文件及可变目录、清单的缓存元数据已通过 OSS 验收。历史照片不代表新版已实车测试。
+
+## Maintenance efficiency review: 2026-11-08
+
+- Reviewed the separate completed maintenance session. The skill prefers a working updater, freezes targets before writes, reuses private preparation and separates update acceptance from optional map display diagnosis.
+- A rerunnable offline Store refresh is documented separately from other app installation; USB/hotspot are conditional paths. No new vehicle-side import capability is claimed.
+- Catalog planning limits each request to 20 seconds with zero curl retries. Artifact downloads retain 180-second request limits, two retries and size/hash verification. Thirteen tests passed, including timeout-to-mirror fallback and unchanged package verification behavior.
+- A live `domestic-first` plan successfully selected OSS and checked catalog integrity/dependencies. It still lists Store 0.9.29, updater 0.8.31 and uplink 0.7.6; the recorded vehicle update installed newer versions. This probe did not download packages or certify a complete new mirror release.
+- Documentation links, skill structure and standalone packaging passed. This is local helper/documentation validation; no vehicle or head-unit emulator was used for this skill revision.
+
+## Authorized OSS CLI synchronization: 2026-11-08
+
+- `tools/sync_oss.py` was exercised with ossutil 2.2.0 against the authorized mirror prefix. A prepared snapshot that no longer matched upstream was refused before upload; regeneration included the newly published mgu-render 0.6.13.
+- Published Store catalog commit `5f2ac20566716711b97882ad1f37d11ef0e7deae` and apps catalog commit `05e38eca8ca6f3bcde7e43d67127da664401caa8`. Updated components: Store 0.9.30, updater 0.8.32, uplink 0.7.7, Python 1.0.3 and mgu-render 0.6.13. Map component versions are unchanged.
+- Fourteen objects were uploaded, including metadata repairs. All 22 indexed files and ten packages passed public HTTPS size/hash/dependency acceptance; fixed-path files and the manifest have no-cache. Old packages remain; no ACL or bucket policy changes were made.
+- Accepted manifest SHA-256: `50d77469608b7729cc744b2a4b4c09a236de58d6fc73c79efc5638a04b4ad630`.
+- A second live run returned `unchanged` with an empty upload list. Nineteen local tests cover helper behavior, constrained targets, publication ordering, corrupt-resource refusal, rollback on simulated publication/acceptance failures, locks and cache handling.
+- The configuration and CLI are local maintainer resources outside the repository. No credentials, downloaded packages or private vehicle records are distributed with the skill. Mirror validation is not vehicle/emulator installation validation.

@@ -62,6 +62,28 @@ Observed:
 
 最后一条尤其重要：车主确认安装成功，不等于已测量 HUD 帧率、验证高德/百度画质或完成所有车型兼容测试。
 
+## Maintenance-path review: 2026-11-08 / 维护路径复核
+
+The successful 2026-11-06 session used the official installer for Store setup over ENET. Its updater logs also recorded an active uplink and "iPhone: Personal Hotspot carrier on"; the subsequent map installation ran while the updater reported online. This is evidence of ENET Store delivery and a network-assisted app update, not an all-app ENET-only offline installation.
+
+The later prepared update had updater 0.8.30 offline: its network-source and HTTP-request gates required a lease even with a proxy. Its source-add operation accepted GitHub/HTTPS, while an internal file reader alone did not expose a supported local-import action. These findings do not make USB/hotspot universal requirements. The pinned installer documents rerunnable Store setup with `--from`, preserving newer versions; its scope is the Store bundle.
+
+复核原始记录后，区分商店本地包 ENET 传输和当时已联网的地图更新。不能把历史成功描述成“全部应用纯 ENET 离线更新”，也不能把后一次网络源受阻概括成“更新商店必须 U 盘或热点”。本次仅审阅记录及源码，未操作车辆。
+
+## Recorded maintenance: 2026-11-08 / 已记录维护结果
+
+The owner's separate maintenance session recorded Store 0.9.30, updater 0.8.32, deploy 0.8.4, uplink 0.7.7, map app 0.6.4, map service 0.9.3 and cluster-render 0.4.2. A normal restart was observed; target versions, app registration, service health and patch boot checks passed. Temporary proxy settings were cleared. Phone navigation/HUD visuals were not observed.
+
+The resumed execution took about 20 minutes. It refreshed Store/updater to intermediate versions, then discovered newer releases and updated them again. Installation verification then expanded into stream diagnosis and a restart. These observations motivate locking targets before writes, using one supported update route where possible, and separating update acceptance from optional navigation testing; they do not establish a guaranteed faster runtime.
+
+用户另一会话记录了上述版本、重启及服务验证；未目视确认导航/HUD 画面。本次优化依据真实的重复更新和验收扩展，不能承诺固定时长，也未因编辑 skill 再次操作车辆。
+
+## Mirror review: 2026-11-08 / 镜像审阅
+
+The 2026-11-08 mirror review published Store 0.9.30, updater 0.8.32, uplink 0.7.7, Python 1.0.3 and mgu-render 0.6.13 from Store catalog commit `5f2ac20566716711b97882ad1f37d11ef0e7deae`. The map catalog remains `05e38eca8ca6f3bcde7e43d67127da664401caa8`. Upstream's new Phone over USB switch can disable USB phone uplinks; preserve the owner's setting. The Python component is the HU runtime, not a new computer-side Python requirement. Public mirror acceptance does not extend the recorded vehicle test matrix.
+
+本次镜像同步并非新一轮实车升级；Python 组件版本与电脑 Python 环境要求分别判断。新版 USB 手机接入开关不改变 Wi-Fi 的使用条件。
+
 ## Lessons to preserve / 可复用经验
 
 1. Working SSH is the starting point for maintenance, not a reason to repeat bootstrap.

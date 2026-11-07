@@ -63,7 +63,7 @@ def checked(path, size, sha256):
     return pathlib.Path(path).is_file() and pathlib.Path(path).stat().st_size == size and digest(path) == sha256
 
 
-def download(url, destination, size=None, sha256=None, accept=None):
+def download(url, destination, size=None, sha256=None, accept=None, timeout=180, retries=2):
     # Curl uses the platform certificate store; TLS verification stays enabled.
     parsed = urllib.parse.urlsplit(url)
     if parsed.scheme != "https" or parsed.username or parsed.password or not parsed.hostname:
@@ -79,8 +79,8 @@ def download(url, destination, size=None, sha256=None, accept=None):
         raise ValueError("Refusing a symlink destination")
     command = ["curl", "--fail", "--location", "--silent", "--show-error",
                "--proto", "=https", "--proto-redir", "=https",
-               "--connect-timeout", "15", "--max-time", "180",
-               "--retry", "2", "--max-filesize", str(size or MAX_FILE)]
+               "--connect-timeout", str(min(15, timeout)), "--max-time", str(timeout),
+               "--retry", str(retries), "--max-filesize", str(size or MAX_FILE)]
     if accept:
         command += ["--header", "Accept: " + accept]
     command += ["--output", str(part), url]
@@ -220,6 +220,10 @@ def source_order(preference):
 def plan_sources(config, preference=None):
     """Probe catalogs only. Artifact verification remains a separate prerequisite."""
     attempts = []
+    # Catalog selection should fail over promptly; package downloads keep retries.
+    def probe(url, destination, size=None, sha256=None, accept=None):
+        download(url, destination, size, sha256, accept, timeout=20, retries=0)
+
     with tempfile.TemporaryDirectory(prefix="mgu-source-check-") as directory:
         root = pathlib.Path(directory)
         for source in source_order(preference or config.get("preference", "auto")):
@@ -231,7 +235,7 @@ def plan_sources(config, preference=None):
                         raise ValueError("OSS URL has not been configured")
                     base = https_url(base)
                     index = root / "mirror-manifest.json"
-                    download(base + "mirror-manifest.json", index)
+                    probe(base + "mirror-manifest.json", index)
                     manifest = load_json(index)
                     if manifest.get("schema") != 1:
                         raise ValueError("Invalid mirror manifest")
@@ -241,18 +245,18 @@ def plan_sources(config, preference=None):
                         entry = indexed[rel]
                         url = base + rel
                         local = root / (repo + ".json")
-                        download(url, local, entry["size"], entry["sha256"])
+                        probe(url, local, entry["size"], entry["sha256"])
                         catalogs.append(validate_catalog(load_json(local)))
                         urls.append(url)
                 else:
                     for repo in ("mgu-store", "idrive-apps"):
                         release = root / (repo + "-release.json")
-                        download("https://api.github.com/repos/robertnisipeanu/" + repo
-                                 + "/releases/tags/catalog", release,
-                                 accept="application/vnd.github+json")
+                        probe("https://api.github.com/repos/robertnisipeanu/" + repo
+                              + "/releases/tags/catalog", release,
+                              accept="application/vnd.github+json")
                         asset = next(a for a in load_json(release)["assets"] if a["name"] == "catalog.json")
                         local = root / (repo + ".json")
-                        download(asset["url"], local, accept="application/octet-stream")
+                        probe(asset["url"], local, accept="application/octet-stream")
                         catalogs.append(validate_catalog(load_json(local)))
                         urls.append(asset["browser_download_url"])
                 entries = verify_dependencies(catalogs)

@@ -14,6 +14,8 @@ Read `network-sources.json`. Supported preferences:
 
 `auto` tests catalogs; it does not geolocate users. A Chinese-language request is not a location signal. Honor an explicit preference, keep it for subsequent tasks, and report the selected source. If no preference is known, use `auto`. The shared skill starts in `auto`; users in mainland China can select `domestic-first`.
 
+The planner limits each catalog/metadata request to 20 seconds with no retries before trying the next configured source on failure; this is not a 20-second bound for the entire plan. Package downloads keep their longer timeout, retries and integrity checks. Once a usable source is selected, do not repeatedly probe the failed source during the same update without new evidence. Confirm the installed updater's source/origin mapping before using a mirror to update existing apps.
+
 国内用户选择 `domestic-first`，海外用户选择 `upstream-first`；默认 `auto` 优先尝试官方源，不通过 IP 或系统语言判断所在地。用户指定优先级后，应复用该偏好。GitHub 与 Gitee 的代码同步、OSS 的发布包同步是两件事。
 
 ## Configure and plan / 配置与计划
@@ -52,13 +54,15 @@ Use the verified, unmodified `bootstrap/mgu-install.js`. First prepare an existi
 node <verified-mirror>/bootstrap/mgu-install.js usb-repo <existing-folder> <verified-mirror>/mgu-store <verified-mirror>/idrive-apps
 ```
 
-This converts the mirror catalogs into the official flat USB layout. Apply only the previously authorized operation, with vehicle and backup prerequisites met. For first Store installation, the official path is:
+This converts the mirror catalogs into the official flat USB layout. Apply only the previously authorized operation, with vehicle and backup prerequisites met. For Store setup or a compatible Store-bundle refresh, the official path is:
 
 ```text
 node <verified-mirror>/bootstrap/mgu-install.js first-install --from <existing-folder>/mgu-repo/mgu-store --identity <private-key-path>
 ```
 
-The mirror's nested, hash-addressed package layout is for HTTPS/`usb-repo` input; do not assume it is already the flat `first-install --from` layout. Preparing a local folder does not turn the computer into a car-visible USB stick. Later app installation uses the Store UI/USB or another supported updater path.
+The mirror's nested, hash-addressed package layout is for HTTPS/`usb-repo` input; do not assume it is already the flat `first-install --from` layout. The installer sends that Store bundle over SSH/ENET without needing physical USB or HU internet; the inspected implementation supports rerunning and preserves newer installed components. It does not install arbitrary app catalogs. Other app installation uses Store UI/USB or another supported updater path; preparing a computer folder does not mount it on the HU.
+
+For existing apps, choose the actual transfer path using [maintenance-update.md](maintenance-update.md) before preparing a proxy. Adding an OSS HTTPS source selects online downloads, not files already cached on the computer. In updater 0.8.30 a configured proxy still requires an uplink lease for network requests; the local USB reader is separate. Do not generalize that gate into a requirement that every offline update must connect to a hotspot.
 
 ## Keep car updates on the chosen source / 车端更新源
 
@@ -91,3 +95,7 @@ Trace later download URLs as well as catalog artifact URLs: check installer defa
 更新检查必须同时对照官方发布与实时 OSS，列出需要新增或替换的准确路径、版本、哈希、依赖和缓存设置。先完整生成并校验资源，再与已验证的线上快照比较；仅当省略文件在线上仍一致时，才可交付增量上传包。先资源、再目录、最后清单；上传窗口内避免安装，完成后重新远端验收，保留旧包。
 
 还须检查安装器、更新器和运行时的后续下载依赖，区分溯源链接与必需联网路径。镜像目录可用不等于车端所有更新都走 OSS。用户自行上传时，交付文件和步骤，不代为上传、删除或宣称上线成功。
+
+For explicitly authorized maintainer automation, the source repository provides `tools/sync_oss.py --publish` (not bundled in the standalone skill). It accepts an external private ossutil config, verifies live/upstream snapshots, publishes a delta with cache metadata and performs public acceptance; failures attempt restoration of prior mutable indexes. Read the repository's `docs/DOMESTIC-MIRROR.md` for invocation and scope. Keep credentials out of instructions and public artifacts; only report success after the script's remote acceptance. Automation of mirror uploads does not authorize vehicle updates or repository pushes.
+
+维护者明确授权自动上传时，可使用源码仓库的 `tools/sync_oss.py --publish`，配置保存在仓库外，按脚本结果报告同步、验收或回滚状态。独立 Skill 不包含该维护工具，不能假定它已安装。自动镜像同步不等于自动升级车辆。
