@@ -98,13 +98,19 @@ Inspect patch state: installation may preserve a previously disabled CarPlay pat
 
 Choose Cluster, HUD or both in the app. HUD is experimental upstream. For cluster output, select the vehicle's central Map view as documented. Reconnect CarPlay if necessary, start navigation, inspect stream/renderer state and obtain actual display evidence.
 
+App 0.6.4 with map service 0.9.3 provides "Own settings for this driver". Settings are shared by default; opting in keeps the display target, HUD size and position per driver, not every map setting. Enable it only when requested and verify settings after switching drivers. An unknown driver or unavailable service can disable the control; this is not a reason to reflash. See [recovery.md](recovery.md) for configuration backup and downgrade considerations.
+
 Use the offered normal restart and respect its cooldown. Afterwards inspect boot ID/uptime, core services, mode/owner, boot verification, registered apps and pending restarts. The recorded build expected 0755 for carplay/aapd; derive expectations from verified originals/current upstream on other builds.
 
 No video can mean patch disabled, restart pending, no phone secondary stream, HUD off, renderer failure or navigation-app incompatibility. Do not promise Amap/Baidu quality or a fixed frame rate without observing that combination.
 
+For latency, map service 0.9.2 onward adds frame assembly, decoder buffering and H.264 diagnostics. Additional logging is not a frame-rate improvement; cluster-render 0.4.2 raises layer capacity without raising video bandwidth.
+
 ## 7. Update, downgrade and remove
 
 Record current versions and known-good resources, refresh published catalogs, check dependencies and request only chosen updates. Let the updater resolve requirements, perform necessary restart and verify versions afterwards. Do not falsify version fields to bypass checks.
+
+For a domestic mirror, check the live OSS catalogs and artifacts as well as the skill/Gitee checkout. App 0.6.4 requires map service >= 0.9.3; use the selected release's actual requirements. After a vehicle firmware update, handle "Needs setup / Set up" through the current Store's setup flow, complete any requested restart and verify the result rather than restoring system-file snapshots from the old firmware.
 
 For downgrade, rollback, patch removal, Store removal or SSH removal, read [recovery.md](recovery.md). Native-tool rollback, app downgrade and firmware downgrade are different operations.
 

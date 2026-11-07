@@ -69,3 +69,17 @@ They show the app entries, the Store, display-target settings, and actual HUD
 map output on the owner's iDrive 7. They are visual evidence from that setup,
 not another installation test, frame-rate measurements or a broader compatibility
 claim. The photos have no GPS EXIF tag. They are copied without pixel edits.
+
+## Upstream adaptation and local OSS update package: 2026-11-07
+
+- Documentation covers app 0.6.4/service 0.9.3 driver settings, configuration backup/downgrade behavior, latency diagnostics, tile-name diagnosis and firmware-update setup. Historical vehicle evidence retains its recorded versions.
+- A new complete mirror snapshot was generated from official catalogs at Store `8cfae23db27e51d86f84e65b13ce0592668d8df9` and apps `05e38eca8ca6f3bcde7e43d67127da664401caa8`. Its 22 indexed files and ten component packages passed size/hash and dependency checks. Catalog fields match upstream except artifact URLs.
+- Prepared and remotely downloaded manifest SHA-256: `cb21bf4f988523c2894821e03bc92b95ccc27b495329b3021972fdbb18e39be7`. All 22 indexed files downloaded from OSS match this snapshot; content and cache metadata acceptance passed.
+- The live old snapshot was downloaded again and verified before comparison. The upload delta has 12 files: four component packages, two source archives, five supporting/catalog files, and the final manifest. Applying the delta to the verified old snapshot reproduces all newly indexed files while retaining old packages.
+- The unmodified installer converted the new local catalogs into its USB layout with all ten components. This test performs no vehicle installation.
+- Skill validation, documentation links and twelve helper tests passed. The standalone skill archive was rebuilt.
+- After the owner's upload, the original installer downloaded both live OSS catalogs and all ten components into its USB layout. A Node fetch guard restricted these 12 requests to the OSS prefix; they returned HTTP 200 without redirects.
+- Final GET checks confirm `Cache-Control: no-cache` on both live catalogs, the root manifest, both upstream catalogs and the apps README. All six downloaded files still match the prepared snapshot byte for byte.
+- The built-in GitHub update source remains a network dependency; this work does not introduce a domestic-only network mode or claim emulator/vehicle validation.
+
+新版文件及可变目录、清单的缓存元数据已通过 OSS 验收。历史照片不代表新版已实车测试。

@@ -66,6 +66,10 @@ The unmodified installer seeds GitHub sources on a fresh unit. A successful offl
 
 For domestic use, once the Store opens, use **Settings → Add source** to add the real HTTPS URLs ending in `mgu-store/catalog.json` and `idrive-apps/catalog.json`. Inspect displayed versions/dependencies against the prepared snapshot. Use supported Store controls to disable unwanted upstream checks if available and requested; do not remove built-in sources by editing files. Do not modify vehicle registries, binaries or the bootstrap installer merely to change a mirror URL. If the installed Store cannot manage its sources, report that limit and retain the working USB update path.
 
+The reviewed updater 0.8.31 retains a built-in GitHub Store source and refuses its removal; adding OSS does not replace it. The mirrored installer and updater remain unmodified. `domestic-first` is a preference with possible upstream fallback, not an enforced domestic-only network policy.
+
+审阅的 updater 0.8.31 不允许移除内置 GitHub 商店源；新增 OSS 不是替换内置源。镜像保留原版安装器/更新器。`domestic-first` 允许记录原因后回退官方源，不能宣称整个过程绝不访问外网。
+
 ## Acceptance after upload / 上传后验收
 
 The maintainer provides a stable HTTPS download root without login, cookies or expiring query tokens. HTTPS public reads must work from the intended clients. CORS is not needed for the native installer/updater download path.
@@ -73,3 +77,17 @@ The maintainer provides a stable HTTPS download root without login, cookies or e
 Use `fetch --base-url <实际根地址> --output <新的验收目录> --manifest-sha256 <本地清单SHA256>` to verify every uploaded file against the prepared manifest. Also test the official `usb-repo` conversion locally; it does not require or contact a vehicle. These checks validate distribution, not vehicle compatibility.
 
 Do not report the domestic path publicly available until this remote acceptance succeeds. Preserve TLS verification.
+
+## Update review and upload handoff / 更新检查与上传交接
+
+When reviewing upstream or skill updates, compare both published upstream catalogs with live OSS, including their complete dependencies. A current Gitee checkout or reachable OSS index does not establish that its packages are current or available. Keep unresolved mirror differences visible in later reports.
+
+For an authorized mirror refresh, use the repository's `tools/prepare_oss.py` to generate and verify a new complete snapshot outside the checkout. Compare it with a verified live snapshot to identify uploads. Provide exact object paths, new/replaced files, versions, hashes, cache settings and upload order. Clearly distinguish prepared files from recommendations; never invent paths or checksums. A delta is sufficient only when all omitted files still match on OSS.
+
+Upload versioned packages and source archives first, followed by changed supporting files, both catalogs, and finally `mirror-manifest.json`. Keep old packages for rollback and active downloads. Use long caching only for content-addressed/versioned objects; use `Cache-Control: no-cache` for catalogs, manifest and other replaced fixed-path files. The two catalogs and manifest are not an atomic update: avoid installs during publication and complete remote acceptance afterwards. A new snapshot prefix provides stronger isolation.
+
+Trace later download URLs as well as catalog artifact URLs: check installer defaults, updater sources, dependency downloads and external runtime assets. Distinguish attribution/source links from required network access. Offline preparation and relative OSS artifact URLs do not disable the Store's built-in GitHub checks. Report unverified paths and unsupported source-management controls rather than claiming an entirely offline/domestic workflow.
+
+更新检查必须同时对照官方发布与实时 OSS，列出需要新增或替换的准确路径、版本、哈希、依赖和缓存设置。先完整生成并校验资源，再与已验证的线上快照比较；仅当省略文件在线上仍一致时，才可交付增量上传包。先资源、再目录、最后清单；上传窗口内避免安装，完成后重新远端验收，保留旧包。
+
+还须检查安装器、更新器和运行时的后续下载依赖，区分溯源链接与必需联网路径。镜像目录可用不等于车端所有更新都走 OSS。用户自行上传时，交付文件和步骤，不代为上传、删除或宣称上线成功。

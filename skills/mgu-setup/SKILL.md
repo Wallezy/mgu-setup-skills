@@ -33,7 +33,7 @@ For read-only diagnosis, do not require unrelated installation downloads. For re
 - Failure, downgrade, rollback or removal: also read [recovery.md](references/recovery.md).
 - Platform claims, historical lessons or source review: [evidence.md](references/evidence.md).
 - Record work using [session-record.md](references/session-record.md), outside the public repository.
-- Source selection, OSS downloads and mirror acceptance: [network-mirrors.md](references/network-mirrors.md).
+- Source selection, OSS downloads, update-file handoff and mirror acceptance: [network-mirrors.md](references/network-mirrors.md). Compare live OSS resources and dependencies whenever assessing skill updates; code-mirror synchronization alone is insufficient.
 
 ## Select from actual state
 

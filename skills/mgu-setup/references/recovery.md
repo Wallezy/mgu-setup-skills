@@ -13,6 +13,8 @@ Use this reference for failures, downgrade, restore or removal. Confirm the curr
 | Changed host key / 主机密钥变化 | Verify physical interface, fresh vehicle identity and expected restart before accepting a new key. 核实接口、车辆身份与重启过程，不能直接关闭校验。 |
 | Public key rejected / 公钥拒绝 | Match key/enrollment and selected user; use current upstream repair guidance. 核对凭据和用户，不能因一次失败就 fix-key。 |
 | Store recorded, no entry / 有安装记录无入口 | Check registry, tile/fallback and manager health; use official repair. 检查真实注册、入口和管理器，再用官方流程恢复。 |
+| Tile exists, name missing / 入口存在但名称消失 | Store 0.9.29 and map app 0.6.2 include a manager-owned tile-name fix. This does not diagnose an absent tile. 该修复针对应用被管理器停止后的名称丢失，不等同于修复所有入口缺失。 |
+| Needs setup after firmware update / 固件更新后需要设置 | Use the installed Store's Set up action and inspect its result/restart request. 使用当前商店设置动作；不是再次解锁 SSH 或强制恢复旧系统文件的理由。 |
 | “Installed” tool has no launcher / 工具无入口 | Background services such as renderers do not need tiles. 渲染器等后台服务本来就没有入口。 |
 | Startup animation repeats / 开机动画重复 | Compare boot IDs, uptime and service process/restart evidence. 动画重复本身不能证明整机重启。 |
 | Coding restored, still unstable / 恢复编码后仍异常 | Coding restore cannot repair modes, patched executables or services. 继续区分文件、补丁和服务问题。 |
@@ -63,6 +65,20 @@ Snapshots record firmware. Restores writing outside `/var/opt` require the recor
 Do not call snapshot restore directly unless the current supported maintenance path and applicable local instructions permit it. If the Store is unavailable, first assess official bootstrap/repair. Do not invent a recovery component on the live car.
 
 快照还原须走当前允许的维护路径。商店不可用时先评估官方修复，不临时编写救援组件在实车试运行。
+
+## Driver settings and map diagnostics / 驾驶员设置与地图诊断
+
+With map service 0.9.3, include both effective `map.state.conf` and, when present, `/var/opt/waze-on-cluster/profiles.json` in the configuration backup inventory. Confirm the installed version, actual paths and export coverage through supported maintenance tools; a deployment snapshot does not imply these files were saved. Keep profile identifiers private. No opted-in driver may mean no profile file; absence alone is not corruption.
+
+地图服务 0.9.3 的配置备份清单应同时考虑当前生效的 `map.state.conf` 和实际存在的 `/var/opt/waze-on-cluster/profiles.json`。核对当前版本、路径及受支持工具的导出范围，不能默认部署快照已经覆盖。驾驶员标识私有保存；未启用独立设置时可能没有配置文件，不能直接判断损坏。
+
+Older 0.9.x reads the effective settings, but changes made there while a driver has its own settings can be replaced by `profiles.json` at the next start of a profile-aware version. Record shared/own state and preserve both files before an authorized downgrade. Use supported UI/maintenance actions; do not delete the profile file or hand-edit it to force a reset.
+
+旧版 0.9.x 仍可读取当前生效设置，但在驾驶员独立设置启用期间降级并修改配置，再启动支持该功能的版本时，改动可能被 `profiles.json` 覆盖。降级前记录共享/个人状态及备份；不以删除或手改配置文件作为默认恢复办法。
+
+Map service 0.9.2 adds diagnostics to exported logs and `probe.txt`: stream SPS, decoder output order, frame completion by marker/next timestamp, assembly delay and decoder-held frames. Use the current app's supported log export and compare the same phone/navigation/output combination. Missing fields can reflect an unmeasured stream path, not a fault. This release's logging and renderer 0.4.2's layer capacity are not evidence of higher frame rate.
+
+地图服务 0.9.2 起的日志和 `probe.txt` 可区分帧组装等待与解码缓冲；使用当前应用支持的导出入口，记录同一手机、导航和显示目标组合。未测量的路径可能不输出某些字段，不能据此认定故障；图层容量增加和诊断增强都不等于帧率提升。
 
 ## Boot instability and executable permissions / 启动异常与权限
 
