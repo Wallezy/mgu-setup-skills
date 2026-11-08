@@ -100,3 +100,32 @@ claim. The photos have no GPS EXIF tag. They are copied without pixel edits.
 - Accepted manifest SHA-256: `50d77469608b7729cc744b2a4b4c09a236de58d6fc73c79efc5638a04b4ad630`.
 - A second live run returned `unchanged` with an empty upload list. Nineteen local tests cover helper behavior, constrained targets, publication ordering, corrupt-resource refusal, rollback on simulated publication/acceptance failures, locks and cache handling.
 - The configuration and CLI are local maintainer resources outside the repository. No credentials, downloaded packages or private vehicle records are distributed with the skill. Mirror validation is not vehicle/emulator installation validation.
+
+## Root stable-release adaptation: 2026-11-08
+
+- Official latest stable Release was v1.3.1 at review time; its tag and an isolated
+  source checkout resolve to `1d3ba60a9aa8a79fe16e1c26488a89918ec1d928`.
+  The skill records that reviewed revision and official Windows asset metadata.
+- Reviewed source requirements, CLI arguments, discovery, enrollment, flash and
+  persistence. GUI variant selection is mandatory, but CLI defaults to ID7;
+  workflow examples therefore require explicit verified `--arch`.
+  Persistence is verified separately from the overall CLI return code.
+- The optional `--root-repo` local check passed for the isolated v1.3.1 checkout
+  and rejected the existing older `f79134b5dee77a79fe2a72d24d0897f388d91816`
+  checkout. It does not fetch, import or execute Root code, and an invalid Root
+  checkout does not block a Store-only environment profile.
+- Twenty-six tests passed, including seven new source-checkout tests: pinned
+  revision, modified/missing tracked files, nested repository paths, missing Git
+  metadata, missing Git/timeouts, preserved local data and scope-specific readiness.
+- On macOS arm64, the selected existing Python 3.14.0 environment with
+  cryptography 46.0.7 and OpenSSH 10.5p1 passed the Root source profile.
+  The reviewed upstream CLI's `--help` ran successfully without a diagnostic
+  action. The old checkout and desktop application settings were not changed.
+- Gitee's v1.3.1 tag resolves to the same reviewed official commit. Fetching that
+  tag into the isolated local checkout succeeded and the Root source check passed.
+  Domestic-first can select this matching source; fallback still verifies the
+  selected revision. OSS contains Store/apps only. No Root artifacts or private
+  data were uploaded.
+- Skill structure, local documentation links and standalone packaging passed.
+  This is local preparation and helper validation, not a vehicle/emulator flash
+  test or a Windows executable test; historical vehicle evidence is unchanged.

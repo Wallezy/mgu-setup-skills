@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "reviewed_at": "2026-11-08",
+  "repository": "cauliflowermossgrape/idrive7-8-ssh-root",
+  "version": "v1.3.1",
+  "commit": "1d3ba60a9aa8a79fe16e1c26488a89918ec1d928",
+  "release_url": "https://github.com/cauliflowermossgrape/idrive7-8-ssh-root/releases/tag/v1.3.1",
+  "windows_asset": {
+    "name": "MGU-SSH-windows.zip",
+    "size": 19941014,
+    "sha256": "83d621c2c95504384613be0e2cda5bc445aac25a37e1f8fcce1ed8f727d1fb8b",
+    "url": "https://github.com/cauliflowermossgrape/idrive7-8-ssh-root/releases/download/v1.3.1/MGU-SSH-windows.zip"
+  }
+}

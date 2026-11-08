@@ -33,6 +33,25 @@ These are published-source findings, not another vehicle or emulator test. The l
 
 以上为正式发布与上游源码审阅，不是新增实车或模拟器验证；诊断增强不等于帧率提升。个人配置仅覆盖显示目标和 HUD 大小/位置。下方实车版本保留原始记录。
 
+## Root release review: 2026-11-08 / Root 正式版审阅
+
+Reviewed [v1.3.1](https://github.com/cauliflowermossgrape/idrive7-8-ssh-root/releases/tag/v1.3.1)
+at `1d3ba60a9aa8a79fe16e1c26488a89918ec1d928`, including `ssh_enable.py`,
+discovery, enrollment, flash, persistence and the source requirements. The
+preceding [v1.3.0 release](https://github.com/cauliflowermossgrape/idrive7-8-ssh-root/releases/tag/v1.3.0)
+documents the macOS/Linux discovery, post-reset wait/retry, busy readback and
+Windows key-permission fixes; v1.3.1 restores Windows discovery fallbacks.
+
+The GUI requires a variant choice, but the CLI retains a default of ID7.
+The skill therefore requires an explicit verified architecture for writes.
+CLI flash/enable calls `run_persist()` without using its return value as the
+overall result; verify persistence/debug state and fresh login independently.
+Version/asset metadata is in [root-tool.json](root-tool.json); preparation and
+validation limits are in [root-tool.md](root-tool.md).
+
+本次是正式版源码审阅及电脑端准备校验，没有连接车辆；Windows 发布包摘要来自 GitHub
+元数据，不能当作已下载或运行 Windows 程序的证据。以下历史实车记录保持原版本。
+
 ## Recorded successful session / 已记录成功会话
 
 Environment: macOS, wired ENET through an Ethernet adapter, MGU iDrive 7, firmware family `P18_23w44.2-1-3 mgu-high`.

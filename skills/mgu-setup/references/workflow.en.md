@@ -6,6 +6,12 @@ Identify the requested endpoint: preparation, first root, Store repair/install, 
 
 Run `scripts/check_environment.py` with the Python intended for the SSH source tool. It checks Python, cryptography, Node and OpenSSH locally; it does not certify vehicle readiness.
 
+For Root work, follow [Root tool preparation](root-tool.md) to select a stable
+release and separate local folder, then use `--profile root --root-repo <prepared-root-source>`
+to check its runtime and revision. The reviewed baseline is v1.3.1; that reference
+covers source fallback, offline reuse and newer releases. Do not keep using an
+unverified old path or download the same release again.
+
 | Platform | Check |
 |---|---|
 | macOS | Dock Ethernet interface, link-local address and routes alongside hotspot/VPN; interface names vary |
@@ -39,14 +45,19 @@ The current root README documents loss of coding/CAFD and Digital Key pairings o
 
 Try existing authorized credentials against the discovered HU first. If root login works, skip bootstrap.
 
-For an unprovisioned unit, inspect the checkout's CLI help and architecture handling. At review time the upstream CLI documents:
+For an unprovisioned unit, inspect the verified checkout's CLI help and architecture handling. At v1.3.1:
 
 ```text
-python ssh_enable.py status
-python ssh_enable.py flash --vin <verified-vehicle-vin> --persist
+python <verified-root-folder>/ssh_enable.py status
+python <verified-root-folder>/ssh_enable.py flash --arch <verified-variant> --vin <verified-vehicle-vin> --persist
 ```
 
-These are workflow examples, not commands for every connection. Use a verified VIN and explicitly select the supported architecture when required. Execute flash only for an authorized first setup with prerequisites satisfied. The GUI's combined “Flash + Enable” may already perform persistence and debug shutdown.
+These are workflow examples, not commands for every connection. Select `id7`,
+`id8-bdc3` or `id8-bcp` from verified HU evidence. v1.3.1 GUI requires a selection,
+but CLI still defaults to ID7: always supply `--arch`, never infer it from a
+model/VIN alone. Execute flash only for authorized first setup with prerequisites
+satisfied. GUI “Flash + Enable” and CLI `--persist` already request persistence;
+verify its result rather than automatically appending enable/persist.
 
 For provisioned SSH that fails, distinguish timeout, changed host key and public-key rejection. Check routing, wake state and credentials first. `enable` repairs existing setup; it is not routine connection setup. `fix-key` reflashes and requires a separate repair decision plus flash prerequisites. Do not enable optional key replacement by default.
 

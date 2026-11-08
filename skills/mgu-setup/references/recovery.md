@@ -9,9 +9,10 @@ Use this reference for failures, downgrade, restore or removal. Confirm the curr
 | Observation / 现象 | Decision / 判断 |
 |---|---|
 | No ENET link / 无有线链路 | Inspect cable, dock, interface and power; do not flash. 检查线缆、拓展坞、网卡和供电，不刷写。 |
+| ENET linked, discovery empty / 有链路但发现为空 | Check the selected Root version: v1.3.1 restores Windows broadcast fallbacks and retains macOS/Linux discovery fixes. Use [Root preparation](root-tool.md) before diagnosing missing SSH. 先核对工具版本和路由，不把发现失败当成需要刷写。 |
 | Port timeout / 端口超时 | Distinguish route/wake/firewall from absent SSH. 区分路由、唤醒、防火墙和 SSH 未启用。 |
 | Changed host key / 主机密钥变化 | Verify physical interface, fresh vehicle identity and expected restart before accepting a new key. 核实接口、车辆身份与重启过程，不能直接关闭校验。 |
-| Public key rejected / 公钥拒绝 | Match key/enrollment and selected user; use current upstream repair guidance. 核对凭据和用户，不能因一次失败就 fix-key。 |
+| Public key rejected / 公钥拒绝 | Distinguish local `Load key: Permission denied` from server rejection; v1.3.0 fixes Windows key-file permissions. Match key/enrollment and selected user. 区分本地读不到密钥和服务端拒绝，不能因一次失败就 fix-key。 |
 | Store recorded, no entry / 有安装记录无入口 | Check registry, tile/fallback and manager health; use official repair. 检查真实注册、入口和管理器，再用官方流程恢复。 |
 | Tile exists, name missing / 入口存在但名称消失 | Store 0.9.29 and map app 0.6.2 include a manager-owned tile-name fix. This does not diagnose an absent tile. 该修复针对应用被管理器停止后的名称丢失，不等同于修复所有入口缺失。 |
 | Needs setup after firmware update / 固件更新后需要设置 | Use the installed Store's Set up action and inspect its result/restart request. 使用当前商店设置动作；不是再次解锁 SSH 或强制恢复旧系统文件的理由。 |
@@ -24,6 +25,23 @@ Use this reference for failures, downgrade, restore or removal. Confirm the curr
 Avoid invoking an unknown daemon with guessed arguments. In this case `patchd.js status` started another daemon; inspect documented read-only entrypoints instead. Even a deploy command named `status` can reconcile state in some versions: read its implementation and prefer direct observation when a strictly read-only session is requested.
 
 不能猜测守护进程的状态参数。案例中 `patchd.js status` 启动了第二个进程；应使用已确认的查询入口。有些版本的部署 `status` 也会协调状态，严格只读任务必须核对实现。
+
+Root v1.3.0+ includes bounded retries for specific post-reset diagnostic-session
+delays and a non-fatal busy enrollment readback. A final failure still stops
+the workflow; these changes do not authorize automatically repeating flash.
+Check activation, fresh SSH login and persistence separately. See [Root preparation](root-tool.md).
+
+Root v1.3.0+ 对特定复位后诊断延迟和登记读回忙状态有内置处理；最终失败仍须停下分析，
+不能自动从头重刷。激活成功、SSH 登录、持久化分别验收。
+
+If BimmerCode reports a successful restore but individual settings remain reset,
+the reviewed Root README describes incomplete coding restoration on some units.
+Assess the matching saved CAFD/NCD and the supported E-Sys coding path; do not
+diagnose every missing tile or boot problem as coding loss, and do not reflash
+to restore coding. This skill does not provide an E-Sys implementation.
+
+BimmerCode 提示恢复成功但部分设置仍重置时，上游记录了编码恢复不完整的可能性。
+核对匹配的 CAFD/NCD 和 E-Sys 编码恢复条件；不能把所有入口/启动问题归为编码，也不能靠重刷补编码。
 
 ## Four different recovery scopes / 四种恢复范围
 

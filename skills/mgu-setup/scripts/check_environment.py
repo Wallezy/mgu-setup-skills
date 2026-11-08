@@ -6,11 +6,55 @@
 import argparse
 import importlib
 import json
+import os
+import pathlib
 import platform
 import re
 import shutil
 import subprocess
 import sys
+
+ROOT_RELEASE = pathlib.Path(__file__).resolve().parents[1] / "references/root-tool.json"
+
+
+def probe_root_repo(folder):
+    policy = json.loads(ROOT_RELEASE.read_text(encoding="utf-8"))
+    result = {
+        "ok": False,
+        "version": None,
+        "revision": None,
+        "expected_version": policy["version"],
+        "expected_revision": policy["commit"],
+    }
+    repo = pathlib.Path(folder).expanduser().resolve()
+    git = shutil.which("git")
+    if not git:
+        return dict(result, reason="Git is required to verify a source checkout")
+    if not (repo / "ssh_enable.py").is_file():
+        return dict(result, reason="Root source folder or ssh_enable.py is missing")
+
+    def read_git(*arguments):
+        completed = subprocess.run(
+            [git, "-C", str(repo), *arguments],
+            capture_output=True, text=True, timeout=8, check=False,
+            # Avoid refreshing the index in a read-only environment check.
+            env=dict(os.environ, GIT_OPTIONAL_LOCKS="0"),
+        )
+        if completed.returncode:
+            raise ValueError("Git checkout could not be verified")
+        return completed.stdout.strip()
+
+    try:
+        if pathlib.Path(read_git("rev-parse", "--show-toplevel")).resolve() != repo:
+            return dict(result, reason="Select the Root repository itself, not a subfolder")
+        result["revision"] = read_git("rev-parse", "HEAD")
+        if result["revision"] != policy["commit"]:
+            return dict(result, reason="Revision differs from the reviewed stable release")
+        if read_git("status", "--porcelain", "--untracked-files=no"):
+            return dict(result, reason="Tracked source or assets are modified or missing")
+    except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+        return dict(result, reason=str(exc) if isinstance(exc, ValueError) else type(exc).__name__)
+    return dict(result, ok=True, version=policy["version"], reason="Reviewed source checkout; vehicle not checked")
 
 
 def probe_tool(name, argument, pattern, minimum=None):
@@ -63,7 +107,7 @@ def required_for(profile):
     }[profile]
 
 
-def make_report(profile):
+def make_report(profile, root_repo=None):
     checks = {
         "python": {
             "ok": sys.version_info >= (3, 9),
@@ -75,6 +119,10 @@ def make_report(profile):
         "ssh": probe_tool("ssh", "-V", r"\b(OpenSSH[^\s,]*)"),
     }
     required = required_for(profile)
+    if root_repo is not None:
+        checks["root_tool"] = probe_root_repo(root_repo)
+        if profile in ("root", "full"):
+            required.append("root_tool")
     return {
         "schema": 1,
         "profile": profile,
@@ -89,6 +137,7 @@ def make_report(profile):
             "No network, interface, administrator, coding-backup or vehicle check.",
             "The root profile checks the Python source route, not a Windows executable.",
             "The store profile checks the direct Node installer, not runtime wrappers.",
+            "Root source revision is checked only when --root-repo is supplied; untracked code is not audited.",
             "Recheck current upstream requirements before installing.",
         ],
     }
@@ -98,13 +147,17 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--json", action="store_true", help="emit a JSON report")
     parser.add_argument(
+        "--root-repo",
+        help="verify a local Root source checkout against the reviewed release; no fetch or execution",
+    )
+    parser.add_argument(
         "--profile",
         choices=["inspect", "root", "store", "full"],
         default="full",
         help="local prerequisites to require (default: full)",
     )
     args = parser.parse_args()
-    report = make_report(args.profile)
+    report = make_report(args.profile, args.root_repo)
     if args.json:
         print(json.dumps(report, indent=2))
     else:

@@ -6,6 +6,10 @@
 
 用准备运行 SSH 源码工具的 Python 执行 `scripts/check_environment.py`，检查 Python、cryptography、Node 和 OpenSSH。它不判断车辆是否具备刷写条件。
 
+涉及 Root 时，先按 [Root 工具准备](root-tool.md)选择正式版本和独立本地目录，再用
+`--profile root --root-repo <已准备的Root源码目录>` 校验运行环境与版本。当前审阅基线为 v1.3.1；
+来源选择、离线复用和新版本判断以该参考为准，不重复下载，也不沿用未核验的旧目录。
+
 | 系统 | 检查重点 |
 |---|---|
 | macOS | 拓展坞网卡、链路本地地址、热点/VPN 与 ENET 路由；接口名不能写死 |
@@ -39,14 +43,17 @@ Root 资源必须匹配所选架构并私有保存；为选择资源可提前只
 
 先使用现有授权凭据连接已识别的 HU。root 登录正常时跳过首次设置。
 
-对未设置的车机，检查当前源码 CLI 帮助和架构参数。审阅时上游命令形态：
+对未设置的车机，检查已核验源码的 CLI 帮助和架构参数。v1.3.1 的命令形态：
 
 ```text
-python ssh_enable.py status
-python ssh_enable.py flash --vin <已核对的车辆VIN> --persist
+python <已核验Root目录>/ssh_enable.py status
+python <已核验Root目录>/ssh_enable.py flash --arch <已核实变体> --vin <已核对的车辆VIN> --persist
 ```
 
-这是 agent 流程示例，不是每次连车都执行的命令。VIN 必须核对，按当前工具要求明确选择支持的架构；仅在授权且前提齐备的首次设置中执行 flash。GUI 的“Flash + Enable”可能已经包含持久化和关闭调试。
+这是 agent 流程示例，不是每次连车都执行的命令。变体必须明确为 `id7`、`id8-bdc3` 或 `id8-bcp`；
+v1.3.1 GUI 要求选择，但 CLI 仍默认 ID7，因此不得省略 `--arch`，也不能只凭车型/VIN 猜测。
+仅在授权且前提齐备的首次设置中执行 flash。GUI 的“Flash + Enable”及 CLI 的 `--persist`
+已包含持久化请求，完成后单独核验结果，不再机械追加 enable/persist。
 
 已设置 SSH 却失败时，区分超时、主机密钥变化和公钥拒绝，先检查路由、唤醒状态及凭据。`enable` 修复已有设置，不是日常连接步骤。`fix-key` 会重新刷写，需要单独判断并满足刷写前提。不要默认启用可选的密钥替换。
 

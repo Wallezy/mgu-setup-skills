@@ -14,6 +14,7 @@ Read only the procedure relevant to the request:
 
 - Existing Store/app update or resume: [maintenance-update.md](references/maintenance-update.md). Start with saved preparation, not first setup. U 盘和热点不是所有更新的统一前提。
 - First setup, Store restoration or map/HUD configuration: [Chinese workflow](references/workflow.zh-CN.md) or [English workflow](references/workflow.en.md).
+- Root tool preparation/version check: [root-tool.md](references/root-tool.md). Reuse the reviewed release, verify the selected local checkout, and explicitly select the HU variant; Store/app updates do not need a Root tool refresh.
 - Access failure, unstable boot, downgrade or removal: [recovery.md](references/recovery.md). Working SSH needs no flash/enable/persist.
 - Source selection, OSS preparation or acceptance: [network-mirrors.md](references/network-mirrors.md). Skill/mirror maintenance checks include live OSS versions and dependencies.
 - Historical versions and validation limits: [evidence.md](references/evidence.md).

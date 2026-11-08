@@ -108,6 +108,7 @@ Use `--profile store` for direct Store installation prerequisites, `--profile ro
 
 - [FAQ](docs/FAQ.md): prerequisites, offline use, root persistence and recovery boundaries.
 - [Skill entrypoint](skills/mgu-setup/SKILL.md).
+- [Root release preparation](skills/mgu-setup/references/root-tool.md): reviewed v1.3.1, local revision checks and source/Windows routes.
 - [English workflow](skills/mgu-setup/references/workflow.en.md) / [中文流程](skills/mgu-setup/references/workflow.zh-CN.md).
 - [Recovery decisions / 恢复判断](skills/mgu-setup/references/recovery.md).
 - [Evidence and sources / 经验与来源](skills/mgu-setup/references/evidence.md).

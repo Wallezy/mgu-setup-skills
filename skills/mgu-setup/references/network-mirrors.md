@@ -31,6 +31,11 @@ Paths are relative to this skill folder. Windows may use the selected Python lau
 
 The mirror root contains `mirror-manifest.json`, `mgu-store/catalog.json`, `idrive-apps/catalog.json` and `bootstrap/mgu-install.js`. The upstream links in provenance and bundled README files are attribution, not runtime package dependencies.
 
+Root tools use a separate [release preparation path](root-tool.md), not either
+Store catalog. Verify the selected Gitee tag against the reviewed official
+commit; the current OSS manifest does not supply a Root source or Windows bundle.
+Root 工具单独按正式版本准备；Gitee 需核对标签/提交，不能把商店 OSS 完整缓存当成 Root 也已齐备。
+
 ## Download and verify / 下载与校验
 
 For an explicitly selected domestic source:
