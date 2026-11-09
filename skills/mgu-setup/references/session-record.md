@@ -25,11 +25,16 @@ Copy this template to a private directory outside the repository. Omit secrets a
 | Patch originals / 补丁原件 | | |
 | Known-good artifacts / 已知可用安装资源 | | |
 
+- Coding backup: matching vehicle/module, format, restore tool and supported restoration route / 编码备份对应车辆与模块、格式、恢复工具和支持的恢复路径:
+- Supplemental capture, if used: revision, read consistency, coverage/stop reason; restorability separately confirmed or unknown / 补充采集（如有）：提交、复读一致性、范围/停止原因；可恢复性单独标记已确认或未知:
+- Coding recovery readiness: met/unmet with evidence; capture verification alone is insufficient / 编码恢复条件：满足或未满足及依据；采集校验不能单独满足:
+
 ## Changes / 操作
 
 ### Readiness before planned writes / 计划写入前准备结果
 
 - Requested operation and selected architecture / 操作范围与所选架构:
+- Read-only or authorized repair; query entrypoint/version and known side effects / 只读或已授权修复；查询入口、版本及已知副作用:
 - Environment profile, interpreter and result / 环境检查模式、解释器及结果:
 - Private staging directory / 本地私有资源目录:
 - Reused snapshot, installer and verified-package manifest paths / 复用快照、安装器及已校验包清单路径:
@@ -55,6 +60,7 @@ Copy this template to a private directory outside the repository. Omit secrets a
 - Patch on disk vs active after boot / 磁盘补丁与启动后生效状态:
 - Boot ID continuity, uptime, service failures/restarts / 启动与服务状态:
 - Mode/owner and backup verification / 权限、所有者、备份校验:
+- Repairs actually triggered, before/after evidence and manager restarts / 实际触发的修复、前后证据和管理器重启:
 - Deferred verification and pending restart / 延迟检查与待重启:
 - Phone stream, cluster/HUD output and navigation app / 手机流与实际显示:
 - Frame rate measurement, if any; otherwise “not measured” / 帧率未测则明确:

@@ -24,6 +24,10 @@ The skill-creator package's `quick_validate.py` can also validate `skills/mgu-se
 | Existing supported recovery ready / 已有可执行恢复准备 | Do not delay recovery to download unrelated catalogs/apps |
 | Root already works / root 正常 | Skip flash/enable/persist mutations |
 | First flash, no coding backup / 无编码备份首次刷写 | Complete preparation; stop flash at missing backup |
+| Read-only diagnosis with deploy 0.8.8 / 使用新版部署工具只读排查 | Exclude root `status`, including JSON/wrapper polling; observe passively or report unavailable data, never repair implicitly |
+| Authorized manager repair / 已授权管理器修复 | Preserve before-state, use supported operation and record actual side effects; reuse applicable authorization |
+| Only preflight records with verified=true / 仅采集记录且校验通过 | Mark supplemental; restoration readiness remains unmet without a compatible backup/restore path |
+| Sparse coding DIDs or early scan stop / 编码编号不连续或提前结束 | Record coverage as incomplete/unknown; matching captured blocks and hashes do not certify completeness |
 | Unknown HU architecture / 未知架构 | Do not assume ID7 or write an arbitrary image |
 | Old install record, no tile / 有记录无入口 | Inspect registration and manager, official repair |
 | Repeating animation, stable boot ID / 动画重复但启动未变 | Investigate UI/service; do not claim full reboot loop |
@@ -41,6 +45,18 @@ The skill-creator package's `quick_validate.py` can also validate `skills/mgu-se
 These are review scenarios, not claims that each was executed on hardware or by an independent agent. Add actual results and platform evidence before expanding the tested-support matrix.
 
 这些是审查场景，不表示已经逐项实车或独立 agent 测试。扩大验证范围前必须补充实际结果。
+
+## Authoring validation: 2026-11-09, diagnosis and capture boundaries
+
+The entrypoint, recovery/Root references, both workflows and session template
+distinguish passive diagnosis from repair, and capture integrity from restoration
+readiness. Repository validation (21 Markdown files, 109 local links),
+skill-creator quick validation, standalone packaging (18 files) and
+`git diff --check` passed. The scenario rows above are review criteria, not
+executed vehicle or independent-agent tests. No helper code or vehicle state changed.
+
+入口、恢复/Root 参考、中英流程及会话模板已区分只读与修复、采集校验与恢复能力。
+本次仅完成文档、结构和打包校验；保留历史实车证据，不新增实车验证声明。
 
 ## Authoring validation: 2026-11-06
 

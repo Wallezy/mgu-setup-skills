@@ -25,6 +25,43 @@ without a new release lookup.
 不为重复查询“最新”强制联网。检查器仅核验所附基线；采用更高的已审阅版本时，另行记录等效的
 提交与完整性检查，不能把版本不匹配改写成“v1.3.1 校验通过”。
 
+<a id="coding-capture-limits"></a>
+
+## Coding capture limits / 编码采集边界
+
+The 2026-11-09 review of upstream commit
+`a43ac32029d9d4f93d1da649042381fb995e7b55` found `mgu7/preflight.py` on
+main, outside the reviewed **v1.3.1** release/Windows bundle. This is a
+version-specific review, not a claim about future releases. Do not switch to
+main or require a new capture for routine Store updates.
+
+该提交的 `preflight` 是补充编码记录，不是已经验证的恢复备份。
+它不在本 Skill 审阅的 v1.3.1 正式包中；后续版本应核对实际实现，不能为了采集而追 main。
+
+- `_read_did()` returns `None` for both negative and absent responses;
+  `_scan()` stops after 16 consecutive such results. A gap of unsupported DIDs
+  can therefore hide later valid blocks. This is static analysis, not a vehicle
+  reproduction. 连续 16 个不存在的编号可能导致提前结束扫描，不能把它等同于整段完整读取。
+- `verified=true` means a nonempty set of captured coding blocks matched a
+  second read. It does not verify unvisited blocks or the full identification
+  record. File hashes check file integrity, not capture coverage or restorability.
+  两次一致只验证已采到的编码块；哈希一致只验证文件完整性。
+- The output includes coding records and restore guidance, but this implementation
+  has no automatic restore or verified BimmerCode/E-Sys import path. Do not
+  assume `coding_MGU.txt` or `backup.json` can be imported by those tools.
+  文本/JSON/恢复说明不是可直接导入编码工具的证明，也不是完整固件备份。
+
+Record capture integrity, scan coverage/stop reason, and restoration capability
+separately in the [session record](session-record.md). If only this capture exists,
+mark it supplemental and leave coding recovery readiness unmet. Continue local
+preparation, but do not authorize first flash on that evidence alone; establish
+a compatible tool's matching HU/MGU backup and supported restore path. A confirmed
+existing backup can be reused without recapturing it.
+
+分别记录采集一致性、扫描范围/停止原因、可用恢复工具与格式。只有此类采集时，
+编码恢复条件仍未满足；可继续本地准备，不能因此放行首次刷写。
+已有匹配且确认可用的编码备份应复用，无需重复备份。
+
 ## Prepare source locally / 本地准备源码
 
 Use a private directory outside this skill and outside an existing tool checkout.

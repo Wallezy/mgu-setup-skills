@@ -22,9 +22,35 @@ Use this reference for failures, downgrade, restore or removal. Confirm the curr
 | Map missing / 无地图 | Inspect patch, pending restart, phone stream, output selection and renderer. 不能直接归因于安装失败。 |
 | Download stalls / 下载停滞 | Test exact asset, change to official offline media or supported proxy; keep verified completed stages. 测试实际资源，换官方离线包/代理，不重做已验证步骤。 |
 
-Avoid invoking an unknown daemon with guessed arguments. In this case `patchd.js status` started another daemon; inspect documented read-only entrypoints instead. Even a deploy command named `status` can reconcile state in some versions: read its implementation and prefer direct observation when a strictly read-only session is requested.
+Avoid invoking an unknown daemon with guessed arguments. In this case `patchd.js status` started another daemon; inspect documented read-only entrypoints instead.
 
-不能猜测守护进程的状态参数。案例中 `patchd.js status` 启动了第二个进程；应使用已确认的查询入口。有些版本的部署 `status` 也会协调状态，严格只读任务必须核对实现。
+不能猜测守护进程的状态参数。案例中 `patchd.js status` 启动了第二个进程；应使用已确认的查询入口。
+
+### Read-only status versus repair / 只读检查与修复
+
+In reviewed deploy **0.8.8**, `status` calls `syncMgrHome()`. As root, when
+MainApp's home is incorrectly root-owned, it repairs directory ownership/modes,
+waits for the manager on ID7, may restart it, or saves a pending-restart state.
+Other status reconciliation steps can also write. `--json` changes output, not
+these side effects. This is conditional app-manager recovery, not an unconditional
+head-unit reboot. Source: `deploy/unit/mgu-deploy.js` at Store commit
+`ed9393a980743ddbe1933eed006c706c943d71e0`.
+
+审阅的 deploy **0.8.8** 在 root 身份下执行 `status`，可能修复 MainApp 目录所有者/
+权限、等待或重启应用管理器，或保存待重启状态；其他状态协调步骤也可能写入。
+`--json` 不会变成只读模式。这是有条件的应用管理器恢复，不是每次都重启整台车机。
+
+- A read-only request excludes this entrypoint and any wrapper/polling path that
+  calls it. Use already-reviewed passive observations of boot IDs, uptime,
+  processes, logs and file metadata through available supported tools.
+  If none is available, report the observation as unavailable; do not try
+  guessed flags or silently repair. 只读请求不得调用此入口或后台自动轮询它；
+  使用已核对的被动观察方式，不可用就说明限制，不隐含修复。
+- For an authorized repair/install, capture the relevant before-state first,
+  run the supported operation once and record actual directory/service changes
+  and pending restarts. Reuse existing authorization when it covers that repair;
+  a diagnostic-only request does not. 已授权修复时先保留现场，记录实际修改及重启需求，
+  不因该规则重复索取已有授权。
 
 Root v1.3.0+ includes bounded retries for specific post-reset diagnostic-session
 delays and a non-fatal busy enrollment readback. A final failure still stops

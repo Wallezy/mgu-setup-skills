@@ -28,7 +28,7 @@ Root assets must match the selected architecture and remain private. Read-only v
 
 ## 2. Vehicle identity and backup preparation
 
-Discover the gateway/HU through upstream read-only status/discovery. Observe architecture, firmware, interface, IP and vehicle identity. Do not reuse another session's VIN or gateway. Do not change coding or arm debug merely to discover an already accessible unit.
+Discover the gateway/HU through upstream status/discovery verified to be read-only. Observe architecture, firmware, interface, IP and vehicle identity. Do not reuse another session's VIN or gateway. Do not change coding or arm debug merely to discover an already accessible unit. A name is insufficient: deploy 0.8.8 `status` can repair directories or restart the manager; apply [read-only versus repair](recovery.md#read-only-status-versus-repair--只读检查与修复).
 
 Before first flash, establish that the car is parked, awake and on power appropriate for programming. Confirm the pre-flash HU/MGU coding backup, selected module, tool and location. Keep these categories outside the public repository:
 
@@ -38,6 +38,11 @@ Before first flash, establish that the car is parked, awake and on power appropr
 | Access | Matching root key, enrollment metadata and connection information; a key is not necessarily unique per vehicle. |
 | Deployment | Before-state, versions, registry/tile state and deploy snapshots. Check archive contents, exit status and retention. |
 | Patch originals | Verified originals, patch records, modes and owners for changed files. Not a firmware image. |
+
+A capture's `verified=true` or matching hashes do not establish complete coverage
+or restoration capability. Supplemental DID records alone do not satisfy recovery
+readiness or allow first flash. Confirm the matching HU/MGU backup and supported
+restore tool/format; see [coding capture limits](root-tool.md#coding-capture-limits).
 
 The current root README documents loss of coding/CAFD and Digital Key pairings on flashing. Coding backups do not cover Digital Keys. Do not promise a recovery time or guaranteed rescue.
 
