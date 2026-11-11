@@ -1,23 +1,24 @@
 ---
 name: mgu-setup
-description: Set up and maintain an owner-authorized BMW MGU over ENET using upstream SSH and Store tools. Use for environment checks, backup preparation, initial root, Store installation or missing tiles, map/HUD setup, updates, and supported rollback or removal. Supports Chinese and English.
+description: Set up and maintain an owner-authorized BMW MGU over ENET using SSH and Store tools. Use for environment checks, backup preparation, initial root, Store setup, full-distribution switch preparation and supported migration, map/HUD setup, updates, and supported rollback or removal. Supports Chinese and English.
 license: GPL-3.0-only
 ---
 
 # MGU setup and maintenance / MGU 安装与维护
 
-Execute the user's requested work with current upstream tools and observed vehicle state. Respond in the user's language. This skill covers a lifecycle; a request for one operation does not authorize all operations.
+Execute the user's requested work with the selected distribution's supported tools and observed vehicle state. Respond in the user's language. This skill covers a lifecycle; a request for one operation does not authorize all operations.
 
 ## Choose one route / 先选路径
 
 Read only the procedure relevant to the request:
 
+- Switch the full distribution / 切换整套发行版: [store-distributions.md](references/store-distributions.md#switch-distribution). Cover the computer-side installer, Store/updater/deploy tools, dependencies, installed apps and their update channels. Use this before ordinary updates when moving between official, Walle CN or another fork; a mirror-only change follows the source route.
 - Existing Store/app update or resume: [maintenance-update.md](references/maintenance-update.md). Start with saved preparation, not first setup. U 盘和热点不是所有更新的统一前提。
 - First setup, Store restoration or map/HUD configuration: [Chinese workflow](references/workflow.zh-CN.md) or [English workflow](references/workflow.en.md).
 - Root tool preparation/version check: [root-tool.md](references/root-tool.md). Reuse the reviewed release, verify the selected local checkout, and explicitly select the HU variant; Store/app updates do not need a Root tool refresh.
 - Access failure, unstable boot, downgrade or removal: [recovery.md](references/recovery.md). Working SSH needs no flash/enable/persist.
 - Source selection, OSS preparation or acceptance: [network-mirrors.md](references/network-mirrors.md). Skill/mirror maintenance checks include live OSS versions and dependencies.
-- Store edition selection or switching to the CN fork: [store-distributions.md](references/store-distributions.md). A download mirror and a modified Store distribution are different choices; respect the selected edition and its release readiness.
+- First-install distribution selection: [store-distributions.md](references/store-distributions.md). Select the matching installer and complete distribution separately from download preference; respect release readiness.
 - Historical versions and validation limits: [evidence.md](references/evidence.md).
 
 ## Execute with minimal repetition / 复用准备，直接执行

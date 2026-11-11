@@ -46,6 +46,12 @@ Other supported requests:
 - “Inspect the boot loop and identify a supported rollback.”
 - “Remove the map patch and app; retain the Store.”
 - “Prepare offline resources now; the car is not connected.”
+- “Prepare a full switch to Walle CN, including the installer and installed components; preserve my settings.”
+
+[Full-distribution switching](skills/mgu-setup/references/store-distributions.md#switch-distribution)
+covers the installer, Store, updater, deploy tool, dependencies, installed apps
+and update channels. Walle CN currently supports assessment and preparation only;
+its migration entrypoint and installation release are not ready.
 
 The agent should execute within the request's scope, not just print a tutorial. Physical display checks and coding-tool operations may still need the owner. Installing this skill does not authorize vehicle writes.
 
@@ -67,6 +73,7 @@ The environment helper reports problems; the agent prepares missing dependencies
 | Store setup and repair | Official installer; registry/tile checks for missing entries |
 | Maps and HUD | Install dependencies; configure through the app; verify actual output |
 | Updates | Published releases, dependency resolution and post-start verification |
+| Distribution switching | Prepare the matching installer and full component plan; execute only through a verified release and migration entrypoint |
 | Downgrade/rollback | Check retained versions and compatibility; use supported paths only |
 | Restore/remove | Separate patch removal, component removal, Store removal and SSH removal |
 | Failure diagnosis | Network, authentication, coding, missing tiles and startup failures |

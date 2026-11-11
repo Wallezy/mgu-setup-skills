@@ -252,3 +252,17 @@ claim. The photos have no GPS EXIF tag. They are copied without pixel edits.
 - Repository validation (124 local links), Skill structure validation and
   standalone packaging (19 files) passed. These are documentation checks;
   application localization tests are recorded in the application repository.
+
+## Full-distribution switching guidance: 2026-11-12
+
+- The switching route covers the computer-side installer/bootstrap, Store,
+  updater, deploy tool, installed dependencies/apps and future update sources.
+  A component plan distinguishes retained identical packages, migrations and
+  unmapped third-party components; it does not reinstall every optional app.
+- Instruction review distinguishes a mirror-only change, a same-edition update,
+  a full switch in either direction, an unknown fork and same-version/different-
+  content packages. Healthy SSH is reused. An absent migration entrypoint allows
+  preparation only; changing a catalog URL cannot establish successful migration.
+- Skill structure validation, 133 local links, whitespace checks and standalone
+  packaging (19 files) passed. No installer implementation, vehicle operation or
+  migration success is established by this documentation change.

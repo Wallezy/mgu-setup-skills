@@ -7,6 +7,9 @@ Identify the requested endpoint: preparation, first root, Store repair/install, 
 The Store installation commands here describe the official edition. An explicitly
 selected Walle CN edition first follows [distribution readiness](store-distributions.md);
 do not substitute the official installer silently.
+An existing installation moving to another fork or back to official uses
+[full-distribution switching](store-distributions.md#switch-distribution),
+including the computer's installer and vehicle components, without repeating root.
 
 Run `scripts/check_environment.py` with the Python intended for the SSH source tool. It checks Python, cryptography, Node and OpenSSH locally; it does not certify vehicle readiness.
 

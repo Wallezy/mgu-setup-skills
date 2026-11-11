@@ -1,10 +1,18 @@
-# Store editions / 商店发行版
+# Full distributions / 整套发行版
 
 Choose the Store edition separately from the computer's download preference.
 Reuse an explicit choice. If the user asks to switch editions, identify the
 installed updater and preserve its sources, origins, aliases and recovery
 inventory before preparing the matching release. An existing, healthy SSH
 connection needs no Root reflash.
+
+An edition selection covers the computer's installer and the vehicle's complete
+managed software set. It is not merely a Store UI replacement or a source URL.
+Components retain their own versions; one release plan binds their compatible
+versions, hashes, installer and update channels.
+
+发行版选择包括电脑端安装器、车端商店和更新服务、部署工具、基础依赖及已安装应用。
+各组件保留各自版本号，由同一份发行计划固定兼容组合；不要求所有版本数字相同。
 
 | Edition | Source | Install status |
 | --- | --- | --- |
@@ -27,6 +35,62 @@ components, not a second Store/updater to install alongside them.
 安装两套更新器。国内版移除 GitHub 登录、令牌管理和 GitHub 来源功能，不自动
 访问或回退 GitHub；已有相关资料保留用于恢复。其他作者的应用可通过完整 HTTPS
 目录或本地包提供。GitHub 源码仓库与作者署名不属于车机运行时下载功能。
+
+<a id="switch-distribution"></a>
+## Switch the full distribution / 切换整套发行版
+
+Use this route for "switch to CN", "return to official" or a change of fork,
+including the installer. Same-edition upgrades use [maintenance](maintenance-update.md);
+the same upstream bytes from another host use [mirrors](network-mirrors.md).
+Neither an official installation nor a domestic mirror alone implies an upgrade
+fault. Reuse the user's target; ask only when "switch version" remains ambiguous.
+
+1. **Inventory and match.** Use saved records and verified read-only observations
+   to identify the installed distribution, architecture, components, sources and
+   available package fingerprints. A Chinese interface or an OSS row is not proof
+   of the installed edition. Identify another fork by provenance, not its title.
+   With no car, finish local preparation and mark the installed state unverified.
+2. **Freeze one complete plan.** Cover every row below before writing. Bind the
+   exact target installer/bootstrap, catalogs, source revisions, package hashes,
+   dependencies and supported migration entrypoint. Reuse verified matching local
+   resources; never run the official network bootstrap to install CN packages.
+3. **Check the actual transition.** Same version and identical bytes can be retained;
+   same version with different bytes needs explicit replacement support. Higher
+   versions still need cross-edition compatibility; lower versions need a supported
+   [restore path](recovery.md). Preserve settings, source/origin/alias records and
+   verified prior payloads. Metadata or coding backups alone cannot restore programs.
+4. **Migrate through supported operations.** Execute the plan's installer/Store
+   entrypoint and declared dependency order, not a universal hard-coded sequence.
+   Commit required updater self-update checks before dependent operations. Missing
+   support blocks the affected writes, not preparation. Do not guess a CLI flag,
+   remove the working Store first or edit versions/firmware markers to force a retry.
+5. **Verify the whole result.** Record the installer actually used, active package
+   identities, retained settings, one managed row per component, service health and
+   every managed component's selected update source. Test catalog/package reachability;
+   an actual later update is separate evidence and needs a genuine compatible release.
+   Mark a partial transition as partial; switching back to official needs the same
+   compatibility and recovery assessment.
+
+| Layer / 层次 | Required coverage / 覆盖范围 |
+| --- | --- |
+| Computer / 电脑端 | Target installer, shell/PowerShell bootstrap where used, runtime requirements, checksums and local package plan; keep the previous installer privately for recovery |
+| Store and control / 商店与管理工具 | `robertn_store`, `mgu-updater`, `mgu-deploy`; self-update and recovery compatibility |
+| Base dependencies / 基础组件 | Installed or required Python, privacy, network and renderer components; do not install unrelated optional tools |
+| Apps and native tools / 应用及原生工具 | All installed components in scope, including map control, capture service and cluster/HUD renderer; match by stable component ID |
+| Update channel / 后续更新 | Catalogs, artifact/icon URLs, source ownership and aliases for the entire managed set; a CN transition must not leave base components updating from GitHub |
+| Root access / Root 访问 | Record a compatible Root tool and reuse healthy SSH; selecting a distribution does not require another flash |
+
+For each item record: **current identity -> target identity -> retain / migrate /
+unmapped -> supported action and recovery**. Identical shared dependencies can
+remain installed when compatible, with their future update ownership verified.
+Do not silently remove third-party apps or replace them by similarly named ones.
+If the target has no counterpart, preserve it and report the unmapped item; do not
+claim that every installed app migrated. Installing every optional app in the target
+catalog is a separate request.
+
+“切换到国内版，包含安装器和全部已安装组件，保留设置”会进入整套迁移流程。
+**当前 Walle CN 只能完成检查、资源准备和迁移计划，尚无已验证的换装发布及同版本
+迁移入口。** Skill 负责组织和调用工具，不能代替缺失的安装器实现。
 
 ## Current readiness / 当前可用状态
 

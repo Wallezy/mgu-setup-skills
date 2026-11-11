@@ -14,6 +14,7 @@ Copy this template to a private directory outside the repository. Omit secrets a
 - Root access, coding state, Store visibility / 初始访问、编码与商店:
 - Current apps/native components and source / 初始版本与来源:
 - Selected Store edition, active distribution/GitHub capability and package hashes / 商店发行版、实际通道与 GitHub 能力、安装包哈希:
+- Distribution switch: current/target edition, exact local installer/bootstrap, per-component identities and retain/migrate/unmapped decisions, supported entrypoint / 整套换版：当前与目标发行版、电脑安装器/引导脚本、逐组件身份及保留/迁移/无对应项、受支持入口:
 - Parked/awake/power state if writing / 写入前停车、唤醒与供电:
 
 ## Recovery readiness / 恢复准备
@@ -71,6 +72,7 @@ Copy this template to a private directory outside the repository. Omit secrets a
 - Frame rate measurement, if any; otherwise “not measured” / 帧率未测则明确:
 - Update acceptance vs optional navigation/visual testing; reason for any restart / 更新验收与导航实显分开；重启原因:
 - First same-version edition migration versus a later higher-version update / 首次同版本发行版迁移与后续更高版本升级分别记录:
+- Whole-distribution result: installer used, management tools/dependencies/apps covered, unmapped items, settings retained and each component's update source / 整套迁移结果：实际安装器、管理工具/依赖/应用覆盖、无对应项、设置保留及逐组件更新源:
 - Phase durations: preparation, install, required restart, verification / 各阶段耗时：准备、安装、必要重启、验收:
 
 ## Cleanup and next action / 清理与下一步

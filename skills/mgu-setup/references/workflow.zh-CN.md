@@ -6,6 +6,9 @@
 
 本页商店安装命令针对官方版。若用户选择 Walle 国内版，先按
 [商店发行版与发布状态](store-distributions.md)判断可用性；不默认运行官方安装器替代。
+已有安装切到国内版、其他二开版或切回官方版，先走
+[整套发行版切换](store-distributions.md#switch-distribution)，包含电脑安装器与车端组件，
+不重复首次 root 流程。
 
 用准备运行 SSH 源码工具的 Python 执行 `scripts/check_environment.py`，检查 Python、cryptography、Node 和 OpenSSH。它不判断车辆是否具备刷写条件。
 

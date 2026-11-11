@@ -8,6 +8,11 @@ These installer paths describe the official edition. For an explicitly selected
 CN fork, first apply [edition readiness](store-distributions.md); do not run the
 official installer as an implicit substitute. 国内版选择与下载镜像偏好分别处理。
 
+A change of distribution, including the installer, first uses
+[full-distribution switching](store-distributions.md#switch-distribution), even
+when the target version is higher. 整套换版先核对安装器、车端管理组件、依赖、应用和
+后续更新源；不能以“商店已更换”代表全部完成。
+
 ## Choose by scope / 按更新范围选择
 
 | Scope / 范围 | Supported path / 可用路径 |
