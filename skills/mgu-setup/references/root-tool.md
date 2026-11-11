@@ -62,6 +62,25 @@ existing backup can be reused without recapturing it.
 编码恢复条件仍未满足；可继续本地准备，不能因此放行首次刷写。
 已有匹配且确认可用的编码备份应复用，无需重复备份。
 
+## Programming recovery commands / 编程状态恢复命令
+
+The 2026-11-11 review of main commit
+`b1fca089a679cecad737ef9ce23fb66762700057` found `enter-prog` / `exit-prog`
+outside the reviewed **v1.3.1** release. They change diagnostic/communication
+state; `enter-prog` can reset the ECU. They are not read-only probes or automatic
+fallbacks for a failed SSH connection. A best-effort `exit-prog` returning
+`EXIT_OK` is not proof of recovery: observe actual reachability, boot continuity
+and service health separately.
+
+The same main revision removes CLI confirmation prompts for `flash`, `fix-key`
+and `close`; `--yes` is a compatibility no-op. Required scope, architecture,
+power and backup checks must be established before calling such a reviewed
+version, not delegated to an expected interactive prompt.
+
+以上是主分支行为审阅，不代表 v1.3.1 Windows 正式包已包含。编程状态命令可能改变诊断、
+通信状态或重启 ECU，不能用于只读检查或自动修复 SSH。退出码不证明车机恢复；
+新版 CLI 不再询问确认，也不等于可以省略既有写入条件。
+
 ## Prepare source locally / 本地准备源码
 
 Use a private directory outside this skill and outside an existing tool checkout.

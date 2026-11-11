@@ -8,12 +8,16 @@ import json
 import pathlib
 import re
 import shutil
+import struct
 import subprocess
 import tempfile
 import urllib.parse
+import zlib
 
 CONFIG = pathlib.Path(__file__).resolve().parents[1] / "references/network-sources.json"
 MAX_FILE = 512 << 20
+MAX_ICON = 1 << 20
+MAX_ICON_DIMENSION = 2048
 
 
 def load_json(path):
@@ -53,6 +57,51 @@ def digest(path):
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             result.update(chunk)
     return result.hexdigest()
+
+
+def icon_path(name, sha256):
+    if (not isinstance(name, str)
+            or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}\.png", name)
+            or not re.fullmatch(r"[a-f0-9]{64}", sha256)):
+        raise ValueError("Icon must be a PNG filename with a SHA-256")
+    return "icons/" + sha256 + "/" + name
+
+
+def verify_png(path):
+    path = pathlib.Path(path)
+    if not 0 < path.stat().st_size <= MAX_ICON:
+        raise ValueError("Icon exceeds size limit")
+    data = path.read_bytes()
+    if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+        raise ValueError("Icon is not a PNG")
+    offset, chunks, has_pixels = 8, 0, False
+    while offset + 12 <= len(data):
+        size = struct.unpack_from(">I", data, offset)[0]
+        kind = data[offset + 4:offset + 8]
+        end = offset + 12 + size
+        if end > len(data):
+            raise ValueError("Truncated PNG icon")
+        body = data[offset + 8:end - 4]
+        if zlib.crc32(kind + body) & 0xffffffff != struct.unpack_from(">I", data, end - 4)[0]:
+            raise ValueError("Invalid PNG icon CRC")
+        if chunks == 0:
+            if kind != b"IHDR" or size != 13:
+                raise ValueError("Missing PNG icon header")
+            width, height, depth, color, compression, filtering, interlace = struct.unpack(">IIBBBBB", body)
+            depths = {0: (1, 2, 4, 8, 16), 2: (8, 16), 3: (1, 2, 4, 8), 4: (8, 16), 6: (8, 16)}
+            if (not 0 < width <= MAX_ICON_DIMENSION or not 0 < height <= MAX_ICON_DIMENSION
+                    or depth not in depths.get(color, ()) or compression or filtering
+                    or interlace not in (0, 1)):
+                raise ValueError("Unsupported PNG icon dimensions or format")
+        elif kind == b"IHDR":
+            raise ValueError("Duplicate PNG icon header")
+        has_pixels = has_pixels or (kind == b"IDAT" and size > 0)
+        if kind == b"IEND":
+            if size or end != len(data) or not has_pixels:
+                raise ValueError("Invalid PNG icon end")
+            return
+        offset, chunks = end, chunks + 1
+    raise ValueError("Incomplete PNG icon")
 
 
 def checked(path, size, sha256):
@@ -160,6 +209,20 @@ def verify_bundle(root):
             rel = repo + "/" + str(relative_path(artifact.get("url", artifact["name"])))
             if rel not in inventory or not checked(root / rel, artifact["size"], artifact["sha256"]):
                 raise ValueError("Catalog artifact mismatch: " + rel)
+            if component.get("icon"):
+                icon = str(relative_path(component["icon"]))
+                rel = repo + "/" + icon
+                entry = inventory.get(rel)
+                if entry is None:
+                    raise ValueError("Catalog icon absent from manifest: " + rel)
+                if icon != icon_path(pathlib.PurePosixPath(icon).name, entry["sha256"]):
+                    raise ValueError("Catalog icon must use its content-addressed path")
+                provenance = manifest.get("repositories", {}).get(repo, {}).get("icons", {})
+                source = provenance.get(pathlib.PurePosixPath(icon).name, {})
+                if any(source.get(k) != v for k, v in (
+                        ("path", icon), ("size", entry["size"]), ("sha256", entry["sha256"]))):
+                    raise ValueError("Catalog icon provenance mismatch: " + rel)
+                verify_png(root / rel)
     verify_dependencies(catalogs)
     if "bootstrap/mgu-install.js" not in inventory:
         raise ValueError("Missing upstream installer")

@@ -52,6 +52,34 @@ validation limits are in [root-tool.md](root-tool.md).
 本次是正式版源码审阅及电脑端准备校验，没有连接车辆；Windows 发布包摘要来自 GitHub
 元数据，不能当作已下载或运行 Windows 程序的证据。以下历史实车记录保持原版本。
 
+## Published and main-only review: 2026-11-11 / 正式发布与主分支审阅
+
+The published Store catalog identifies
+`efbdcc0d68bd7faf5c5939fa6240050e5e3a449f`; the apps catalog identifies
+`c91cf979377d2de5970fdb8e775d45fe74a69d2c`. Relevant reviewed source files:
+
+- Store `deploy/unit/mgu-deploy.js` and `deploy/mgu-install.js`: deploy 0.8.10
+  read-only status and the computer wrapper's ordinary-status fallback.
+- Store `native/mgu-updater/CHANGELOG.md` and `apps/robertn_store/package/CHANGELOG.md`:
+  required-tool removal checks and visible refusal reasons.
+- Apps `apps/robertn_waze_cluster/package/CHANGELOG.md`, `release.json`,
+  `native/waze-on-cluster/component.json` and `README.md`: Off, HUD pop-up
+  preference, driver settings and supported crash logs. App 0.6.7 requires
+  service 0.9.10, which requires renderer 0.5.3.
+- Root main `b1fca089a679cecad737ef9ce23fb66762700057`:
+  programming-state commands and removed CLI prompts. These findings are
+  outside the reviewed stable v1.3.1 bundle; see [root-tool.md](root-tool.md).
+
+Official catalog and PNG Release assets were verified by size and SHA-256.
+The OSS mirror passed public content, dependency, PNG and cache-header checks.
+The unmodified installer converted all ten packages locally with network
+requests disabled, but did not copy catalog icons. These are source/distribution
+checks; no vehicle or head-unit emulator was used, and the historical vehicle
+matrix below retains its observed versions.
+
+本次验证覆盖发布资源、图标、镜像及本地离线转换，不是新版实车测试；
+主分支新增 Root 恢复命令不能当作正式包已有能力。
+
 ## Recorded successful session / 已记录成功会话
 
 Environment: macOS, wired ENET through an Ethernet adapter, MGU iDrive 7, firmware family `P18_23w44.2-1-3 mgu-high`.

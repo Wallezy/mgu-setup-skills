@@ -22,15 +22,50 @@ SPEC.loader.exec_module(M)
 REPOS = ("mgu-store", "idrive-apps")
 
 
+def release_asset(repo, release, name, maximum):
+    matches = [a for a in release.get("assets", []) if a.get("name") == name]
+    if len(matches) != 1:
+        raise ValueError("Expected one published release asset: " + name)
+    asset = matches[0]
+    size, digest = asset.get("size"), asset.get("digest", "")
+    url = ("https://github.com/robertnisipeanu/" + repo
+           + "/releases/download/catalog/" + name)
+    if (asset.get("state") != "uploaded" or asset.get("browser_download_url") != url
+            or not isinstance(size, int) or isinstance(size, bool) or not 0 < size <= maximum
+            or not re.fullmatch(r"sha256:[a-f0-9]{64}", digest)):
+        raise ValueError("Invalid official release asset metadata: " + name)
+    return {"url": url, "size": size, "sha256": digest[7:]}
+
+
 def upstream_catalog(repo, cache):
+    if repo not in REPOS:
+        raise ValueError("Unsupported upstream repository")
     metadata = cache / (repo + "-release.json")
     M.download("https://api.github.com/repos/robertnisipeanu/" + repo
                + "/releases/tags/catalog", metadata, accept="application/vnd.github+json")
-    assets = M.load_json(metadata).get("assets", [])
-    asset = next(a for a in assets if a["name"] == "catalog.json")
+    release = M.load_json(metadata)
+    asset = release_asset(repo, release, "catalog.json", M.MAX_FILE)
     path = cache / (repo + "-catalog.json")
-    M.download(asset["url"], path, accept="application/octet-stream")
-    return M.validate_catalog(M.load_json(path)), path
+    M.download(asset["url"], path, asset["size"], asset["sha256"])
+    catalog = M.validate_catalog(M.load_json(path))
+    icons = {}
+    for entry in catalog["components"]:
+        name = entry.get("icon")
+        if name:
+            M.icon_path(name, "0" * 64)
+            icons[name] = release_asset(repo, release, name, M.MAX_ICON)
+    return catalog, path, icons
+
+
+def rewrite_catalog(catalog, icons):
+    rewritten = copy.deepcopy(catalog)
+    for entry in rewritten["components"]:
+        artifact = entry["artifact"]
+        artifact["url"] = "packages/" + artifact["sha256"] + "/" + artifact["name"]
+        if entry.get("icon"):
+            name = entry["icon"]
+            entry["icon"] = M.icon_path(name, icons[name]["sha256"])
+    return rewritten
 
 
 def inspect_archive(path):
@@ -43,29 +78,29 @@ def inspect_archive(path):
                 raise ValueError("Refusing a bundled SDK or built BMW-linked app: " + member.name)
 
 
-def prepare(output, cache):
+def prepare(output, cache, upstream=None):
     if output.exists():
         raise ValueError("Use a new output folder; existing snapshots are never overwritten")
     cache.mkdir(parents=True, exist_ok=True)
-    originals = {}
-    for repo in REPOS:
-        originals[repo] = upstream_catalog(repo, cache)
-    M.verify_dependencies([c for c, _ in originals.values()])
+    originals = upstream if upstream is not None else {
+        repo: upstream_catalog(repo, cache) for repo in REPOS}
+    M.verify_dependencies([c for c, _, _ in originals.values()])
     output.parent.mkdir(parents=True, exist_ok=True)
     staging = pathlib.Path(tempfile.mkdtemp(prefix=".mgu-oss-", dir=output.parent))
     try:
         provenance = {}
-        for repo, (catalog, raw) in originals.items():
+        for repo, (catalog, raw, icons) in originals.items():
             commit = catalog.get("commit", "")
             if not re.fullmatch(r"[a-f0-9]{40}", commit):
                 raise ValueError("Published catalog must identify a source commit")
             provenance[repo] = {"upstream": "https://github.com/robertnisipeanu/" + repo,
-                                "commit": commit, "catalog_sha256": M.digest(raw)}
+                                "commit": commit, "catalog_sha256": M.digest(raw),
+                                "icons": {}}
             destination = staging / repo
             destination.mkdir()
             shutil.copyfile(raw, destination / "upstream-catalog.json")
-            rewritten = copy.deepcopy(catalog)
-            for entry in rewritten["components"]:
+            rewritten = rewrite_catalog(catalog, icons)
+            for entry in catalog["components"]:
                 artifact = entry["artifact"]
                 name = artifact["name"]
                 rel = "packages/" + artifact["sha256"] + "/" + name
@@ -76,9 +111,15 @@ def prepare(output, cache):
                 target = destination / rel
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copyfile(cached, target)
-                artifact["url"] = rel
-                if entry.get("icon"):
-                    raise ValueError("New external icon field needs explicit mirroring before publishing")
+            for name, asset in icons.items():
+                rel = M.icon_path(name, asset["sha256"])
+                cached = cache / rel
+                M.download(asset["url"], cached, asset["size"], asset["sha256"])
+                M.verify_png(cached)
+                target = destination / rel
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(cached, target)
+                provenance[repo]["icons"][name] = dict(asset, path=rel)
             M.write_json(destination / "catalog.json", rewritten)
             source = "https://raw.githubusercontent.com/robertnisipeanu/{}/{}/".format(repo, commit)
             for name in ("LICENSE", "README.md"):
@@ -100,7 +141,7 @@ def prepare(output, cache):
                     raise ValueError("Upstream installer lacks offline first-install support")
         (staging / "NOTICE.txt").write_text(
             "Community distribution mirror maintained by Wallezy.\n"
-            "Installation packages are byte-for-byte upstream releases; catalogs change artifact URLs only.\n"
+            "Packages and icons are byte-for-byte upstream assets; catalogs change artifact and icon URLs only.\n"
             "Original authors, licenses and version/dependency fields are retained.\n"
             "Upstream source archives and LICENSE files are provided beside each catalog.\n"
             "See package notices for third-party licensing/build dependencies.\n"

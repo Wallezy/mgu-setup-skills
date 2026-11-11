@@ -19,6 +19,9 @@ SPEC = importlib.util.spec_from_file_location("prepare_oss", ROOT / "tools/prepa
 P = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(P)
 M = P.M
+CUSTOM_TARGETS = {
+    "https://mgu.walle.pw/mgu/": ("oss://walle-mgu/mgu/", "cn-hangzhou"),
+}
 
 
 def validate_target(destination, base):
@@ -32,14 +35,24 @@ def validate_target(destination, base):
     M.relative_path(prefix)
     expected = re.fullmatch(re.escape(target.netloc) + r"\.oss-[a-z0-9-]+\.aliyuncs\.com",
                             public.hostname or "")
-    if not expected or public.port or public.path != "/" + prefix + "/":
+    custom = CUSTOM_TARGETS.get(base)
+    if custom and custom[0] != destination.rstrip("/") + "/":
+        raise ValueError("Custom domain does not match its configured OSS destination")
+    if (not expected and not custom) or public.port or public.path != "/" + prefix + "/":
         raise ValueError("Public OSS URL must match the destination bucket and prefix")
     return destination.rstrip("/") + "/", base
 
 
+def target_region(destination, base):
+    _, base = validate_target(destination, base)
+    if base in CUSTOM_TARGETS:
+        return CUSTOM_TARGETS[base][1]
+    return re.search(r"\.oss-([a-z0-9-]+)\.aliyuncs\.com", urllib.parse.urlsplit(base).hostname)[1]
+
+
 def immutable(rel):
     parts = pathlib.PurePosixPath(rel).parts
-    return (len(parts) == 4 and parts[0] in P.REPOS and parts[1] == "packages"
+    return (len(parts) == 4 and parts[0] in P.REPOS and parts[1] in ("packages", "icons")
             and re.fullmatch(r"[a-f0-9]{64}", parts[2])) or (
         len(parts) == 3 and parts[0] in P.REPOS and parts[1] == "source"
         and re.fullmatch(r"[a-f0-9]{40}\.zip", parts[2]))
@@ -53,15 +66,23 @@ def no_cache(headers):
     return "no-cache" in [v.strip().lower() for v in headers.get("cache-control", "").split(",")]
 
 
+def headers_match(rel, headers):
+    directives = {v.strip().lower() for v in headers.get("cache-control", "").split(",")}
+    if immutable(rel):
+        cache_ok = ({"public", "max-age=31536000", "immutable"} <= directives
+                    and not directives.intersection({"no-cache", "no-store", "private"}))
+    else:
+        cache_ok = no_cache(headers)
+    return cache_ok and (not rel.endswith(".png")
+                         or headers.get("content-type", "").split(";", 1)[0].strip().lower() == "image/png")
+
+
 def same_catalogs(local, upstream):
-    for repo, (catalog, raw) in upstream.items():
+    for repo, (catalog, raw, icons) in upstream.items():
         if M.digest(local / repo / "upstream-catalog.json") != M.digest(raw):
             return False
         mirrored = M.load_json(local / repo / "catalog.json")
-        expected = json.loads(json.dumps(catalog))
-        for entry in expected["components"]:
-            a = entry["artifact"]
-            a["url"] = "packages/" + a["sha256"] + "/" + a["name"]
+        expected = P.rewrite_catalog(catalog, icons)
         if mirrored != expected:
             return False
     return True
@@ -74,11 +95,17 @@ def versions(root):
 
 def upload_plan(old, new, header_repairs=()):
     prior = {f["path"]: f for f in old["files"]}
+    current = {f["path"] for f in new["files"]}
     plan = []
     for entry in new["files"]:
         rel = str(M.relative_path(entry["path"]))
+        if rel in prior and immutable(rel) and prior[rel] != entry:
+            raise ValueError("Refusing replacement of immutable resource: " + rel)
         if prior.get(rel) != entry or rel in header_repairs:
             plan.append(dict(entry, phase="resources" if immutable(rel) else "metadata"))
+    for rel in header_repairs:
+        if rel not in current and rel in prior and immutable(rel):
+            plan.append(dict(prior[rel], phase="resources", historical=True))
     return sorted(plan, key=lambda e: (e["phase"] != "resources", e["path"]))
 
 
@@ -99,7 +126,35 @@ class Remote:
     def __init__(self, cli, config, destination, base, work):
         self.cli, self.config = cli, config
         self.destination, self.base = validate_target(destination, base)
+        self.region = target_region(destination, base)
         self.work = work
+
+    def cli_options(self):
+        # ossutil 2.2.0 can panic with zero attempts; explicitly request one.
+        return ["--config-file", str(self.config), "--region", self.region,
+                "--endpoint", "https://oss-" + self.region + ".aliyuncs.com",
+                "--retry-times", "1"]
+
+    def verify_binding(self):
+        if self.base not in CUSTOM_TARGETS:
+            return
+        bucket = urllib.parse.urlsplit(self.destination).netloc
+        result = subprocess.run(
+            [str(self.cli), "api", "list-cname", "--bucket", bucket,
+             "--output-format", "json"] + self.cli_options(),
+            capture_output=True, text=True, timeout=60)
+        if result.returncode:
+            raise RuntimeError("Cannot verify custom domain binding on destination bucket")
+        record = json.JSONDecoder().raw_decode(result.stdout.lstrip())[0]
+        entries = record.get("Cname", [])
+        if isinstance(entries, dict):
+            entries = [entries]
+        hostname = urllib.parse.urlsplit(self.base).hostname
+        if record.get("Bucket") != bucket or not any(
+                e.get("Domain") == hostname and e.get("Status") == "Enabled"
+                and e.get("Certificate", {}).get("Status") == "Enabled"
+                for e in entries):
+            raise ValueError("Custom domain or HTTPS certificate is not enabled on destination bucket")
 
     def headers(self, rel):
         M.relative_path(rel)
@@ -120,12 +175,13 @@ class Remote:
         content_type = ("application/json" if rel.endswith(".json") else
                         "text/plain; charset=utf-8" if rel.endswith((".md", ".txt")) else
                         "application/javascript" if rel.endswith(".js") else
+                        "image/png" if rel.endswith(".png") else
                         "application/zip" if rel.endswith(".zip") else "application/gzip")
         result = subprocess.run(
             [str(self.cli), "cp", str(root / rel), self.destination + rel,
-             "--config-file", str(self.config), "--force", "--no-progress",
+             "--force", "--no-progress",
              "--cache-control", cache_control(rel), "--content-type", content_type,
-             "--output-dir", str(self.work / "ossutil-output")],
+             "--output-dir", str(self.work / "ossutil-output")] + self.cli_options(),
             capture_output=True, text=True, timeout=300)
         if result.returncode:
             # Do not copy CLI diagnostics into public logs; they may contain signed URLs.
@@ -133,9 +189,8 @@ class Remote:
 
     def verify(self, rel, entry, folder):
         M.download(self.base + rel, folder / rel, entry["size"], entry["sha256"])
-        if not immutable(rel):
-            if not no_cache(self.headers(rel)):
-                raise RuntimeError("Missing no-cache: " + rel)
+        if not headers_match(rel, self.headers(rel)):
+            raise RuntimeError("Unexpected public cache/content headers: " + rel)
 
 
 def publish(remote, old_root, new_root, plan, work):
@@ -145,7 +200,7 @@ def publish(remote, old_root, new_root, plan, work):
         for entry in plan:
             if entry["phase"] != "resources":
                 continue
-            remote.put(new_root, entry["path"])
+            remote.put(old_root if entry.get("historical") else new_root, entry["path"])
             remote.verify(entry["path"], entry, work / "resource-check")
         # Reused resources were verified from live OSS before reaching this point.
         for entry in plan:
@@ -159,9 +214,9 @@ def publish(remote, old_root, new_root, plan, work):
         M.fetch_remote(remote.base, work / "remote-acceptance",
                        manifest_sha256=M.digest(new_root / "mirror-manifest.json"))
         manifest = M.load_json(new_root / "mirror-manifest.json")
-        for rel in [e["path"] for e in manifest["files"] if not immutable(e["path"])] + ["mirror-manifest.json"]:
-            if not no_cache(remote.headers(rel)):
-                raise RuntimeError("Missing no-cache: " + rel)
+        for rel in [e["path"] for e in manifest["files"]] + ["mirror-manifest.json"]:
+            if not headers_match(rel, remote.headers(rel)):
+                raise RuntimeError("Unexpected public cache/content headers: " + rel)
     except Exception as original:
         errors = []
         # Restore existing mutable objects and commit the prior manifest last.
@@ -188,14 +243,15 @@ def publish(remote, old_root, new_root, plan, work):
 def synchronize(args, work):
     destination, base = validate_target(args.destination, args.base_url)
     remote = Remote(args.ossutil, args.config, destination, base, work)
+    remote.verify_binding()
     # Full public acceptance protects both delta reuse and a possible rollback.
     old_root = work / "live-before"
     M.fetch_remote(base, old_root)
     old, _ = M.verify_bundle(old_root)
     upstream = {repo: P.upstream_catalog(repo, args.cache) for repo in P.REPOS}
-    M.verify_dependencies([c for c, _ in upstream.values()])
-    repairs = [rel for rel in [f["path"] for f in old["files"] if not immutable(f["path"])] + ["mirror-manifest.json"]
-               if not no_cache(remote.headers(rel))]
+    M.verify_dependencies([c for c, _, _ in upstream.values()])
+    repairs = [rel for rel in [f["path"] for f in old["files"]] + ["mirror-manifest.json"]
+               if not headers_match(rel, remote.headers(rel))]
     if same_catalogs(old_root, upstream):
         if not repairs:
             return {"status": "unchanged", "manifest_sha256": M.digest(old_root / "mirror-manifest.json"),
@@ -208,7 +264,7 @@ def synchronize(args, work):
             raise ValueError("Prepared snapshot no longer matches published upstream catalogs")
     else:
         new_root = work / "oss-upload"
-        P.prepare(new_root, args.cache)
+        P.prepare(new_root, args.cache, upstream=upstream)
     new, _ = M.verify_bundle(new_root)
     plan = upload_plan(old, new, repairs)
     report = {"status": "prepared", "destination": destination,
@@ -229,7 +285,7 @@ def main():
     parser.add_argument("--config", type=pathlib.Path, required=True,
                         help="Private ossutil config outside this repository")
     parser.add_argument("--destination", required=True, help="oss://bucket/prefix")
-    parser.add_argument("--base-url", required=True, help="Matching public OSS HTTPS prefix")
+    parser.add_argument("--base-url", required=True, help="Matching public OSS prefix or explicitly configured HTTPS domain")
     parser.add_argument("--work-dir", type=pathlib.Path, required=True)
     parser.add_argument("--cache", type=pathlib.Path, required=True)
     parser.add_argument("--prepared", type=pathlib.Path, help="Previously verified complete snapshot")

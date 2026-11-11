@@ -19,7 +19,7 @@ Use this reference for failures, downgrade, restore or removal. Confirm the curr
 | “Installed” tool has no launcher / 工具无入口 | Background services such as renderers do not need tiles. 渲染器等后台服务本来就没有入口。 |
 | Startup animation repeats / 开机动画重复 | Compare boot IDs, uptime and service process/restart evidence. 动画重复本身不能证明整机重启。 |
 | Coding restored, still unstable / 恢复编码后仍异常 | Coding restore cannot repair modes, patched executables or services. 继续区分文件、补丁和服务问题。 |
-| Map missing / 无地图 | Inspect patch, pending restart, phone stream, output selection and renderer. 不能直接归因于安装失败。 |
+| Map missing / 无地图 | Inspect Show on / Off, current driver settings, patch, pending restart, phone stream and renderer. 先确认没有主动关闭输出或切换驾驶员设置，不能直接归因于安装失败。 |
 | Download stalls / 下载停滞 | Test exact asset, change to official offline media or supported proxy; keep verified completed stages. 测试实际资源，换官方离线包/代理，不重做已验证步骤。 |
 
 Avoid invoking an unknown daemon with guessed arguments. In this case `patchd.js status` started another daemon; inspect documented read-only entrypoints instead.
@@ -40,11 +40,22 @@ head-unit reboot. Source: `deploy/unit/mgu-deploy.js` at Store commit
 权限、等待或重启应用管理器，或保存待重启状态；其他状态协调步骤也可能写入。
 `--json` 不会变成只读模式。这是有条件的应用管理器恢复，不是每次都重启整台车机。
 
-- A read-only request excludes this entrypoint and any wrapper/polling path that
+Deploy **0.8.10** exposes `status --read-only`. Verify that the **vehicle-side**
+tool supports it before choosing a query path. The reviewed computer installer
+probes remote help, but falls back to ordinary repairing `status` when the option
+is absent, warning afterwards. Updating the computer installer alone therefore
+does not make its status request safe for a read-only task. Do not upgrade the
+vehicle merely to obtain a query; use reviewed passive observations when needed.
+
+deploy **0.8.10** 新增只读选项，但必须核对车端能力。新版电脑安装器遇到旧车端工具时，
+仍可能回退普通 `status`，执行后才警告。只读任务不能允许这种回退；
+不为获取状态而先更新车端。
+
+- A read-only request excludes ordinary repairing status and any wrapper/polling path that
   calls it. Use already-reviewed passive observations of boot IDs, uptime,
   processes, logs and file metadata through available supported tools.
   If none is available, report the observation as unavailable; do not try
-  guessed flags or silently repair. 只读请求不得调用此入口或后台自动轮询它；
+  guessed flags or silently repair. 只读请求不得调用普通修复型状态入口或后台自动轮询它；
   使用已核对的被动观察方式，不可用就说明限制，不隐含修复。
 - For an authorized repair/install, capture the relevant before-state first,
   run the supported operation once and record actual directory/service changes
@@ -112,6 +123,27 @@ Do not call snapshot restore directly unless the current supported maintenance p
 
 ## Driver settings and map diagnostics / 驾驶员设置与地图诊断
 
+Map UI **0.6.6** adds **Show on → Off**: output can be deliberately hidden while
+video decoding continues. UI **0.6.7** adds **Keep HUD map over BMW pop-ups** and
+persists it with driver settings. Preserve these choices and record the active
+shared/own profile before diagnosing missing video or updating. Off does not
+require reconnecting the phone or rebooting to change; keeping the map over
+BMW lists is not a promise to suppress every phone navigation card.
+
+地图界面 0.6.6 起支持关闭显示，关闭时仍可能继续解码；0.6.7 起支持在宝马弹出列表上
+保留 HUD 地图，并随驾驶员设置保存。无画面先检查显示目标、Off 和当前共享/个人配置，
+不要直接重装。保留车主选择，不把这一选项解释为屏蔽所有手机导航卡片。
+
+For service **0.9.9+**, collect early service diagnostics using the app's supported
+**Save logs** action when available. Record the actual coverage; an export can
+omit events from before logging started. Renderer **0.5.2** includes a RAMSES 19
+animation-resubscription crash fix, but neither that fix nor published versions
+establishes validation on this vehicle. Resolve the catalog's current dependency
+chain rather than installing a renderer in isolation.
+
+优先使用当前应用的日志保存入口，确认是否覆盖故障时段。早期日志增强、渲染崩溃修复和
+依赖升级都不是本车验证结果；按目录依赖安装，不单独追某个渲染器版本。
+
 With map service 0.9.3, include both effective `map.state.conf` and, when present, `/var/opt/waze-on-cluster/profiles.json` in the configuration backup inventory. Confirm the installed version, actual paths and export coverage through supported maintenance tools; a deployment snapshot does not imply these files were saved. Keep profile identifiers private. No opted-in driver may mean no profile file; absence alone is not corruption.
 
 地图服务 0.9.3 的配置备份清单应同时考虑当前生效的 `map.state.conf` 和实际存在的 `/var/opt/waze-on-cluster/profiles.json`。核对当前版本、路径及受支持工具的导出范围，不能默认部署快照已经覆盖。驾驶员标识私有保存；未启用独立设置时可能没有配置文件，不能直接判断损坏。
@@ -141,6 +173,13 @@ If SSH is lost, first diagnose access. Reflashing SSH is not a file rollback. If
 SSH 丢失先排查访问；重刷 SSH 不等于回滚文件。没有维护通道且车机无法稳定启动时，应明确当前无法执行固件救援。
 
 ## Removal order / 移除顺序
+
+Updater **0.8.37/0.8.38** protects required/core tools and checks installed
+dependants even when their source is unavailable; Store **0.9.34+** displays
+removal restrictions. Treat a refusal as dependency evidence, not a reason
+to delete folders or bulk-uninstall. Inspect the installed versions and scope.
+
+卸载被依赖检查拒绝时，应核对依赖及请求范围；不能通过删除目录或批量卸载绕过保护。
 
 1. Clarify whether the owner wants only the map, a component, all Store-managed software, or SSH itself removed.
 2. Remove map patches through the app when applicable; verify originals and restart state. If removing the app/tool, follow current Store dependency order (normally app, then unused tool).

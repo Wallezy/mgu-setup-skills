@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "oss_base_url": "https://walle-jenkins.oss-cn-beijing.aliyuncs.com/mgu/",
+  "oss_base_url": "https://mgu.walle.pw/mgu/",
   "preference": "auto",
   "source_policy": "Choose domestic, upstream or verified-local explicitly; preserve the selected versions and hashes across retries.",
   "repositories": {

@@ -35,6 +35,7 @@ Copy this template to a private directory outside the repository. Omit secrets a
 
 - Requested operation and selected architecture / 操作范围与所选架构:
 - Read-only or authorized repair; query entrypoint/version and known side effects / 只读或已授权修复；查询入口、版本及已知副作用:
+- Vehicle-side read-only capability and wrapper fallback behavior (repair fallback excluded for read-only requests) / 车端只读能力及包装器回退行为（只读任务禁止修复回退）:
 - Environment profile, interpreter and result / 环境检查模式、解释器及结果:
 - Private staging directory / 本地私有资源目录:
 - Reused snapshot, installer and verified-package manifest paths / 复用快照、安装器及已校验包清单路径:
@@ -63,6 +64,8 @@ Copy this template to a private directory outside the repository. Omit secrets a
 - Repairs actually triggered, before/after evidence and manager restarts / 实际触发的修复、前后证据和管理器重启:
 - Deferred verification and pending restart / 延迟检查与待重启:
 - Phone stream, cluster/HUD output and navigation app / 手机流与实际显示:
+- Display target / Off, HUD pop-up preference and active shared/own driver profile / 显示目标或关闭状态、HUD 弹窗偏好、当前共享或个人配置:
+- Exported diagnostics and covered time range; unavailable earlier events / 日志导出及覆盖时段；缺失的早期事件:
 - Frame rate measurement, if any; otherwise “not measured” / 帧率未测则明确:
 - Update acceptance vs optional navigation/visual testing; reason for any restart / 更新验收与导航实显分开；重启原因:
 - Phase durations: preparation, install, required restart, verification / 各阶段耗时：准备、安装、必要重启、验收:

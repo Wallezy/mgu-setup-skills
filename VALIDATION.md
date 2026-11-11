@@ -145,3 +145,89 @@ claim. The photos have no GPS EXIF tag. They are copied without pixel edits.
 - Skill structure, local documentation links and standalone packaging passed.
   This is local preparation and helper validation, not a vehicle/emulator flash
   test or a Windows executable test; historical vehicle evidence is unchanged.
+
+## Catalog icons and mirror maintenance: 2026-11-11
+
+- Forty-five unit tests passed, including official catalog/icon digest checks,
+  PNG format/CRC/dimension limits, icon-only release changes, public MIME/cache
+  checks, historical package header repairs, resource-before-index publication,
+  rollback, default-branch discovery and preserved divergent working branches.
+- Gitee accepted and read back the Store default branch and nine new tags.
+  The other three mirrors matched in the default-branch-and-tags scope.
+  The divergent `safe-mode` working branch was preserved and reported; no
+  force push or deletion occurred. Strict `--all-branches` still blocks on
+  such a conflict.
+- The authorized OSS prefix accepted 22 object writes: new packages, two
+  content-addressed PNGs, source archives, mutable metadata, the final manifest
+  and two existing packages uploaded with identical bytes to repair cache headers.
+  Public downloads verified all 24 indexed files plus the manifest, dependencies and PNGs;
+  cache headers and PNG content types passed, including historical header repairs.
+  Manifest SHA-256:
+  `f5a248369c415558fb3ffe6a95504cd4da4017c6e79da0d54e38ea1c17cfb3fb`.
+- Mirrored versions: Store 0.9.35, deploy 0.8.10, updater 0.8.38, render 0.6.19,
+  uplink 0.7.9, Python 1.0.3, app-privacy 1.7.1; map app 0.6.7,
+  waze-on-cluster 0.9.10 and cluster-render 0.5.3. A second read-only sync
+  returned `unchanged` with no uploads.
+- The unmodified published installer converted both local catalogs with Node
+  network requests disabled. All ten resulting packages passed size/hash checks.
+  Its `usb-repo` retains icon paths without copying PNGs; this check does not
+  validate USB icon display. OSS and complete mirror snapshots include both icons.
+- Local repository links, skill structure and inspect-profile readiness passed;
+  the standalone archive was rebuilt. The inspect profile requires only Python:
+  the selected system interpreter lacks cryptography, so this check does not
+  certify readiness for a Root write.
+- Skill guidance covers vehicle-side read-only capability and wrapper fallback,
+  main-only Root recovery commands, HUD Off/profile preferences, crash-log coverage
+  and removal dependency checks. Existing vehicle evidence is unchanged.
+  No vehicle, emulator or desktop application was modified or tested in this work.
+
+## Hangzhou custom-domain migration: 2026-11-11
+
+- The entire Beijing `walle-jenkins/mgu/` prefix was inventoried: 70 objects
+  (69 files and one directory marker), 192,362,542 bytes, including historical
+  packages and the existing hidden metadata files. All were copied to
+  `walle-mgu/mgu/`; the source and the target's prior test file were preserved.
+- Every copied object was read through `https://mgu.walle.pw/mgu/` and checked
+  against the staged SHA-256, size and original content/cache/disposition headers.
+  Source inventory stability was checked before and after copying. Resource
+  files preceded both catalogs, and `mirror-manifest.json` was published last.
+  Historical objects retained their original headers, including absent cache
+  headers; no claim is made that every archived package uses immutable caching.
+- The active manifest remains
+  `f5a248369c415558fb3ffe6a95504cd4da4017c6e79da0d54e38ea1c17cfb3fb`;
+  this is a relocation of the accepted snapshot, not a component upgrade.
+- The maintenance helper accepts the explicitly mapped custom domain and
+  verifies its enabled OSS bucket binding and HTTPS certificate through the
+  authenticated API. It supplies the correct Hangzhou region/endpoint and a
+  positive ossutil attempt count. A same-byte NOTICE upload through that helper
+  and subsequent public acceptance passed.
+- Forty-seven unit tests passed, including custom-domain destination isolation,
+  binding/certificate refusal cases and explicit region/retry arguments.
+  The skill's live domestic-first planner selected both new catalog URLs without
+  fallback. The shared default remains `auto`; source preference is not geolocation.
+- A read-only maintenance comparison prepared newer deploy 0.8.11, updater
+  0.8.39 and cluster-render 0.5.4 artifacts separately. They were not published
+  during this migration; the migrated versions remain those recorded above.
+- Skill validation, 114 local links and packaging passed. The daily maintenance
+  destination uses Hangzhou; Beijing remains a retained compatibility snapshot.
+  No vehicle source, application, network setting or firmware was changed.
+
+## CN distribution routing: 2026-11-11
+
+- The Skill distinguishes the official edition, an unmodified download mirror,
+  and the separate Walle CN forks. The CN edition is explicitly development-only:
+  no approved vehicle installation release is recorded.
+- Existing maintenance and both language workflows route an explicit CN choice
+  through distribution readiness, without substituting the official installer
+  or adding the legacy removable mirror again.
+- Two independent, read-only agent reviews exercised the scenario of a working
+  official Store, working SSH, unreachable GitHub and a requested CN switch.
+  They identified ambiguous routing in the general update and map-source steps;
+  those steps now preserve the chosen edition. This was instruction review, not
+  an installer, emulator or vehicle test.
+- Forty-seven helper tests, Skill structure validation, 124 local documentation
+  links and standalone packaging (19 files) passed. The official Gitee/OSS
+  maintenance mappings remain separate from the reserved CN release channel.
+- Fork creation, source commits and unit tests do not establish CN migration,
+  self-update, recovery or public OSS installation readiness. Historical vehicle
+  evidence remains associated with its original versions.

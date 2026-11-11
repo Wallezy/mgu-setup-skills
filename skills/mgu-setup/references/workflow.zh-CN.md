@@ -4,6 +4,9 @@
 
 确定本次终点：准备资源、首次 root、商店修复/安装、地图/HUD、更新、回滚或卸载。读取所用仓库的要求，保留车主选择和已有改动。
 
+本页商店安装命令针对官方版。若用户选择 Walle 国内版，先按
+[商店发行版与发布状态](store-distributions.md)判断可用性；不默认运行官方安装器替代。
+
 用准备运行 SSH 源码工具的 Python 执行 `scripts/check_environment.py`，检查 Python、cryptography、Node 和 OpenSSH。它不判断车辆是否具备刷写条件。
 
 涉及 Root 时，先按 [Root 工具准备](root-tool.md)选择正式版本和独立本地目录，再用
@@ -100,11 +103,11 @@ node mgu-install.js first-install --from <已存在目录>/mgu-repo/mgu-store --
 
 ## 6. 地图与 HUD
 
-通过商店 UI 或受支持的更新服务，安装官方 `idrive-apps` 发布源中的 `robertn_waze_cluster`。由依赖声明决定 `waze-on-cluster` 和 `cluster-render` 的版本与顺序。
+先复用或让用户选择地图应用来源：GitHub 官方／国内镜像二选一，按 [来源切换流程](network-mirrors.md)验证并只保留对应的一份目录；其他作者的独立来源保留。通过商店 UI 或受支持更新服务安装 `robertn_waze_cluster`，由依赖声明决定 `waze-on-cluster` 和 `cluster-render` 的版本与顺序。商店及基础组件的内置官方源不在这个二选一范围内。
 
 检查补丁状态：安装可能保留此前关闭的 CarPlay 补丁。在兼容且属于请求范围时，通过应用“应用补丁/Patch”控制。Android Auto 状态独立，并受编码/架构约束。
 
-在应用中选择仪表盘、HUD 或两者。HUD 属上游实验性功能。仪表盘中央区域按说明选择地图视图；必要时重连 CarPlay，开始导航，检查视频流/渲染器并获得实际屏幕结果。
+在应用中选择仪表盘、HUD 或两者，先确认“Show on”没有设为 Off。HUD 属上游实验性功能。仪表盘中央区域按说明选择地图视图；必要时重连 CarPlay，开始导航，检查视频流/渲染器并获得实际屏幕结果。0.6.6 的 Off 开关无需重连或重启；0.6.7 的“Keep HUD map over BMW pop-ups”应保留车主偏好，详见 [地图诊断](recovery.md)。
 
 应用 0.6.4 与地图服务 0.9.3 提供“Own settings for this driver”选项：默认共享设置，启用后按驾驶员保存显示目标、HUD 大小和位置。按实际界面翻译识别该选项，不假定所有地图设置都按驾驶员隔离。仅在车主需要时启用；切换驾驶员后验证配置随之变化。驾驶员身份未识别或服务不可用时，控件可能不可用，不应因此重新刷写。配置备份和降级注意事项见 [recovery.md](recovery.md)。
 

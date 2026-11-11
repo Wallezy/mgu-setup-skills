@@ -4,6 +4,10 @@
 
 Identify the requested endpoint: preparation, first root, Store repair/install, map/HUD setup, update, rollback or removal. Read instructions in every checkout used. Preserve owner choices and unrelated changes.
 
+The Store installation commands here describe the official edition. An explicitly
+selected Walle CN edition first follows [distribution readiness](store-distributions.md);
+do not substitute the official installer silently.
+
 Run `scripts/check_environment.py` with the Python intended for the SSH source tool. It checks Python, cryptography, Node and OpenSSH locally; it does not certify vehicle readiness.
 
 For Root work, follow [Root tool preparation](root-tool.md) to select a stable
@@ -110,11 +114,16 @@ Alternatively use the Store's supported HTTP/SOCKS proxy setting with a reachabl
 
 ## 6. Maps and HUD
 
-Install `robertn_waze_cluster` from official `idrive-apps` releases through Store UI or its supported updater. Let declared requirements choose `waze-on-cluster` and `cluster-render` versions/order.
+Reuse or ask for one map-app source: Official GitHub or Domestic mirror.
+Follow [source switching](network-mirrors.md), retaining one matching catalog
+and unrelated authors' sources. Install `robertn_waze_cluster` through Store
+UI or its supported updater; declared requirements choose `waze-on-cluster`
+and `cluster-render` versions/order. The built-in Store and infrastructure
+source is outside this choice.
 
 Inspect patch state: installation may preserve a previously disabled CarPlay patch. Use the app's Patch control within the requested scope and supported compatibility. Android Auto patching is separate and coding/architecture dependent.
 
-Choose Cluster, HUD or both in the app. HUD is experimental upstream. For cluster output, select the vehicle's central Map view as documented. Reconnect CarPlay if necessary, start navigation, inspect stream/renderer state and obtain actual display evidence.
+Choose Cluster, HUD or both in the app, checking that Show on is not Off. HUD is experimental upstream. For cluster output, select the vehicle's central Map view as documented. Reconnect CarPlay if necessary, start navigation, inspect stream/renderer state and obtain actual display evidence. App 0.6.6's Off toggle needs no reconnect/reboot; preserve the owner's 0.6.7 "Keep HUD map over BMW pop-ups" preference. See [map diagnostics](recovery.md).
 
 App 0.6.4 with map service 0.9.3 provides "Own settings for this driver". Settings are shared by default; opting in keeps the display target, HUD size and position per driver, not every map setting. Enable it only when requested and verify settings after switching drivers. An unknown driver or unavailable service can disable the control; this is not a reason to reflash. See [recovery.md](recovery.md) for configuration backup and downgrade considerations.
 

@@ -2,6 +2,10 @@
 
 Use one skill and one vehicle workflow. Source preference changes download locations, not installation checks or authorization.
 
+This document covers mirrors of unmodified upstream releases. For the
+separate CN Store fork, read [store-distributions.md](store-distributions.md);
+its development catalog paths must not replace the working upstream mirror.
+
 ## Preference / 优先级
 
 Read `network-sources.json`. Supported preferences:
@@ -31,6 +35,24 @@ Paths are relative to this skill folder. Windows may use the selected Python lau
 
 The mirror root contains `mirror-manifest.json`, `mgu-store/catalog.json`, `idrive-apps/catalog.json` and `bootstrap/mgu-install.js`. The upstream links in provenance and bundled README files are attribution, not runtime package dependencies.
 
+The maintained domestic root is `https://mgu.walle.pw/mgu/`, backed by the
+Hangzhou bucket `walle-mgu`. Preserve the requested source preference:
+`auto`/`upstream-first` still prefer GitHub; `domestic-first` prefers this root.
+The Beijing mirror is retained for existing clients, not the default for new
+domestic preparation. Do not silently fall back to it after a route failure.
+
+国内镜像使用杭州自定义域名；海外/官方优先策略保持不变。
+旧北京地址保留兼容，但不能在新地址失败时未经检查又退回已知路由冲突的旧地址。
+
+Published catalog icons use relative `icons/<sha256>/<name>.png` paths on the
+same OSS origin. The manifest records their official Release URLs, sizes and
+hashes; these source URLs are provenance, not the rewritten runtime icon URL.
+Validate icon bytes as well as packages. Do not interpret an external icon
+URL or an unlisted icon as a complete domestic snapshot.
+
+发布目录图标也须来自同一 OSS，使用带哈希的相对路径；官方来源仅用于溯源。
+图标缺失、未入清单或仍指向外部运行时地址，均不能判为镜像完整。
+
 Root tools use a separate [release preparation path](root-tool.md), not either
 Store catalog. Verify the selected Gitee tag against the reviewed official
 commit; the current OSS manifest does not supply a Root source or Windows bundle.
@@ -59,7 +81,16 @@ Use the verified, unmodified `bootstrap/mgu-install.js`. First prepare an existi
 node <verified-mirror>/bootstrap/mgu-install.js usb-repo <existing-folder> <verified-mirror>/mgu-store <verified-mirror>/idrive-apps
 ```
 
-This converts the mirror catalogs into the official flat USB layout. Apply only the previously authorized operation, with vehicle and backup prerequisites met. For Store setup or a compatible Store-bundle refresh, the official path is:
+This converts the mirror catalogs into the official flat USB layout. Apply only the previously authorized operation, with vehicle and backup prerequisites met.
+
+At reviewed Store commit `efbdcc0d68bd7faf5c5939fa6240050e5e3a449f`,
+`usb-repo` copies packages but does not copy catalog PNG icons, even though it
+retains their paths. Local verification covered all ten package files, not
+USB icon display. OSS catalogs and a complete `fetch` snapshot include the
+icons; do not describe upstream USB conversion as an icon-complete copy.
+本次审阅的原版 USB 转换器不复制图标，不能把包校验通过等同于 USB 图标显示已验证。
+
+For Store setup or a compatible Store-bundle refresh:
 
 ```text
 node <verified-mirror>/bootstrap/mgu-install.js first-install --from <existing-folder>/mgu-repo/mgu-store --identity <private-key-path>
@@ -73,11 +104,80 @@ For existing apps, choose the actual transfer path using [maintenance-update.md]
 
 The unmodified installer seeds GitHub sources on a fresh unit. A successful offline first installation does not switch future updates to OSS.
 
-For domestic use, once the Store opens, use **Settings → Add source** to add the real HTTPS URLs ending in `mgu-store/catalog.json` and `idrive-apps/catalog.json`. Inspect displayed versions/dependencies against the prepared snapshot. Use supported Store controls to disable unwanted upstream checks if available and requested; do not remove built-in sources by editing files. Do not modify vehicle registries, binaries or the bootstrap installer merely to change a mirror URL. If the installed Store cannot manage its sources, report that limit and retain the working USB update path.
+For app installation, offer one choice for the removable `idrive-apps` source:
+**Official GitHub** or **Domestic mirror**. Reuse an explicit saved choice; ask
+once if none exists. This choice is scoped to these apps, not all repositories
+or the built-in Store infrastructure. Use the catalog URL, not the bare domain:
+
+```text
+https://mgu.walle.pw/mgu/idrive-apps/catalog.json
+```
+
+选择地图应用来源：GitHub 官方或国内镜像，复用已选偏好，不默认同时保留两份相同目录。
+该选择不涵盖不可删除的商店内置源，也不删除其他作者的独立应用来源。
+
+With both sources present, installed components keep their origin and the
+mirror's duplicate IDs can be blocked. In inspected updater 0.8.32/0.8.38,
+when the old removable source no longer lists an installed component,
+`openLead()` can select a remaining source by matching its installed title.
+HTTPS `copyOf` is not a mirror alias. Do not assume this fallback works for
+every component or version.
+
+For an authorized switch:
+
+1. Save source definitions, actual installed versions, recorded origins and
+   error state privately. Verify the selected catalog and dependencies first.
+2. Add the chosen source through supported Store source management if absent.
+   Remove only the matching, removable duplicate source, without uninstalling
+   its components. Preserve unrelated sources and the built-in source.
+3. Check each affected installed ID has one row, unchanged installed version,
+   the chosen effective update source, and no `blocked`/unlisted condition.
+   Check dependency sources separately. If selection fails, restore the saved
+   source definition and report the failure; do not edit origin files.
+4. Record effective source selection separately from persisted install origin
+   and successful installation. Historical download errors may remain in the
+   state after switching; do not erase them or start an install merely to
+   clear them. Installing/updating is a separate authorized operation.
+
+移除来源不是卸载应用。本车 updater 0.8.32 实测：移除官方 `idrive-apps` 来源后，
+三个地图组件只剩单条、有效更新源为杭州 OSS、`blocked=null`，已安装版本保持不变。
+这只证明来源选择与去重，不是整包下载或安装成功；旧错误记录及安装归属分别记录。
 
 The reviewed updater 0.8.31 retains a built-in GitHub Store source and refuses its removal; adding OSS does not replace it. The mirrored installer and updater remain unmodified. `domestic-first` is a preference with possible upstream fallback, not an enforced domestic-only network policy.
 
 审阅的 updater 0.8.31 不允许移除内置 GitHub 商店源；新增 OSS 不是替换内置源。镜像保留原版安装器/更新器。`domestic-first` 允许记录原因后回退官方源，不能宣称整个过程绝不访问外网。
+
+Do not add a duplicate Store HTTPS source by default on these versions.
+The Store mirror catalog at `https://mgu.walle.pw/mgu/mgu-store/catalog.json`
+remains useful for verified computer-side package preparation and supported
+offline Store maintenance. It cannot transparently replace the built-in
+GitHub source. When GitHub is unreachable, use a supported proxy or the
+scoped offline maintenance path; a map-source switch does not repair this.
+Keep existing owner sources unless removal is authorized.
+
+基础组件仍由内置官方源管理；GitHub 不可达时，单靠镜像二选一无法更新这些组件。
+可用已验证代理或官方本地包维护路径，不能宣称纯 OSS 在线更新已实现。
+地图未来若要求更高版本的基础组件，也必须先解决该依赖的获取路径。
+
+## Online but downloads fail / 在线但来源失败
+
+An uplink lease establishes a connection, not DNS/TLS/artifact reachability.
+Check the exact catalog and a required package through the actual downloader's
+network context. The 2026-11-11 case found a main-table `59.0.0.0/8` route
+intercepting the Beijing endpoint; the hotspot DNS also returned loopback for
+a GitHub download hostname. These are independent of origin conflicts.
+The Hangzhou custom domain passed a complete small-file GET, TLS and SHA-256
+check over that vehicle's hotspot without proxy. It does not certify every
+future DNS address, other vehicles or an application update.
+
+When local and HU results differ, distinguish DNS answers, selected routes,
+TLS failures and HTTP responses. Preserve certificate checking and original
+vehicle routes. Use the supported proxy path for an authorized temporary
+workaround, record its dependency on the computer/ENET, and restore temporary
+settings when finished. Do not repeatedly refresh catalogs or reflash Root.
+
+热点“在线”不代表下载可用；电脑代理的虚拟 DNS 地址也不能作为车机公网路径证据。
+换域名后的成功只证明当时路径可达，不能代替更新来源归属及安装验收。
 
 ## Acceptance after upload / 上传后验收
 
@@ -93,7 +193,7 @@ When reviewing upstream or skill updates, compare both published upstream catalo
 
 For an authorized mirror refresh, use the repository's `tools/prepare_oss.py` to generate and verify a new complete snapshot outside the checkout. Compare it with a verified live snapshot to identify uploads. Provide exact object paths, new/replaced files, versions, hashes, cache settings and upload order. Clearly distinguish prepared files from recommendations; never invent paths or checksums. A delta is sufficient only when all omitted files still match on OSS.
 
-Upload versioned packages and source archives first, followed by changed supporting files, both catalogs, and finally `mirror-manifest.json`. Keep old packages for rollback and active downloads. Use long caching only for content-addressed/versioned objects; use `Cache-Control: no-cache` for catalogs, manifest and other replaced fixed-path files. The two catalogs and manifest are not an atomic update: avoid installs during publication and complete remote acceptance afterwards. A new snapshot prefix provides stronger isolation.
+Upload versioned packages, content-addressed PNG icons and source archives first, followed by changed supporting files, both catalogs, and finally `mirror-manifest.json`. Keep old packages for rollback and active downloads. Use `Cache-Control: public,max-age=31536000,immutable` for content-addressed packages/icons and commit-addressed sources, `Content-Type: image/png` for PNGs, and `Cache-Control: no-cache` for catalogs, manifest and other replaced fixed-path files. Verify these headers on all indexed resources, including reused files. The two catalogs and manifest are not an atomic update: avoid installs during publication and complete remote acceptance afterwards. A new snapshot prefix provides stronger isolation.
 
 Trace later download URLs as well as catalog artifact URLs: check installer defaults, updater sources, dependency downloads and external runtime assets. Distinguish attribution/source links from required network access. Offline preparation and relative OSS artifact URLs do not disable the Store's built-in GitHub checks. Report unverified paths and unsupported source-management controls rather than claiming an entirely offline/domestic workflow.
 
