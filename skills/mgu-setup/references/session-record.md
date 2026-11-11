@@ -13,6 +13,7 @@ Copy this template to a private directory outside the repository. Omit secrets a
 - HU architecture and firmware / 架构与固件:
 - Root access, coding state, Store visibility / 初始访问、编码与商店:
 - Current apps/native components and source / 初始版本与来源:
+- Selected Store edition, active distribution/GitHub capability and package hashes / 商店发行版、实际通道与 GitHub 能力、安装包哈希:
 - Parked/awake/power state if writing / 写入前停车、唤醒与供电:
 
 ## Recovery readiness / 恢复准备
@@ -58,6 +59,7 @@ Copy this template to a private directory outside the repository. Omit secrets a
 
 - Installed versions and dependencies / 实际版本与依赖:
 - Registry, tile and physical UI separately / 注册、入口与屏幕分别记录:
+- HMI language, Chinese menus/status/errors/log page; untranslated unknown diagnostics / 车机语言、中文菜单/状态/错误/日志页；保留原文的未知诊断:
 - Patch on disk vs active after boot / 磁盘补丁与启动后生效状态:
 - Boot ID continuity, uptime, service failures/restarts / 启动与服务状态:
 - Mode/owner and backup verification / 权限、所有者、备份校验:
@@ -68,6 +70,7 @@ Copy this template to a private directory outside the repository. Omit secrets a
 - Exported diagnostics and covered time range; unavailable earlier events / 日志导出及覆盖时段；缺失的早期事件:
 - Frame rate measurement, if any; otherwise “not measured” / 帧率未测则明确:
 - Update acceptance vs optional navigation/visual testing; reason for any restart / 更新验收与导航实显分开；重启原因:
+- First same-version edition migration versus a later higher-version update / 首次同版本发行版迁移与后续更高版本升级分别记录:
 - Phase durations: preparation, install, required restart, verification / 各阶段耗时：准备、安装、必要重启、验收:
 
 ## Cleanup and next action / 清理与下一步

@@ -231,3 +231,20 @@ claim. The photos have no GPS EXIF tag. They are copied without pixel edits.
 - Fork creation, source commits and unit tests do not establish CN migration,
   self-update, recovery or public OSS installation readiness. Historical vehicle
   evidence remains associated with its original versions.
+
+## CN localization preparation: 2026-11-11
+
+- Distribution guidance records the initial CN localization versions
+  (`robertn_waze_cluster` 0.6.7, `waze-on-cluster` 0.9.10,
+  `cluster-render` 0.5.4), with exact source/package identity separate from
+  the displayed numeric version.
+- The procedure distinguishes initial same-version migration from a later
+  higher-version update. It does not treat translated catalog text or an empty
+  update list as proof that a localized application package was installed.
+  Published same-version artifacts and tags must not be replaced.
+- The session record includes the active edition, GitHub capability, Chinese
+  menu/status/error/log-page observations and separate migration/update results.
+  The owner's planned vehicle tests are pending; none is recorded as completed.
+- Repository validation (124 local links), Skill structure validation and
+  standalone packaging (19 files) passed. These are documentation checks;
+  application localization tests are recorded in the application repository.

@@ -82,3 +82,42 @@ The Store fork's release tooling prepares the independent CN snapshot.
 Uploading that snapshot and public acceptance are separate from GitHub code
 pushes. Keep credentials, car data, private keys, firmware and SDK donors out
 of both repositories and all public snapshots.
+
+## Chinese localization and unchanged versions / 汉化与同版本迁移
+
+The initial `idrive-apps-cn` localization keeps `robertn_waze_cluster` at
+`0.6.7`, `waze-on-cluster` at `0.9.10` and `cluster-render` at `0.5.4`.
+These are preparation baselines, not permanent recommended or frozen versions.
+The fork's `release/cn-localization-versions.json` and its test track all version
+fields; a future reviewed upstream upgrade updates that baseline deliberately.
+
+Chinese coverage includes the control app's menus and known dynamic status/error
+messages, the native log-download web page, and catalog titles/descriptions.
+The app defaults to Chinese when the HMI language is unknown and follows an
+explicit supported language. Raw logs, IDs and machine protocol fields retain
+their original form; unknown diagnostic details are preserved rather than guessed.
+
+Changing UI text changes artifact bytes even if the displayed version stays the
+same. Keep the exact CN source commit, catalog and SHA-256 as part of the selected
+edition. Never replace an already published same-version artifact, change its
+recorded hash or rewrite a tag to disguise the modification.
+
+The updater normally compares numeric versions. An installed upstream app with
+the same number will not necessarily offer a CN localization update. Before
+first migration, establish a tested same-version reinstall/migration entrypoint
+that preserves settings and recovery data. A source switch, translated catalog
+title or an empty update list is not proof the Chinese app package is installed.
+Do not uninstall first as a shortcut. If no tested path is available, finish
+local preparation and report that specific blocker.
+
+首次迁入保留版本号的中文包，需要核对源码与哈希，并使用验证过的迁移或重新安装
+入口。后续正常升级仍遵守版本和依赖规则，不能反复用同一个版本号发布不同内容。
+官方原包镜像与国内版汉化包分别维护，定时任务不得相互覆盖。
+
+For the owner's later vehicle validation, record the actual CN channel
+(`distribution: "walle-cn"`, `github: false`), installed package identity,
+Chinese tile/settings/status/error/log pages, and an online update when a
+genuinely newer compatible version exists. Retain before/after versions,
+hashes, settings and restart/service results. Do not manufacture an update by
+editing version numbers or overwrite packages merely to make an update appear.
+Offline checks and owner photos remain separate from completed vehicle tests.
