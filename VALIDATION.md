@@ -245,6 +245,10 @@ claim. The photos have no GPS EXIF tag. They are copied without pixel edits.
 - The session record includes the active edition, GitHub capability, Chinese
   menu/status/error/log-page observations and separate migration/update results.
   The owner's planned vehicle tests are pending; none is recorded as completed.
+- Read-only inspection of the CN Store installer and deployer confirms that
+  healthy same-version apps are skipped, including with `first-install --from`;
+  no supported CN migration entrypoint is implemented at the recorded revision.
+  The guidance treats this as a missing capability, not a retry or evidence gap.
 - Repository validation (124 local links), Skill structure validation and
   standalone packaging (19 files) passed. These are documentation checks;
   application localization tests are recorded in the application repository.

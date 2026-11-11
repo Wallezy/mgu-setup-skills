@@ -110,9 +110,17 @@ title or an empty update list is not proof the Chinese app package is installed.
 Do not uninstall first as a shortcut. If no tested path is available, finish
 local preparation and report that specific blocker.
 
+At Store commit `b951fd93eee47806b2a975f350188444abe9be6b`, that migration
+entrypoint is not implemented. A healthy same-version app is skipped by the
+deployer, including through `first-install --from`. The installer also refuses
+an equal/newer updater with different payload bytes. Do not repeatedly retry
+these paths, relax the guard or set firmware-repair flags to force replacement.
+
 首次迁入保留版本号的中文包，需要核对源码与哈希，并使用验证过的迁移或重新安装
 入口。后续正常升级仍遵守版本和依赖规则，不能反复用同一个版本号发布不同内容。
 官方原包镜像与国内版汉化包分别维护，定时任务不得相互覆盖。
+当前缺少同版本迁移入口，不只是缺少验证记录；反复首次安装、切换来源或伪造修复
+标记均不能代替该功能。应完成迁移实现后再安排这一类换装。
 
 For the owner's later vehicle validation, record the actual CN channel
 (`distribution: "walle-cn"`, `github: false`), installed package identity,
