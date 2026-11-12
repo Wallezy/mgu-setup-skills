@@ -57,6 +57,35 @@ permanent target. An installed official service 0.9.11/0.9.12 cannot be silently
 downgraded into it. Review the target's map-URL patch/deactivate compatibility
 and prepare a compatible newer CN candidate when needed.
 
+### Resume a prepared trial / 继续已准备的试验
+
+Use the private trial handoff's exact **migration snapshot** and **online-update
+snapshot**, with their recorded publication and CI results. Recheck their local
+hashes; download or rebuild only a missing/mismatched item. Do not replace a
+reviewed snapshot with a newer catalog midway through the vehicle session.
+
+The November 12 RHMI fix uses deploy 0.8.17 with Store 0.9.38 for migration and
+Store 0.9.39 for the subsequent real online update. These version numbers are a
+recorded test pair, not permanent minimums or proof of vehicle acceptance.
+Deploy 0.8.16's migration is a known failed candidate: its check rejects RHMI
+files consumed by MainApp, and its runtime-only recovery omits the UI. Do not
+reuse that candidate for a new trial.
+
+Before the update, finish the migration verifier and confirm the actual Store
+tile opens. Its recovery package must include both the installed runtime bytes
+and the complete matching RHMI resources. A registered tile is insufficient.
+Once a subsequent update changes payloads, the migration journal is historical:
+use that update's supported component rollback, not a blind old-transaction
+rollback or a forced migration verification.
+
+Read the updater's own network/source state or use its supported fetch path.
+MGU uplink may deny root UID Internet access while the Store's allowed UID is
+online; a root `https.get` failure does not establish that the hotspot is down.
+
+上车前把资源、校验、两个固定快照与恢复材料准备完。上车后只做当前身份与版本检查、
+执行切换、确认商店入口、在商店里在线更新、正常重启与结果记录。
+网络验收走更新器实际使用的访问路径，不用 root 直连探测反复要求用户改热点。
+
 ## Promotion and maintenance / 晋升与维护
 
 Review upstream -> adapt CN/localization -> CI and candidate build -> publish
@@ -73,6 +102,10 @@ It requires recorded installation, migration, component-order, restart, settings
 download-channel, self-update and rollback results. It preserves package, icon,
 bootstrap and corresponding-source bytes; do not rebuild after vehicle testing.
 Keep vehicle identifiers, credentials and raw private logs out of public evidence.
+When a trial uses two snapshots, the evidence names the final online-updated
+snapshot and records the path from the initial migration snapshot. Pending
+screen, update, rollback or component-order checks remain pending; do not mark
+them passed just because the owner says the installation finished.
 
 Numeric component versions stay compatible with the updater; channel identity
 is separate metadata. Published package bytes are immutable: another code change
