@@ -64,8 +64,13 @@ snapshot**, with their recorded publication and CI results. Recheck their local
 hashes; download or rebuild only a missing/mismatched item. Do not replace a
 reviewed snapshot with a newer catalog midway through the vehicle session.
 
-The November 12 RHMI fix uses deploy 0.8.17 with Store 0.9.38 for migration and
-Store 0.9.39 for the subsequent real online update. These version numbers are a
+The November 12 owner trial uses deploy 0.8.17 with Store 0.9.38 for migration and
+deploy 0.8.18 with Store 0.9.39 for the subsequent real online update. Its initial
+snapshot requires the complete Store and map-app recovery packages verified
+against the saved vehicle files; recheck their hashes on reconnection. Other
+starting states use a reviewed snapshot with deploy 0.8.18 or later, whose
+preflight also rejects a runtime-only recovery package for an installed UI.
+These version numbers are a
 recorded test pair, not permanent minimums or proof of vehicle acceptance.
 Deploy 0.8.16's migration is a known failed candidate: its check rejects RHMI
 files consumed by MainApp, and its runtime-only recovery omits the UI. Do not
