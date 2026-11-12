@@ -8,6 +8,12 @@ license: GPL-3.0-only
 
 Execute the user's requested work with the selected distribution's supported tools and observed vehicle state. Respond in the user's language. This skill covers a lifecycle; a request for one operation does not authorize all operations.
 
+## Default release / 默认正式版
+
+For ordinary installation and updates, use the published production release and call it **正式版 / production release**. `stable` is an internal channel identifier, not a choice to present to users. Do not proactively mention, recommend or offer Beta, ask users to choose between channels, or treat “latest” as a request for a prerelease. Enter the Beta installation/trial route only when the user explicitly requests Beta; reuse an applicable explicit request without asking again. If production resources are unavailable, explain the concrete blocker without offering Beta as a fallback.
+
+普通安装和更新只提供正式版，不主动告知 Beta，也不让用户二选一。用户明确要求安装 Beta 时才进入测试版流程。已有明确选择的 Beta 安装在日常维护中保留原通道，不擅自切换；维护者发布到两个通道的指令不等于车主要求安装 Beta。
+
 ## Choose one route / 先选路径
 
 Read only the procedure relevant to the request:
@@ -19,7 +25,7 @@ Read only the procedure relevant to the request:
 - Access failure, unstable boot, downgrade or removal: [recovery.md](references/recovery.md). Working SSH needs no flash/enable/persist.
 - Source selection, OSS preparation or acceptance: [network-mirrors.md](references/network-mirrors.md). Skill/mirror maintenance checks include live OSS versions and dependencies.
 - First-install distribution selection: [store-distributions.md](references/store-distributions.md). Select the matching installer and complete distribution separately from download preference; respect release readiness.
-- CN Beta trial or Stable promotion: [release-channels.md](references/release-channels.md). Stable is the default; Beta requires the owner's explicit choice and a fixed candidate.
+- Only for an explicitly requested Beta installation/trial, maintenance of a recorded explicit Beta installation, or maintainer release work: [release-channels.md](references/release-channels.md). Do not load or present this route during ordinary production installation.
 - Historical versions and validation limits: [evidence.md](references/evidence.md).
 
 ## Execute with minimal repetition / 复用准备，直接执行
@@ -37,7 +43,7 @@ Missing resources or prerequisites block the affected write, not independent pre
 1. Follow applicable local instructions and inspected upstream behavior. Reuse the same-version review; inspect changed or uncertain code. A command named `status` is not necessarily read-only: historical `patchd.js status` started another daemon, and ordinary deploy status can repair directories and restart the app manager. Verify the vehicle-side `--read-only` capability; a newer computer wrapper can fall back to repairing status on an older unit. For read-only requests, exclude that fallback and report unavailable observations instead; see [recovery.md](references/recovery.md).
 2. Before first flash, establish owner authorization, supported HU architecture, coding backup and appropriate stable power. Reuse applicable answers in the active session. Missing prerequisites block flashing, not independent preparation. Do not automatically choose an unknown architecture, run `fix-key` or retry a failed flash.
 3. Flash provisions debug/SSH access, not the Store. `enable` repairs access; `persist` changes SSH lifecycle. Working access needs neither. Current combined commands may include persistence.
-4. Use the selected distribution's supported installer for Store setup/refresh and Store/updater operations for apps. Ordinary CN installation uses validated Stable; an expressly requested owner Beta trial follows [release-channels.md](references/release-channels.md). Do not hand owners shell edits, manually patch binaries, fake network/USB state or deploy bespoke executables. App builds use an available HU SDK donor; never redistribute it.
+4. Use the selected distribution's supported installer for Store setup/refresh and Store/updater operations for apps. Ordinary CN installation uses the published production release with its applicable readiness checks; an expressly requested owner Beta trial follows [release-channels.md](references/release-channels.md). Do not hand owners shell edits, manually patch binaries, fake network/USB state or deploy bespoke executables. App builds use an available HU SDK donor; never redistribute it.
 5. Prefer published artifacts and declared requirements. Record source revision, catalog versions and size/hash verification. Downloaded is not installed; registered is not visually observed; HUD software installed is not HUD video verified.
 6. Separate coding, access, deployment and patch-original backups. None is a complete firmware image. A coding capture's `verified` flag or matching hashes do not establish complete coverage or a usable restore path. Confirm the matching backup format, restoration tool and coverage before marking recovery ready; see [Root capture limits](references/root-tool.md#coding-capture-limits). Keep VINs, keys, firmware-derived files and logs outside this repository.
 7. Serialize writes; inspect each result before the next mutation. Stop on identity mismatch, failed checksum, unsupported target, new crash loop, failed rollback or unexplained mode/owner changes. Retry downloads only while progress or a changed network path justifies it.

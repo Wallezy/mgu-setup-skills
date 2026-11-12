@@ -51,9 +51,8 @@ Root 工具的正式版本选择、本地版本校验及 Windows 发布包路径
 
 [整套发行版切换](skills/mgu-setup/references/store-distributions.md#switch-distribution)
 涵盖电脑安装器、商店、更新器、部署工具、基础依赖、已安装应用及后续更新源。
-**国内版默认使用 Stable；维护者可明确选择 Beta 做实车试验。** 两者共用一份 Skill。
-Stable 尚无完成实车验收的正式发行；Beta 也须先核对固定候选、离线检查、公开资源和
-恢复条件，不能因为叫测试版就直接写入。详见[通道与实车试验](skills/mgu-setup/references/release-channels.md)。
+**国内版安装和更新默认使用正式版，无需选择发布通道。** AI 会核对当前已发布资源、
+版本、兼容性与所需恢复条件；发布状态和实车验证结果分别记录。
 
 AI 应在授权范围内实际操作，不应只输出教程。车机屏幕观察、编码工具备份和恢复可能仍需车主完成。安装 skill 不等于授权写入车辆。
 

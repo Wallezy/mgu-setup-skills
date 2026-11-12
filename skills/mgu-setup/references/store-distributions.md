@@ -17,8 +17,7 @@ versions, hashes, installer and update channels.
 | Edition | Source | Install status |
 | --- | --- | --- |
 | Official upstream | `robertnisipeanu/mgu-store`, `robertnisipeanu/idrive-apps` | Use reviewed published releases and the supported workflow |
-| Walle CN Stable (default) | `Wallezy/mgu-store-cn`, `Wallezy/idrive-apps-cn` | Requires a validated promoted release; currently no completed Stable vehicle acceptance |
-| Walle CN Beta (explicit) | Same repositories and component IDs | Owner trial only; follow [release-channels.md](release-channels.md) and verify candidate availability |
+| Walle CN 正式版 / production | `Wallezy/mgu-store-cn`, `Wallezy/idrive-apps-cn` | Default CN installation/update route; verify current publication records and applicable installation readiness |
 
 The official edition can use a verified mirror for local package preparation.
 That does not replace its built-in GitHub update source. Keep the existing
@@ -90,30 +89,26 @@ claim that every installed app migrated. Installing every optional app in the ta
 catalog is a separate request.
 
 “切换到国内版，包含安装器和全部已安装组件，保留设置”会进入整套迁移流程。
-**Walle CN 的 Stable 安装和 Beta 试验是不同路径。**
-普通安装要求正式验收；车主明确选择 Beta 时按[测试通道](release-channels.md)准备并执行
-支持的试验。离线检查、允许试验、实车通过不能混为一谈。
+普通安装和更新直接使用正式版，不主动介绍测试版或让用户选择发布通道。
+只有用户明确要求安装 Beta，或维护此前明确选择的 Beta 安装时，才读取
+[测试版内部流程](release-channels.md)。维护者发布任务也使用该参考文档，
+但发布授权不等于车端安装请求。离线检查、公开发布和实车通过分别记录。
 
 ## Current readiness / 当前可用状态
 
-As of 2026-11-12, the CN repositories contain source, offline migration tests
-and local release candidates.
-They have not passed the required head-unit integration, migration, update
-order, self-update and recovery checks. Their reserved paths are:
+Check current publication records and the selected release manifest instead of
+treating this document as a live release-status register. Production resources use:
 
 - `https://mgu.walle.pw/mgu/cn/mgu-store/catalog.json`
 - `https://mgu.walle.pw/mgu/cn/idrive-apps/catalog.json`
 - `https://mgu.walle.pw/mgu/cn/bootstrap/mgu-install.js`
 
-These are Stable paths, not proof of an approved installation. If Stable lacks
-release acceptance, complete local preparation and report the missing evidence.
-An explicit Beta request follows [release-channels.md](release-channels.md);
-do not silently substitute the official edition or an unbound development branch.
-Do not mark the CN option ready because the repositories exist, unit tests
-pass, an HTTP request succeeds, or a catalog contains higher version numbers.
-
-Stable 尚无通过验收的正式发行时不能直接换装。明确选择 Beta 的车主可以按试验路径
-验证固定候选；缺少候选或传输/恢复能力时仍先准备。不擅自替换为官方版。
+These production paths alone do not prove installation readiness. Verify the
+published snapshot, compatibility and prerequisites for the requested operation.
+If the production release is unavailable or required evidence is missing, finish
+independent preparation and explain that concrete blocker without offering a
+prerelease or silently substituting another edition. Publication does not prove
+complete vehicle validation; keep pending checks pending.
 
 ## Enabling a verified CN release
 

@@ -14,7 +14,7 @@ Copy this template to a private directory outside the repository. Omit secrets a
 - Root access, coding state, Store visibility / 初始访问、编码与商店:
 - Current apps/native components and source / 初始版本与来源:
 - Selected Store edition, active distribution/GitHub capability and package hashes / 商店发行版、实际通道与 GitHub 能力、安装包哈希:
-- Release channel (Stable default / explicit Beta), exact candidate manifest SHA-256 and public acceptance / 发行通道、固定候选清单哈希与公开资源验收:
+- Internal release channel (production by default; record explicit request only if Beta applies), exact manifest SHA-256 and public acceptance / 内部通道、清单哈希与公开资源验收（普通用户不询问通道；Beta 记录既有明确请求）:
 - Development validation method and separate results: offline checks, owner vehicle trial, later online update, Stable promotion / 开发验证方式及分层结果（离线、车主实车、后续升级、正式晋升）:
 - Distribution switch: current/target edition, exact local installer/bootstrap, per-component identities and retain/migrate/unmapped decisions, supported entrypoint / 整套换版：当前与目标发行版、电脑安装器/引导脚本、逐组件身份及保留/迁移/无对应项、受支持入口:
 - Parked/awake/power state if writing / 写入前停车、唤醒与供电:

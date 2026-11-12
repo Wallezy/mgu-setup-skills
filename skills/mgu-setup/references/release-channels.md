@@ -1,11 +1,19 @@
-# Stable and Beta / 正式与测试通道
+# Internal release workflow / 内部发布与明确请求的测试版流程
 
-Use one Skill and one set of component IDs. Default to **Stable**. Use **Beta**
-only when the owner explicitly selects it; reuse that selection during the
-session. A missing Stable release is not permission to substitute Beta.
+Read this reference only for an explicitly requested Beta installation/trial,
+maintenance of a previously explicitly selected Beta installation, or maintainer
+release work. It is not a user-facing menu. Ordinary installation and updates use
+the production release; call it 正式版, not Stable. Do not proactively mention or
+recommend Beta, ask users to choose a channel, or offer Beta when production is
+unavailable. “Latest” alone is not an explicit Beta request. A maintainer's request
+to publish both channels does not authorize installing Beta on a user's vehicle.
 
-普通用户默认 Stable；维护者可明确选择 Beta。不用另发一份容易过期的测试版 Skill，
-也不同时安装两套商店。Root 工具仍按自己的审阅版本选择，不随商店通道切换。
+Use one Skill and one set of component IDs. `stable` remains the internal
+production identifier. Beta requires the user's explicit request; reuse that
+request during the session. Preserve a previously explicitly selected Beta
+installation during routine maintenance rather than silently switching it.
+Root 工具仍按自己的审阅版本选择，不随商店通道切换。下表仅用于操作者核对路径，
+不得作为普通用户安装前的二选一问题。
 
 | Channel | Root | Admission |
 | --- | --- | --- |
