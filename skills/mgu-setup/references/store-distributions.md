@@ -17,7 +17,8 @@ versions, hashes, installer and update channels.
 | Edition | Source | Install status |
 | --- | --- | --- |
 | Official upstream | `robertnisipeanu/mgu-store`, `robertnisipeanu/idrive-apps` | Use reviewed published releases and the supported workflow |
-| Walle CN | `Wallezy/mgu-store-cn`, `Wallezy/idrive-apps-cn` | Development: no approved vehicle installation release |
+| Walle CN Stable (default) | `Wallezy/mgu-store-cn`, `Wallezy/idrive-apps-cn` | Requires a validated promoted release; currently no completed Stable vehicle acceptance |
+| Walle CN Beta (explicit) | Same repositories and component IDs | Owner trial only; follow [release-channels.md](release-channels.md) and verify candidate availability |
 
 The official edition can use a verified mirror for local package preparation.
 That does not replace its built-in GitHub update source. Keep the existing
@@ -89,8 +90,9 @@ claim that every installed app migrated. Installing every optional app in the ta
 catalog is a separate request.
 
 “切换到国内版，包含安装器和全部已安装组件，保留设置”会进入整套迁移流程。
-**当前 Walle CN 已有开发中的迁移入口，但尚无通过车机集成验收的换装发布。**
-Skill 仍只完成本地检查与资源准备，不能把离线测试通过当作车机安装许可。
+**Walle CN 的 Stable 安装和 Beta 试验是不同路径。**
+普通安装要求正式验收；车主明确选择 Beta 时按[测试通道](release-channels.md)准备并执行
+支持的试验。离线检查、允许试验、实车通过不能混为一谈。
 
 ## Current readiness / 当前可用状态
 
@@ -103,22 +105,25 @@ order, self-update and recovery checks. Their reserved paths are:
 - `https://mgu.walle.pw/mgu/cn/idrive-apps/catalog.json`
 - `https://mgu.walle.pw/mgu/cn/bootstrap/mgu-install.js`
 
-These are not approved installation links. If CN is requested now, complete
-local preparation and report the missing integration/release evidence. Do not
-silently substitute the official edition or install a development branch.
+These are Stable paths, not proof of an approved installation. If Stable lacks
+release acceptance, complete local preparation and report the missing evidence.
+An explicit Beta request follows [release-channels.md](release-channels.md);
+do not silently substitute the official edition or an unbound development branch.
 Do not mark the CN option ready because the repositories exist, unit tests
 pass, an HTTP request succeeds, or a catalog contains higher version numbers.
 
-目前选择国内版只能准备代码与资源，不能直接换装。选择官方版可继续既有维护路径；
-用户明确要求国内版时，不擅自替换为官方版，也不把开发分支作为正式发布安装。
+Stable 尚无通过验收的正式发行时不能直接换装。明确选择 Beta 的车主可以按试验路径
+验证固定候选；缺少候选或传输/恢复能力时仍先准备。不擅自替换为官方版。
 
 ## Enabling a verified CN release
 
 Before changing the status above, record a fixed release with:
 
-1. Exact source commits for both forks and successful
-   `release-check/cn-integration` statuses for those commits, backed by actual
-   integration records. Local fixture tests do not establish these statuses.
+1. Exact source commits and successful source/installer CI for both forks,
+   plus real integration evidence bound to the exact Beta snapshot. The
+   promotion manifest records `release-check/cn-integration` for those commits;
+   the separate GitHub Release workflow also requires that GitHub status if used.
+   Local fixture tests alone do not establish integration success.
 2. Packages, icons, licenses, corresponding sources and bootstrap checksums.
    Verify dependency closure and all public HTTPS bytes under the dedicated
    CN prefix. Catalogs/manifests need revalidation caching; immutable resources
@@ -180,8 +185,9 @@ or an exact `--expect-plan`, plus `migration-status`, `migration-verify` and
 `migration-rollback` for a recorded transaction. Inspect the selected release's
 `docs/CN-MIGRATION.md` before using these interfaces. The combined snapshot must
 include the exact running installer, both catalogs and checked package bytes.
-An `installReady: false` snapshot refuses execution before connecting; do not
-edit that flag or create a success attestation to bypass integration.
+A Stable `installReady: false` snapshot refuses execution before connecting.
+Beta instead requires explicit channel selection and exact snapshot/plan hashes;
+it does not edit that flag or create a successful integration attestation.
 
 The current implementation targets ID7 -> Walle CN. It preserves ordinary
 same-version app data with independent recovery packages and permits only the
@@ -203,8 +209,9 @@ not implemented by these commands; rollback restores that transaction's old byte
 首次迁入保留版本号的中文包，需要核对源码与哈希，并使用验证过的迁移或重新安装
 入口。后续正常升级仍遵守版本和依赖规则，不能反复用同一个版本号发布不同内容。
 官方原包镜像与国内版汉化包分别维护，定时任务不得相互覆盖。
-当前迁移代码已具备离线测试覆盖，但缺少车机集成与公开发行验收。反复首次安装、
-修改来源、提升标志或伪造修复状态都不能代替验收；中断后先读取事务，不从头重刷。
+当前迁移代码的离线测试不等于车机集成验收。Beta 试验与 Stable 发行分别记录；
+反复首次安装、修改来源、提升标志或伪造修复状态都不能代替验收；
+中断后先读取事务，不从头重刷。
 
 For the owner's later vehicle validation, record the actual CN channel
 (`distribution: "walle-cn"`, `github: false`), installed package identity,

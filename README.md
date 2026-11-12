@@ -50,9 +50,10 @@ Other supported requests:
 
 [Full-distribution switching](skills/mgu-setup/references/store-distributions.md#switch-distribution)
 covers the installer, Store, updater, deploy tool, dependencies, installed apps
-and update channels. Walle CN currently supports local assessment and preparation
-only; its development migration entrypoint has not passed head-unit integration
-or installation-release acceptance.
+and update channels. Walle CN uses Stable by default; an explicit owner Beta
+trial follows the [release-channel workflow](skills/mgu-setup/references/release-channels.md).
+Stable vehicle acceptance remains pending. Beta preparation and trial admission
+do not establish head-unit integration or formal installation-release acceptance.
 
 The agent should execute within the request's scope, not just print a tutorial. Physical display checks and coding-tool operations may still need the owner. Installing this skill does not authorize vehicle writes.
 

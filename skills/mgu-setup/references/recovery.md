@@ -82,6 +82,19 @@ BimmerCode 提示恢复成功但部分设置仍重置时，上游记录了编码
 
 ## Four different recovery scopes / 四种恢复范围
 
+For `waze-on-cluster` 0.9.11/0.9.12, review the map-URL **fifth CarPlay edit**
+before choosing an older component or a snapshot restore. Older patch removers
+may leave that edit. Version 0.9.12 requires deploy >= 0.7.17 so normal rollback
+and cross-source replacement run the departing version's `deactivate`; that
+does not establish the same behavior for every snapshot/firmware-change path.
+The 2026-11-12 review found Store PR #269 still open for those paths. Recheck its
+actual published inclusion before relying on it, and retain the current
+version's supported removal/recovery route. The initial CN 0.9.10 candidate
+does not accept a silent downgrade from an installed 0.9.11/0.9.12.
+
+新版第五处补丁需要由认识它的版本处理。普通组件回滚、部署快照恢复和固件更新后的
+降级不是等效操作；不能只复制旧包或凭一次退出码判断补丁已完整还原。
+
 | Scope / 范围 | Supported approach and boundary / 方法与边界 |
 |---|---|
 | Coding / 编码 | Restore the matching HU/MGU pre-flash backup through a compatible coding tool. It is not file/firmware recovery. 使用匹配的刷写前编码备份，不等同于文件或固件恢复。 |

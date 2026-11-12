@@ -278,3 +278,20 @@ claim. The photos have no GPS EXIF tag. They are copied without pixel edits.
 - The recorded deployment, updater and installer tests are offline fixtures.
   Neither a real HU emulator nor a vehicle migration has been validated;
   vehicle-installation readiness remains false.
+
+## Stable and Beta routing: 2026-11-12
+
+- One Skill defaults to Stable and routes an explicit owner Beta choice to a
+  fixed-candidate trial. Missing Stable resources never select Beta implicitly.
+- The owner may explicitly choose a controlled real-vehicle trial instead of
+  an unavailable emulator. That choice is recorded separately from test results.
+- Beta execution binds candidate/plan hashes without changing Stable readiness.
+  Channel, package identity, settings, recovery and public acceptance remain
+  distinct checks. The first Beta route is existing-store ID7 migration.
+- Promotion preserves tested payloads and requires actual private validation
+  evidence. Published same-version packages cannot be overwritten.
+- The daily maintenance workflow tracks upstream adaptation, CI, Beta, vehicle
+  validation, Stable promotion and public acceptance. Source changes and CN
+  publication are not silently authorized by official mirror synchronization.
+- These are workflow/documentation changes; no vehicle trial or Stable approval
+  is established by this Skill revision.
