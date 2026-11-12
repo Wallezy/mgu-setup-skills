@@ -266,3 +266,15 @@ claim. The photos have no GPS EXIF tag. They are copied without pixel edits.
 - Skill structure validation, 133 local links, whitespace checks and standalone
   packaging (19 files) passed. No installer implementation, vehicle operation or
   migration success is established by this documentation change.
+
+## Migration candidate routing: 2026-11-12
+
+- Guidance records the candidate's complete-snapshot installer, exact-plan
+  binding, ID7-only scope, retained application data, independent recovery
+  packages and separate transaction status/verification/rollback.
+- Healthy same-version apps still skip through ordinary first-install.
+  Same-version maintenance binaries, unmapped components and unknown ownership
+  remain refusals; the agent must not rewrite readiness flags or attestations.
+- The recorded deployment, updater and installer tests are offline fixtures.
+  Neither a real HU emulator nor a vehicle migration has been validated;
+  vehicle-installation readiness remains false.

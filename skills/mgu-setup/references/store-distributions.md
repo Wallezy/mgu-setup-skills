@@ -89,12 +89,13 @@ claim that every installed app migrated. Installing every optional app in the ta
 catalog is a separate request.
 
 “切换到国内版，包含安装器和全部已安装组件，保留设置”会进入整套迁移流程。
-**当前 Walle CN 只能完成检查、资源准备和迁移计划，尚无已验证的换装发布及同版本
-迁移入口。** Skill 负责组织和调用工具，不能代替缺失的安装器实现。
+**当前 Walle CN 已有开发中的迁移入口，但尚无通过车机集成验收的换装发布。**
+Skill 仍只完成本地检查与资源准备，不能把离线测试通过当作车机安装许可。
 
 ## Current readiness / 当前可用状态
 
-As of 2026-11-11, the CN repositories contain source and local test work.
+As of 2026-11-12, the CN repositories contain source, offline migration tests
+and local release candidates.
 They have not passed the required head-unit integration, migration, update
 order, self-update and recovery checks. Their reserved paths are:
 
@@ -174,17 +175,36 @@ title or an empty update list is not proof the Chinese app package is installed.
 Do not uninstall first as a shortcut. If no tested path is available, finish
 local preparation and report that specific blocker.
 
-At Store commit `b951fd93eee47806b2a975f350188444abe9be6b`, that migration
-entrypoint is not implemented. A healthy same-version app is skipped by the
-deployer, including through `first-install --from`. The installer also refuses
-an equal/newer updater with different payload bytes. Do not repeatedly retry
-these paths, relax the guard or set firmware-repair flags to force replacement.
+The development installer exposes `migrate-cn` with `--from` and `--plan-only`,
+or an exact `--expect-plan`, plus `migration-status`, `migration-verify` and
+`migration-rollback` for a recorded transaction. Inspect the selected release's
+`docs/CN-MIGRATION.md` before using these interfaces. The combined snapshot must
+include the exact running installer, both catalogs and checked package bytes.
+An `installReady: false` snapshot refuses execution before connecting; do not
+edit that flag or create a success attestation to bypass integration.
+
+The current implementation targets ID7 -> Walle CN. It preserves ordinary
+same-version app data with independent recovery packages and permits only the
+reviewed Waze log-presentation change at the same native version. Same-version
+Store/updater/deploy replacements, downgrades, unknown source identities and
+unmapped installed components are refused. The management candidate uses Store
+0.9.38, updater 0.8.42 and deploy 0.8.15; the three map versions above stay unchanged.
+These are preparation versions, not an instruction to install or a permanent
+recommendation.
+
+Ordinary `first-install --from` still skips healthy same-version apps. Do not
+retry it as migration, relax the updater guard or set firmware-repair flags.
+An interrupted transaction is inspected and restored through its own recovery
+runner; do not start another installation or remove its journal. Verification
+checks installed content and active CN catalog ownership; a genuine later online
+update remains separate evidence. Returning to arbitrary official releases is
+not implemented by these commands; rollback restores that transaction's old bytes.
 
 首次迁入保留版本号的中文包，需要核对源码与哈希，并使用验证过的迁移或重新安装
 入口。后续正常升级仍遵守版本和依赖规则，不能反复用同一个版本号发布不同内容。
 官方原包镜像与国内版汉化包分别维护，定时任务不得相互覆盖。
-当前缺少同版本迁移入口，不只是缺少验证记录；反复首次安装、切换来源或伪造修复
-标记均不能代替该功能。应完成迁移实现后再安排这一类换装。
+当前迁移代码已具备离线测试覆盖，但缺少车机集成与公开发行验收。反复首次安装、
+修改来源、提升标志或伪造修复状态都不能代替验收；中断后先读取事务，不从头重刷。
 
 For the owner's later vehicle validation, record the actual CN channel
 (`distribution: "walle-cn"`, `github: false`), installed package identity,
