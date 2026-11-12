@@ -63,6 +63,10 @@ Use the private trial handoff's exact **migration snapshot** and **online-update
 snapshot**, with their recorded publication and CI results. Recheck their local
 hashes; download or rebuild only a missing/mismatched item. Do not replace a
 reviewed snapshot with a newer catalog midway through the vehicle session.
+The migration snapshot's archived manifest and local files remain pinned when
+the online-update snapshot replaces the public catalog. Do not compare the
+older snapshot's mutable catalog paths against the newer live catalog; validate
+the current public catalog against the online-update snapshot instead.
 
 The November 12 owner trial uses deploy 0.8.17 with Store 0.9.38 for migration and
 deploy 0.8.18 with Store 0.9.39 for the subsequent real online update. Its initial
