@@ -17,7 +17,7 @@ Root 工具仍按自己的审阅版本选择，不随商店通道切换。下表
 
 | Channel | Root | Admission |
 | --- | --- | --- |
-| Stable | `https://mgu.walle.pw/mgu/cn/` | Validated candidate promoted without rebuilding payloads, then public acceptance |
+| Stable | `https://mgu.walle.pw/mgu/cn/` | Reviewed upstream, expressly owner-reviewed or vehicle-validated candidate; exact bytes and public acceptance |
 | Beta | `https://mgu.walle.pw/mgu/cn/beta/` | Explicit owner trial, exact candidate/plan, successful offline checks and public package/channel acceptance |
 
 These roots identify channels, not proof that a usable release is published.
@@ -105,31 +105,36 @@ online; a root `https.get` failure does not establish that the hotspot is down.
 
 ## Promotion and maintenance / 晋升与维护
 
-Review upstream -> adapt CN/localization -> CI and candidate build -> publish
-Beta -> owner vehicle validation -> promote the same tested bytes -> Stable
-publication and public acceptance.
+Use the CN Store's selected release tooling and policy:
+[CN-RELEASE-CHANNELS.md at 6ece1e7](https://github.com/Wallezy/mgu-store-cn/blob/6ece1e71e4ff39db4acff0b6ca28e9eb16b0d823/docs/CN-RELEASE-CHANNELS.md).
+Do not reintroduce the old blanket vehicle-test gate:
 
-`release/prepare_cn.py --channel beta`, `release/promote_cn.py` and
-`release/publish_cn.py` belong to the reviewed CN Store checkout. Read its
-`docs/CN-RELEASE-CHANNELS.md` for the exact interfaces. Source/package preparation,
-public upload and vehicle execution are separate actions with separate evidence.
+| Work | Publication and evidence |
+| --- | --- |
+| Reviewed upstream synchronization and CN compatibility changes | Publish Beta then Stable from the same payloads in one release task; `reviewed-upstream` evidence. Vehicle tests are recorded honestly, not a required gate. |
+| Small improvement explicitly authorized for both channels without a car trial | `owner-reviewed` evidence; complete source checks, review and reproducible builds. |
+| Separate development feature/trial | Beta only until wider release is requested; preserve it when publishing an unrelated shared change. |
+| Claimed vehicle-validated release | Evidence must bind actual installation, migration, update order, restart, settings, download/self-update and rollback results to the exact snapshot. |
 
-Promotion binds the exact Beta manifest hash and real private validation report.
-It requires recorded installation, migration, component-order, restart, settings,
-download-channel, self-update and rollback results. It preserves package, icon,
-bootstrap and corresponding-source bytes; do not rebuild after vehicle testing.
-Keep vehicle identifiers, credentials and raw private logs out of public evidence.
-When a trial uses two snapshots, the evidence names the final online-updated
-snapshot and records the path from the initial migration snapshot. Pending
-screen, update, rollback or component-order checks remain pending; do not mark
-them passed just because the owner says the installation finished.
+All routes bind fixed commits, successful applicable CI, complete dependencies,
+immutable versioned payloads, a real review/evidence report and public download
+verification. `prepare_cn.py`, `promote_cn.py` and `publish_cn.py` are maintainer
+tools; source pushes, public publication and vehicle operations are separate.
+Review-only releases must retain `fully_vehicle_validated: false`.
 
-Numeric component versions stay compatible with the updater; channel identity
-is separate metadata. Published package bytes are immutable: another code change
-needs another component version, including Beta iterations. Beta-to-Stable does
-not force a downgrade; use compatible Stable bytes/newer versions or the supported
-transaction recovery.
+When Beta has a separate trial, compare both channel inventories before building.
+Promote only the shared scope and retain the exact current Stable repository
+snapshot with the supported `--stable-base` path. Do not replace the Beta trial,
+move it to Stable implicitly, or broaden a partial promotion beyond tool support.
+Changed Stable baselines require replanning.
 
-The daily maintenance task tracks those stages and recommends adaptations.
-Automatic official mirror sync does not authorize automatic CN source merges,
-Beta/Stable publication, vehicle writes or marking tests passed.
+Keep three-part numeric versions, with upstream version/CN revision in release
+records. Changed published bytes require a new component version, even within
+Beta. Promotion preserves payloads; it does not rebuild or force downgrades.
+Release notes should be short, user-facing Chinese: what changed and why it
+matters, with no invented improvements or internal build details.
+
+For a trial with two snapshots, retain both and record the tested path to the
+final snapshot. Pending tests stay pending. Keep private vehicle data out of
+public evidence. Daily monitoring and official backup-source synchronization
+do not themselves authorize new merges, CN publication or vehicle writes.

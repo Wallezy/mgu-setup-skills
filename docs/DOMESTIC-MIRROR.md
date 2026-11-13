@@ -1,6 +1,9 @@
-# 国内镜像与 OSS 分发 / Domestic mirror distribution
+# 备用源维护与 OSS 分发 / Backup-source maintenance
 
-同一份中英文 Skill 同时支持官方源和国内镜像。源码、文档和 Skill 放 GitHub/Gitee，正式安装包和目录放 OSS。镜像资源不是经过实车验证的版本推荐。
+本文面向维护者。用户只选择[国内版或官方版](../skills/mgu-setup/references/store-distributions.md#choose-edition)；
+官方版按网络使用直连或备用源，不再让用户选择“国内镜像版”。这里的“镜像”仅为内部维护术语。
+源码、文档和 Skill 放 GitHub/Gitee，官方原包及目录放 OSS；CN 发行版使用独立发布流程。
+备用源资源不代表实车验证结果。
 
 国内镜像公开根地址：`https://mgu.walle.pw/mgu/`，存储目标为杭州
 `oss://walle-mgu/mgu/`。商店读取 `mgu-store/catalog.json`，应用读取

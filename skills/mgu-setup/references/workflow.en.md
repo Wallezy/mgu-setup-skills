@@ -4,9 +4,11 @@
 
 Identify the requested endpoint: preparation, first root, Store repair/install, map/HUD setup, update, rollback or removal. Read instructions in every checkout used. Preserve owner choices and unrelated changes.
 
-The Store installation commands here describe the official edition. An explicitly
-selected Walle CN edition first follows [distribution readiness](store-distributions.md);
-do not substitute the official installer silently.
+For a first installation, apply [edition selection](store-distributions.md#choose-edition):
+recommend CN in mainland China and official elsewhere; honor the user's choice.
+The commands in sections 4–5 describe the official edition. CN uses its own
+[installer and readiness checks](store-distributions.md); do not execute those
+official examples for CN.
 An existing installation moving to another fork or back to official uses
 [full-distribution switching](store-distributions.md#switch-distribution),
 including the computer's installer and vehicle components, without repeating root.
@@ -77,7 +79,9 @@ After bootstrap, verify fresh root login and intended persistence/debug state. R
 
 ## 4. Official Store installation or repair
 
-Use the current installer from `robertnisipeanu/mgu-store`, not deployment code from an old localized checkout. Check current Chinese support before deciding a fork is needed.
+For the selected official edition, use its reviewed published installer from
+`robertnisipeanu/mgu-store`. CN installation follows its matching distribution
+procedure; Chinese UI support alone does not determine the update source.
 
 For the inspected standalone installer:
 
@@ -97,10 +101,11 @@ For a missing Store tile, compare actual app registration, manager state and til
 
 ## 5. Offline resources and network diagnosis
 
-Select the preference using [network sources](network-mirrors.md) and
-[configuration](network-sources.json). Domestic-first uses Gitee source and
-configured OSS packages; the examples below use official GitHub. There is no
-`gitee:` updater source type. Fallback preserves selected versions and SHA-256.
+Reuse the chosen edition and source. For official-package downloads, use
+[network sources](network-mirrors.md) and [configuration](network-sources.json)
+only when needed; backup resources include Gitee source and official-package OSS.
+The examples below are official GitHub, not CN catalogs. There is no `gitee:`
+updater source type. Fallback preserves the same edition, versions and SHA-256.
 
 Test computer access and HU updater access separately. GitHub API access does not prove release-asset access; test the required artifact and hash. A connected hotspot does not imply GitHub reachability.
 
@@ -117,12 +122,14 @@ Alternatively use the Store's supported HTTP/SOCKS proxy setting with a reachabl
 
 ## 6. Maps and HUD
 
-Reuse or ask for one map-app source: Official GitHub or Domestic mirror.
-Follow [source switching](network-mirrors.md), retaining one matching catalog
-and unrelated authors' sources. Install `robertn_waze_cluster` through Store
-UI or its supported updater; declared requirements choose `waze-on-cluster`
-and `cluster-render` versions/order. The built-in Store and infrastructure
-source is outside this choice.
+Reuse the edition choice: CN uses its managed domestic map catalog; official
+uses direct GitHub or its verified backup according to network availability,
+preserving explicit source choices. Do not ask another source question.
+An official backup-source workaround uses [source switching](network-mirrors.md);
+that map backup does not change
+the built-in Store/core source. Retain one matching catalog and unrelated
+authors' sources. Install `robertn_waze_cluster` through Store/updater and let
+declared requirements choose `waze-on-cluster` and `cluster-render`.
 
 Inspect patch state: installation may preserve a previously disabled CarPlay patch. Use the app's Patch control within the requested scope and supported compatibility. Android Auto patching is separate and coding/architecture dependent.
 
@@ -142,9 +149,15 @@ For a working Store, follow [maintenance updates](maintenance-update.md): reuse 
 
 Record current versions and known-good resources, refresh published catalogs, check dependencies and request only chosen updates. Let the updater resolve requirements, perform necessary restart and verify versions afterwards. Do not falsify version fields to bypass checks.
 
-For a domestic mirror, check the live OSS catalogs and artifacts as well as the skill/Gitee checkout. App 0.6.4 requires map service >= 0.9.3; use the selected release's actual requirements. After a vehicle firmware update, handle "Needs setup / Set up" through the current Store's setup flow, complete any requested restart and verify the result rather than restoring system-file snapshots from the old firmware.
+For a backup source, verify the required live catalogs and artifacts, not just
+the Skill/Gitee revision. Resolve the selected release's actual dependencies.
+After a vehicle firmware update, handle "Needs setup / Set up" through the current
+Store's setup flow and verify its requested restart/result; do not restore
+system-file snapshots from old firmware.
 
-For downgrade, rollback, patch removal, Store removal or SSH removal, read [recovery.md](recovery.md). Native-tool rollback, app downgrade and firmware downgrade are different operations.
+For downgrade/rollback read [recovery.md](recovery.md); for patch removal, complete
+Store uninstall or SSH close/disable, use [removal scope and order](recovery.md#removal).
+These do not restore factory firmware.
 
 ## 8. Validation and handoff
 

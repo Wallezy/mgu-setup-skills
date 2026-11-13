@@ -1,10 +1,10 @@
-# Network sources / 网络源
+# Official backup sources / 官方版备用源
 
 Use one skill and one vehicle workflow. Source preference changes download locations, not installation checks or authorization.
 
 This document covers mirrors of unmodified upstream releases. For the
-separate CN Store fork, read [store-distributions.md](store-distributions.md);
-its development catalog paths must not replace the working upstream mirror.
+separate CN Store edition, read [store-distributions.md](store-distributions.md);
+its production catalogs are separate from the official-package mirror.
 
 ## Preference / 优先级
 
@@ -16,11 +16,20 @@ Read `network-sources.json`. Supported preferences:
 | `upstream-first` | Official GitHub source/releases | Configured OSS |
 | `auto` | Official GitHub source/releases | Configured OSS |
 
-`auto` tests catalogs; it does not geolocate users. A Chinese-language request is not a location signal. Honor an explicit preference, keep it for subsequent tasks, and report the selected source. If no preference is known, use `auto`. The shared skill starts in `auto`; users in mainland China can select `domestic-first`.
+These are internal **official-package download preferences**, not an installation
+menu. Users choose only CN or official via [edition selection](store-distributions.md#choose-edition).
+Reuse an explicit/recorded preference; otherwise use `auto`: try direct upstream
+access, then verified backup resources when the selected catalog/artifact is
+unreachable. Tell the user “改用备用源 / using a backup source”, not “choose a
+domestic mirror edition”. No additional source question is needed.
+Keep shared configuration at `auto`; save personal preferences via an external
+`--config`. CN Store/app updates use CN catalogs, not this official mirror planner.
 
 The planner limits each catalog/metadata request to 20 seconds with no retries before trying the next configured source on failure; this is not a 20-second bound for the entire plan. Package downloads keep their longer timeout, retries and integrity checks. Once a usable source is selected, do not repeatedly probe the failed source during the same update without new evidence. Confirm the installed updater's source/origin mapping before using a mirror to update existing apps.
 
-国内用户选择 `domestic-first`，海外用户选择 `upstream-first`；默认 `auto` 优先尝试官方源，不通过 IP 或系统语言判断所在地。用户指定优先级后，应复用该偏好。GitHub 与 Gitee 的代码同步、OSS 的发布包同步是两件事。
+用户只选择“国内版／官方版”。官方版按网络情况使用直连或备用源，无需再选下载线路。
+`domestic-first` 等名称只用于内部配置；对用户统一称“备用源”。
+下载备用源不会自动切换车端内置更新源；GitHub/Gitee 代码同步与 OSS 包同步分别维护。
 
 ## Configure and plan / 配置与计划
 
@@ -104,17 +113,18 @@ For existing apps, choose the actual transfer path using [maintenance-update.md]
 
 The unmodified installer seeds GitHub sources on a fresh unit. A successful offline first installation does not switch future updates to OSS.
 
-For app installation, offer one choice for the removable `idrive-apps` source:
-**Official GitHub** or **Domestic mirror**. Reuse an explicit saved choice; ask
-once if none exists. This choice is scoped to these apps, not all repositories
-or the built-in Store infrastructure. Use the catalog URL, not the bare domain:
+For an authorized official app install/update, reuse explicit source preferences.
+Otherwise use direct GitHub when reachable and the verified backup when needed;
+briefly state the fallback without another selection question. This route covers
+the removable `idrive-apps` source, not the built-in Store infrastructure.
+Use the catalog URL, not the bare domain:
 
 ```text
 https://mgu.walle.pw/mgu/idrive-apps/catalog.json
 ```
 
-选择地图应用来源：GitHub 官方或国内镜像，复用已选偏好，不默认同时保留两份相同目录。
-该选择不涵盖不可删除的商店内置源，也不删除其他作者的独立应用来源。
+按实际网络使用直连或备用源，复用明确偏好，不同时保留两份相同地图目录。
+这是官方版内部的线路处理，不是第三个版本；不改不可删除的商店内置源或其他作者的来源。
 
 With both sources present, installed components keep their origin and the
 mirror's duplicate IDs can be blocked. In inspected updater 0.8.32/0.8.38,
@@ -155,7 +165,7 @@ GitHub source. When GitHub is unreachable, use a supported proxy or the
 scoped offline maintenance path; a map-source switch does not repair this.
 Keep existing owner sources unless removal is authorized.
 
-基础组件仍由内置官方源管理；GitHub 不可达时，单靠镜像二选一无法更新这些组件。
+基础组件仍由内置官方源管理；GitHub 不可达时，仅更换地图备用源无法更新这些组件。
 可用已验证代理或官方本地包维护路径，不能宣称纯 OSS 在线更新已实现。
 地图未来若要求更高版本的基础组件，也必须先解决该依赖的获取路径。
 

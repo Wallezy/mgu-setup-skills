@@ -1,40 +1,61 @@
 # Full distributions / 整套发行版
 
-Choose the Store edition separately from the computer's download preference.
-Reuse an explicit choice. If the user asks to switch editions, identify the
-installed updater and preserve its sources, origins, aliases and recovery
-inventory before preparing the matching release. An existing, healthy SSH
-connection needs no Root reflash.
+<a id="choose-edition"></a>
+## First installation: one choice / 首次安装：只选一次
 
-An edition selection covers the computer's installer and the vehicle's complete
-managed software set. It is not merely a Store UI replacement or a source URL.
-Components retain their own versions; one release plan binds their compatible
-versions, hashes, installer and update channels.
-
-发行版选择包括电脑端安装器、车端商店和更新服务、部署工具、基础依赖及已安装应用。
-各组件保留各自版本号，由同一份发行计划固定兼容组合；不要求所有版本数字相同。
-
-| Edition | Source | Install status |
+| Edition / 版本 | Recommend when / 推荐场景 | Updates and differences / 更新与区别 |
 | --- | --- | --- |
-| Official upstream | `robertnisipeanu/mgu-store`, `robertnisipeanu/idrive-apps` | Use reviewed published releases and the supported workflow |
-| Walle CN 正式版 / production | `Wallezy/mgu-store-cn`, `Wallezy/idrive-apps-cn` | Default CN installation/update route; verify current publication records and applicable installation readiness |
+| **Walle 国内版 / CN** | Mainland China / 中国大陆 | Store, core components and maps update through domestic HTTPS catalogs. 中文适配，由维护者审阅、合并上游后发布；不保证与上游同时更新。无 GitHub 登录、令牌或 GitHub 软件源功能。 |
+| **官方版 / Official** | Other regions, or users wanting upstream/GitHub sources / 其他地区，或希望直接使用上游与 GitHub 源 | Direct upstream releases with GitHub source support. 先直连下载，访问不畅时使用经过校验的备用源；仍然是官方版。内置商店/基础组件在线更新仍使用 GitHub。 |
 
-The official edition can use a verified mirror for local package preparation.
-That does not replace its built-in GitHub update source. Keep the existing
-[mirror/source guidance](network-mirrors.md) for this edition.
+Both remain available by choice. Both need a working vehicle network for online
+updates; a region recommendation is not a connectivity guarantee.
 
-The CN fork's intended behavior is domestic catalogs for Store, updater,
-dependencies and map apps, while retaining component IDs and settings. It
-normalizes known official/mirror source definitions, disables GitHub sources
-and account functionality, and isolates cached catalogs. Compatible HTTPS/local
-sources remain separate. It is an alternative distribution of the same
-components, not a second Store/updater to install alongside them.
+1. Reuse the current explicit choice, then the saved choice. On existing installs,
+   preserve the installed edition unless a switch is requested.
+2. For a new install with no choice, use a region already stated in the conversation
+   or private record: recommend CN for mainland China, official elsewhere. Do not
+   infer location from Chinese, IP or timezone. State the recommendation briefly;
+   a general install request may proceed with it within existing authorization.
+3. If the region is unknown, ask **one edition question** using the short explanation
+   below. Do not separately ask region, map source and release channel. Before an
+   answer, continue independent environment/resource checks, not an edition write.
+4. Record the edition and effective source privately. Use the matching installer
+   and production release; do not add the official OSS map mirror to CN. For
+   official downloads, reuse an explicit source choice; otherwise try direct
+   upstream access and use verified fallback resources when needed. Preserve
+   versions/hashes and explain only “改用备用源 / using a backup source”.
+   Do not ask for another source choice or offer a third edition.
 
-国内版目标是商店、基础组件与地图应用都使用国内目录，保留组件身份和已有设置。
-这与原版商店“新增一个 OSS 来源”不同。不得把原版镜像包称为国内版，也不得同时
-安装两套更新器。国内版移除 GitHub 登录、令牌管理和 GitHub 来源功能，不自动
-访问或回退 GitHub；已有相关资料保留用于恢复。其他作者的应用可通过完整 HTTPS
-目录或本地包提供。GitHub 源码仓库与作者署名不属于车机运行时下载功能。
+Suggested Chinese explanation (only add the final question if a choice is missing):
+
+> **国内版（大陆推荐）**：商店、基础组件和地图走国内在线更新，含中文适配；上游更新由维护者合并后发布，不支持 GitHub 软件源。
+>
+> **官方版（其他地区推荐）**：直接跟随上游发布，支持 GitHub 软件源；下载时自动选择直连或备用源。
+>
+> 你想安装哪一版？
+
+English: “**CN (recommended in mainland China):** domestic online updates and
+Chinese adaptations; upstream changes arrive after maintainer review, without
+GitHub sources. **Official (recommended elsewhere):** upstream releases and GitHub
+sources, with direct or backup downloads selected for the connection.
+Which edition would you like?”
+
+**Operator detail: backup source ≠ CN edition.** The official-package OSS mirror changes only
+where original bytes are downloaded. It does not replace the official Store's
+built-in GitHub update source; the separate map mirror covers map apps only.
+Use [network-mirrors.md](network-mirrors.md) when that transport is needed.
+Do not expose Gitee/OSS/download preferences as installation choices. If official
+built-in online updates are unreachable, state that specific limit and use a
+supported offline path; do not claim the backup makes all online updates work,
+silently switch to CN, or ask the user to diagnose the network.
+
+CN keeps component IDs/settings, normalizes known official/mirror definitions
+and isolates catalog caches. GitHub source/account features are disabled without
+automatic fallback; retained account data is for recovery. Compatible third-party
+HTTPS/local sources remain separate. Do not install a second Store/updater or
+silently remove unrelated apps. After setup verify the running updater's
+`distribution: "walle-cn"`, `github: false` and effective managed sources.
 
 <a id="switch-distribution"></a>
 ## Switch the full distribution / 切换整套发行版
@@ -42,7 +63,7 @@ components, not a second Store/updater to install alongside them.
 Use this route for "switch to CN", "return to official" or a change of fork,
 including the installer. Same-edition upgrades use [maintenance](maintenance-update.md);
 the same upstream bytes from another host use [mirrors](network-mirrors.md).
-Neither an official installation nor a domestic mirror alone implies an upgrade
+Neither an official installation nor a backup source alone implies an upgrade
 fault. Reuse the user's target; ask only when "switch version" remains ambiguous.
 
 1. **Inventory and match.** Use saved records and verified read-only observations
@@ -110,108 +131,40 @@ independent preparation and explain that concrete blocker without offering a
 prerelease or silently substituting another edition. Publication does not prove
 complete vehicle validation; keep pending checks pending.
 
-## Enabling a verified CN release
+## Installer and migration details / 安装与迁移细节
 
-Before changing the status above, record a fixed release with:
+Use the exact selected CN release's `deploy/README.md` and `docs/CN-MIGRATION.md`
+for command support and limits. Reviewed reference:
+[CN Store at 6ece1e7](https://github.com/Wallezy/mgu-store-cn/tree/6ece1e71e4ff39db4acff0b6ca28e9eb16b0d823).
+Source repositories are `Wallezy/mgu-store-cn` and `Wallezy/idrive-apps-cn`;
+official counterparts are `robertnisipeanu/mgu-store` and
+`robertnisipeanu/idrive-apps`. Do not use historical candidate numbers as targets.
 
-1. Exact source commits and successful source/installer CI for both forks,
-   plus real integration evidence bound to the exact Beta snapshot. The
-   promotion manifest records `release-check/cn-integration` for those commits;
-   the separate GitHub Release workflow also requires that GitHub status if used.
-   Local fixture tests alone do not establish integration success.
-2. Packages, icons, licenses, corresponding sources and bootstrap checksums.
-   Verify dependency closure and all public HTTPS bytes under the dedicated
-   CN prefix. Catalogs/manifests need revalidation caching; immutable resources
-   retain version/hash paths.
-3. Proven fresh-install and existing-install migration, each supported
-   component-update order, CN-to-CN self-update, failed-update recovery and
-   supported return to the prior working installation.
-4. A supported Store/installer migration entry point for the selected installed
-   version. Do not improvise by overwriting source/origin files or uninstalling
-   the working Store first.
+- `migrate-cn --from ... --plan-only` prepares a transaction; it is not strictly
+  read-only. Execution uses its exact plan/snapshot requirements, and
+  `migration-status`, `migration-verify`, `migration-rollback` apply to that
+  recorded transaction. An `installReady: false` production snapshot blocks execution.
+- Same-version localization changes bytes. A source switch or translated catalog
+  title does not prove the CN payload is installed. Ordinary `first-install`
+  skips healthy same-version apps; do not retry it as migration or falsify versions.
+- Inspect actual ID7/ID8, replacement, downgrade and unknown-source restrictions.
+  A higher version alone is not migration compatibility. Preserve complete
+  runtime and RHMI recovery packages; a package missing the UI cannot restore it.
+- Resume interrupted work from its journal. After a later online update, the old
+  migration journal is historical, not a blind rollback for new payloads.
+  Transaction rollback restores its old bytes, not arbitrary official releases.
+- Keep numeric three-part release versions. Record upstream version and CN revision
+  in the release's provenance/notes; changed published bytes require a new version.
 
-After release acceptance, follow the fixed release's migration procedure,
-check one row per managed component, chosen update sources, active versions,
-restart health and a subsequent CN update. A source switch alone is not an
-installed update. Preserve the earlier real-vehicle evidence with its own
-versions; do not apply it to this fork.
+## Maintainer work / 维护者任务
 
-## Maintainer separation
+Read [release-channels.md](release-channels.md) only for release work or an
+explicit Beta request. It covers reviewed upstream dual-channel publication,
+explicitly authorized small improvements and separate development trials.
+Keep publication evidence separate from actual vehicle tests.
 
-The existing `tools/sync_oss.py` mirrors **unmodified upstream** packages under
-`/mgu/mgu-store/` and `/mgu/idrive-apps/`. Its daily job must not publish those
-catalogs as CN releases or write `/mgu/cn/`. The four existing Gitee mappings
-also remain official-source mirrors; they do not mirror these new forks.
-
-The Store fork's release tooling prepares the independent CN snapshot.
-Uploading that snapshot and public acceptance are separate from GitHub code
-pushes. Keep credentials, car data, private keys, firmware and SDK donors out
-of both repositories and all public snapshots.
-
-## Chinese localization and unchanged versions / 汉化与同版本迁移
-
-The initial `idrive-apps-cn` localization keeps `robertn_waze_cluster` at
-`0.6.7`, `waze-on-cluster` at `0.9.10` and `cluster-render` at `0.5.4`.
-These are preparation baselines, not permanent recommended or frozen versions.
-The fork's `release/cn-localization-versions.json` and its test track all version
-fields; a future reviewed upstream upgrade updates that baseline deliberately.
-
-Chinese coverage includes the control app's menus and known dynamic status/error
-messages, the native log-download web page, and catalog titles/descriptions.
-The app defaults to Chinese when the HMI language is unknown and follows an
-explicit supported language. Raw logs, IDs and machine protocol fields retain
-their original form; unknown diagnostic details are preserved rather than guessed.
-
-Changing UI text changes artifact bytes even if the displayed version stays the
-same. Keep the exact CN source commit, catalog and SHA-256 as part of the selected
-edition. Never replace an already published same-version artifact, change its
-recorded hash or rewrite a tag to disguise the modification.
-
-The updater normally compares numeric versions. An installed upstream app with
-the same number will not necessarily offer a CN localization update. Before
-first migration, establish a tested same-version reinstall/migration entrypoint
-that preserves settings and recovery data. A source switch, translated catalog
-title or an empty update list is not proof the Chinese app package is installed.
-Do not uninstall first as a shortcut. If no tested path is available, finish
-local preparation and report that specific blocker.
-
-The development installer exposes `migrate-cn` with `--from` and `--plan-only`,
-or an exact `--expect-plan`, plus `migration-status`, `migration-verify` and
-`migration-rollback` for a recorded transaction. Inspect the selected release's
-`docs/CN-MIGRATION.md` before using these interfaces. The combined snapshot must
-include the exact running installer, both catalogs and checked package bytes.
-A Stable `installReady: false` snapshot refuses execution before connecting.
-Beta instead requires explicit channel selection and exact snapshot/plan hashes;
-it does not edit that flag or create a successful integration attestation.
-
-The current implementation targets ID7 -> Walle CN. It preserves ordinary
-same-version app data with independent recovery packages and permits only the
-reviewed Waze log-presentation change at the same native version. Same-version
-Store/updater/deploy replacements, downgrades, unknown source identities and
-unmapped installed components are refused. The management candidate uses Store
-0.9.38, updater 0.8.42 and deploy 0.8.15; the three map versions above stay unchanged.
-These are preparation versions, not an instruction to install or a permanent
-recommendation.
-
-Ordinary `first-install --from` still skips healthy same-version apps. Do not
-retry it as migration, relax the updater guard or set firmware-repair flags.
-An interrupted transaction is inspected and restored through its own recovery
-runner; do not start another installation or remove its journal. Verification
-checks installed content and active CN catalog ownership; a genuine later online
-update remains separate evidence. Returning to arbitrary official releases is
-not implemented by these commands; rollback restores that transaction's old bytes.
-
-首次迁入保留版本号的中文包，需要核对源码与哈希，并使用验证过的迁移或重新安装
-入口。后续正常升级仍遵守版本和依赖规则，不能反复用同一个版本号发布不同内容。
-官方原包镜像与国内版汉化包分别维护，定时任务不得相互覆盖。
-当前迁移代码的离线测试不等于车机集成验收。Beta 试验与 Stable 发行分别记录；
-反复首次安装、修改来源、提升标志或伪造修复状态都不能代替验收；
-中断后先读取事务，不从头重刷。
-
-For the owner's later vehicle validation, record the actual CN channel
-(`distribution: "walle-cn"`, `github: false`), installed package identity,
-Chinese tile/settings/status/error/log pages, and an online update when a
-genuinely newer compatible version exists. Retain before/after versions,
-hashes, settings and restart/service results. Do not manufacture an update by
-editing version numbers or overwrite packages merely to make an update appear.
-Offline checks and owner photos remain separate from completed vehicle tests.
+`tools/sync_oss.py` mirrors **unchanged official packages** under `/mgu/mgu-store/`
+and `/mgu/idrive-apps/`; it must not write `/mgu/cn/`. Existing Gitee mappings
+mirror the Skill and official projects, not CN fork releases. CN publication uses
+the CN Store's release tools and independent snapshots. Keep credentials, vehicle
+data, firmware and SDK donors out of public repositories and packages.

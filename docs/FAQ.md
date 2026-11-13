@@ -26,9 +26,34 @@ No. If existing root access works, skip bootstrap. Store updates and a missing a
 
 ## Can the computer download for an offline car? / 车机不能访问 GitHub 怎么办？
 
-Prepare official offline resources on the computer. Bootstrap can use the verified local Store folder over ENET; later apps can use physical USB media through the Store. A supported reachable proxy is another option. A computer folder alone is not a car USB source.
+For first installation, recommend CN in mainland China for domestic online
+updates; recommend official elsewhere. Keep the user's choice. Official
+downloads use direct access or a verified backup source according to the
+connection; this remains the official edition. Built-in official Store/core
+online updates still use GitHub. An offline car can use prepared packages:
+Store setup over ENET and supported app installation through physical USB.
+A computer folder alone is not a car USB source.
 
-电脑可以准备官方离线资源；首次安装通过 ENET 传输本地商店资源，后续应用可使用实体 USB 媒体或受支持代理。电脑目录不会自动变成车机 USB 源。
+首次安装大陆推荐国内版、其他地区推荐官方版，用户也可自行选择。官方版下载时根据
+网络使用直连或备用源，不需要再选一版；内置商店/基础组件在线更新仍使用 GitHub。
+离线时可由电脑准备资源，商店通过 ENET 安装，其他应用按受支持的 USB 流程处理。
+已有安装不会自动换版；详见[版本选择](../skills/mgu-setup/references/store-distributions.md#choose-edition)。
+
+## Can it uninstall Store and Root? / 支持卸载商店和 Root 吗？
+
+**Store: yes**, through the matching installer's full uninstall. It removes the
+managed apps/tools, updater data and deployment backups too; export anything
+needed first. SSH is a separate operation.
+
+**Root/SSH: close and persistence removal are supported**, using `close` or
+`disable` as appropriate. Closing debug SSH alone may leave persistent SSH
+running. Neither action unflashes the debug package or restores factory firmware.
+Verify actual removal; the tool's completion message alone is not enough.
+
+**商店支持整套卸载**，包括其管理的应用/工具、更新器数据和部署备份；先导出需保留资料。
+**Root 支持关闭 SSH、撤销常驻**，不等于完全恢复原厂。卸载商店不会顺带关闭 SSH；
+两者都要移除时，先完成商店卸载和核验，最后关闭 SSH。
+[范围、顺序与验证边界](../skills/mgu-setup/references/recovery.md#removal)。
 
 ## Are all “installed” components launchable? / 已安装的组件都有入口吗？
 

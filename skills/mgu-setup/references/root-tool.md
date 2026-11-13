@@ -1,9 +1,11 @@
 # Root tool preparation / Root 工具准备
 
-Read only for first root, access repair, or updating the computer's Root tool.
+Read only for first root, access repair, requested SSH close/disable, or updating the computer's Root tool.
 Working SSH and Store/app updates do not require downloading or running Root again.
 
-仅首次解锁、访问修复或更新电脑上的 Root 工具时读取。已有 SSH 正常、仅更新商店/应用时跳过。
+仅首次解锁、访问修复、明确要求关闭/撤销常驻 SSH 或更新电脑上的 Root 工具时读取。
+卸载范围、顺序及 `close`/`disable` 的验证边界见[卸载说明](recovery.md#removal)。
+已有 SSH 正常、仅更新商店/应用时跳过。
 
 ## Select and reuse / 选择并复用
 

@@ -4,8 +4,9 @@
 
 确定本次终点：准备资源、首次 root、商店修复/安装、地图/HUD、更新、回滚或卸载。读取所用仓库的要求，保留车主选择和已有改动。
 
-本页商店安装命令针对官方版。若用户选择 Walle 国内版，先按
-[商店发行版与发布状态](store-distributions.md)判断可用性；不默认运行官方安装器替代。
+首次安装先按[版本选择](store-distributions.md#choose-edition)：大陆推荐国内版，
+其他地区推荐官方版，尊重用户选择。第 4–5 节命令针对官方版；国内版使用
+[匹配的安装器与可用性检查](store-distributions.md)，不执行下方官方安装示例替代。
 已有安装切到国内版、其他二开版或切回官方版，先走
 [整套发行版切换](store-distributions.md#switch-distribution)，包含电脑安装器与车端组件，
 不重复首次 root 流程。
@@ -69,7 +70,8 @@ v1.3.1 GUI 要求选择，但 CLI 仍默认 ID7，因此不得省略 `--arch`，
 
 ## 4. 官方商店安装与恢复
 
-使用 `robertnisipeanu/mgu-store` 当前官方安装器，不使用旧汉化分支的部署代码。先检查当前上游中文支持，再决定是否需要 fork。
+已选官方版时，使用 `robertnisipeanu/mgu-store` 已审阅的正式安装器。
+国内版按对应发行流程执行；是否有中文界面不能决定后续更新源。
 
 已审阅的独立安装器命令形态：
 
@@ -89,7 +91,10 @@ node mgu-install.js first-install --from <准备目录>/mgu-repo/mgu-store --ide
 
 ## 5. 离线资源与网络
 
-先按 [网络源流程](network-mirrors.md)读取源偏好和 [地址配置](network-sources.json)。国内优先使用 Gitee 源码与已配置的 OSS 安装资源；官方优先使用下方 GitHub 示例。镜像不是 `gitee:` 类型的更新源。切换下载路径时保持所选版本和 SHA-256。
+复用已选版本和来源。需要准备官方包时，再按 [网络源流程](network-mirrors.md)
+和 [地址配置](network-sources.json)选择下载路径；备用源包含 Gitee 源码和官方包 OSS 缓存。
+下方是官方 GitHub 示例，不是国内版目录。不存在 `gitee:` 更新源类型；
+回退下载路径须保持同一发行版、版本和 SHA-256。
 
 分别测试电脑和车机更新服务。GitHub API 可用不代表发布资源可下载，须检查所需资源和哈希。热点连通不代表 GitHub 可达。
 
@@ -106,7 +111,11 @@ node mgu-install.js first-install --from <已存在目录>/mgu-repo/mgu-store --
 
 ## 6. 地图与 HUD
 
-先复用或让用户选择地图应用来源：GitHub 官方／国内镜像二选一，按 [来源切换流程](network-mirrors.md)验证并只保留对应的一份目录；其他作者的独立来源保留。通过商店 UI 或受支持更新服务安装 `robertn_waze_cluster`，由依赖声明决定 `waze-on-cluster` 和 `cluster-render` 的版本与顺序。商店及基础组件的内置官方源不在这个二选一范围内。
+复用版本选择：国内版使用自带的国内地图目录；官方版按网络选择 GitHub 直连或经过校验的
+备用源，保留用户明确指定的偏好，不再询问线路。需要备用源时按
+[来源切换流程](network-mirrors.md)处理；地图备用源不会改变商店及基础组件的内置官方源。
+保留一份匹配目录和其他作者的独立来源。通过商店或更新器安装 `robertn_waze_cluster`，
+由依赖声明选择 `waze-on-cluster` 和 `cluster-render`。
 
 检查补丁状态：安装可能保留此前关闭的 CarPlay 补丁。在兼容且属于请求范围时，通过应用“应用补丁/Patch”控制。Android Auto 状态独立，并受编码/架构约束。
 
@@ -126,9 +135,12 @@ node mgu-install.js first-install --from <已存在目录>/mgu-repo/mgu-store --
 
 记录当前版本和已知可用资源，刷新正式发布目录，检查依赖，只请求用户选择的更新。由更新服务处理依赖，完成必要重启后再核对版本。不能修改版本号绕过检查。
 
-国内镜像同时核对 OSS 实际目录及资源，不能只更新 Skill 或 Gitee。应用 0.6.4 要求地图服务至少 0.9.3；按选定发布的实际依赖准备资源。车辆固件更新后出现“Needs setup / Set up”时，按当前商店提供的设置流程处理，完成提示的重启并验证，不直接恢复旧固件的系统文件快照。
+使用备用源时核对本次所需的实际目录及资源，不能只看 Skill 或 Gitee 是否更新。
+按选定发布的实际依赖准备资源。车辆固件更新后出现“Needs setup / Set up”时，
+按当前商店提供的设置流程处理，完成提示的重启并验证，不恢复旧固件的系统文件快照。
 
-降级、回滚、撤销补丁、移除商店或关闭 SSH 时读取 [recovery.md](recovery.md)。底层工具回滚、应用降级、完整固件降级是不同操作。
+降级、回滚读取 [recovery.md](recovery.md)；撤销补丁、卸载整套商店或关闭/撤销常驻 SSH，
+按[卸载范围与顺序](recovery.md#removal)执行。这些操作均不等于恢复原厂固件。
 
 ## 8. 验证与交接
 

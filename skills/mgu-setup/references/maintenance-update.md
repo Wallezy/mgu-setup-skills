@@ -6,7 +6,10 @@ Use existing authorization, private records and verified local resources. Freshl
 
 These installer paths describe the official edition. For an explicitly selected
 CN fork, first apply [edition readiness](store-distributions.md); do not run the
-official installer as an implicit substitute. 国内版选择与下载镜像偏好分别处理。
+official installer as an implicit substitute. Preserve the installed edition,
+source and channel; a mainland recommendation is for first installation, not
+permission to migrate an existing official installation. 国内版选择与下载镜像
+偏好分别处理；更新不重复询问来源，不因地区而自动换版。
 
 A change of distribution, including the installer, first uses
 [full-distribution switching](store-distributions.md#switch-distribution), even

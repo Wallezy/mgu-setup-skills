@@ -37,7 +37,7 @@ Copy the complete [`skills/mgu-setup`](skills/mgu-setup) directory into your age
 
 Your agent needs local file access and command execution to perform installation; a chat-only assistant can explain the procedure but cannot operate the computer. Skill folder locations and invocation syntax depend on the host tool.
 
-> Use $mgu-setup to inspect my computer and connected head unit, prepare backups, and install root SSH, the official Store and the map/HUD app. Reuse working access and verify each completed stage.
+> Use $mgu-setup to inspect my computer and connected head unit, recommend an edition, prepare backups, and install root SSH, Store and the map/HUD app. Reuse working access and verify each completed stage.
 
 Other supported requests:
 
@@ -45,6 +45,8 @@ Other supported requests:
 - “Update only the Store and map app, preserving my settings.”
 - “Inspect the boot loop and identify a supported rollback.”
 - “Remove the map patch and app; retain the Store.”
+- “Uninstall the whole Store-managed setup; keep SSH.”
+- “The Store is removed; undo SSH persistence and close access.”
 - “Prepare offline resources now; the car is not connected.”
 - “Prepare a full switch to Walle CN, including the installer and installed components; preserve my settings.”
 
@@ -72,30 +74,34 @@ The environment helper reports problems; the agent prepares missing dependencies
 | Environment and connection | Check runtimes, ENET interface, routing, identity and existing SSH |
 | Backup preparation | Separate coding, credentials, deployment snapshots and patch originals |
 | Initial root | Use current upstream first-time setup only when needed |
-| Store setup and repair | Official installer; registry/tile checks for missing entries |
+| Store setup and repair | Matching edition's installer; registry/tile checks for missing entries |
 | Maps and HUD | Install dependencies; configure through the app; verify actual output |
 | Updates | Published releases, dependency resolution and post-start verification |
 | Distribution switching | Prepare the matching installer and full component plan; execute only through a verified release and migration entrypoint |
 | Downgrade/rollback | Check retained versions and compatibility; use supported paths only |
-| Restore/remove | Separate patch removal, component removal, Store removal and SSH removal |
+| Restore/remove | Patch/components, complete Store uninstall, SSH close/persistence removal; no factory firmware restoration |
 | Failure diagnosis | Network, authentication, coding, missing tiles and startup failures |
 | Handoff | Record versions, checks, temporary settings and remaining owner actions |
 
-## Official and domestic sources
+## Which edition?
 
-One skill supports `upstream-first` (official GitHub), `domestic-first`
-(Gitee source and OSS packages), and `auto` (official catalogs first, then
-configured OSS). Location is not inferred from language or IP. Fallback
-preserves selected versions and hashes.
+Choose between two editions; both use the production release by default:
 
-The configured OSS snapshot passed public HTTPS download and hash acceptance
-on November 7, 2026; see the [validation record](VALIDATION.md). The shared
-default remains `auto`; users can save `domestic-first` as their preference.
-The [Gitee skill mirror](https://gitee.com/walle7/mgu-setup-skills),
-[source configuration](skills/mgu-setup/references/network-sources.json),
-[mirror maintenance guide](docs/DOMESTIC-MIRROR.md) and standalone
-[source workflow](skills/mgu-setup/references/network-mirrors.md) describe
-the two download paths.
+| Edition | Recommended for | Difference |
+| --- | --- | --- |
+| **CN** | Mainland China | Domestic online updates for Store, core components and maps; Chinese adaptations. Upstream changes arrive after maintainer review; no GitHub source support. |
+| **Official** | Other regions, or users wanting upstream directly | Upstream releases and GitHub source support; direct or verified backup downloads selected for the connection. |
+
+The skill reuses existing choices and recommends by a known region, never
+guessing from language or IP. If unknown, it asks for the edition once, not a
+download route. When direct official downloads fail, it says “using a backup
+source” and keeps the same official version. Built-in official online updates
+still need GitHub access. Existing installs do not change edition automatically.
+See [selection and switching](skills/mgu-setup/references/store-distributions.md).
+
+The Skill is also available on [Gitee](https://gitee.com/walle7/mgu-setup-skills).
+Backup-source configuration and acceptance are [maintainer work](docs/DOMESTIC-MIRROR.md),
+not settings users need to choose during installation.
 
 ## Platforms and evidence
 
@@ -125,7 +131,7 @@ Use `--profile store` for direct Store installation prerequisites, `--profile ro
 - [Validation scenarios / 验证场景](VALIDATION.md).
 - [Contributing](CONTRIBUTING.md): translations, tests and sanitized compatibility reports.
 - [Photos / 实车效果图](docs/SHOWCASE.md): app entries, Store, cluster and HUD.
-- [Domestic mirrors / 国内镜像](docs/DOMESTIC-MIRROR.md): source preferences, preparation and OSS publishing.
+- [Backup-source maintenance / 备用源维护](docs/DOMESTIC-MIRROR.md): Gitee synchronization and OSS acceptance for maintainers.
 
 ## Upstream projects
 

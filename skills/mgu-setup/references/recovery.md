@@ -87,10 +87,11 @@ before choosing an older component or a snapshot restore. Older patch removers
 may leave that edit. Version 0.9.12 requires deploy >= 0.7.17 so normal rollback
 and cross-source replacement run the departing version's `deactivate`; that
 does not establish the same behavior for every snapshot/firmware-change path.
-The 2026-11-12 review found Store PR #269 still open for those paths. Recheck its
-actual published inclusion before relying on it, and retain the current
-version's supported removal/recovery route. The initial CN 0.9.10 candidate
-does not accept a silent downgrade from an installed 0.9.11/0.9.12.
+The reviewed [deploy changelog at CN Store 6ece1e7](https://github.com/Wallezy/mgu-store-cn/blob/6ece1e71e4ff39db4acff0b6ca28e9eb16b0d823/deploy/CHANGELOG.md)
+records upstream deploy 0.8.15 adding deactivation for those paths and CN 0.8.19
+including it. Verify inclusion in the actual installed build; a fork's higher
+version alone proves nothing. Retain the current version's supported removal
+path and do not silently downgrade a newer patch implementation.
 
 新版第五处补丁需要由认识它的版本处理。普通组件回滚、部署快照恢复和固件更新后的
 降级不是等效操作；不能只复制旧包或凭一次退出码判断补丁已完整还原。
@@ -185,19 +186,58 @@ If SSH is lost, first diagnose access. Reflashing SSH is not a file rollback. If
 
 SSH 丢失先排查访问；重刷 SSH 不等于回滚文件。没有维护通道且车机无法稳定启动时，应明确当前无法执行固件救援。
 
-## Removal order / 移除顺序
+<a id="removal"></a>
+## Removal scope and order / 卸载范围与顺序
+
+| Request / 请求 | Supported operation / 可执行范围 |
+| --- | --- |
+| Remove map patch/app / 移除地图 | App's Remove patch, then Store dependency-aware component removal if requested; keep Store and SSH. 只移除请求的范围。 |
+| Uninstall Store / 卸载商店 | Matching distribution's `mgu-install.js uninstall`. Removes the **whole Store-managed setup**, including managed apps/tools, updater sources/tokens and deployment backups; it is not just deleting a tile. |
+| Close SSH / 临时关闭 SSH | Root tool `close`: stop debug SSH. Does not remove the always-on override; persistent SSH can remain accessible. |
+| Disable Root/SSH / 撤销常驻并关闭 SSH | Root tool `disable`: attempt to remove persistence, then stop debug SSH. Verify both stages; see limits below. |
+| Restore factory firmware / 完全恢复原厂 | Not provided. Store uninstall or SSH disable does not reverse the full debug flash, restore coding or flash stock firmware. |
 
 Updater **0.8.37/0.8.38** protects required/core tools and checks installed
 dependants even when their source is unavailable; Store **0.9.34+** displays
 removal restrictions. Treat a refusal as dependency evidence, not a reason
 to delete folders or bulk-uninstall. Inspect the installed versions and scope.
 
-卸载被依赖检查拒绝时，应核对依赖及请求范围；不能通过删除目录或批量卸载绕过保护。
+1. Match the requested endpoint to the table. Reuse clear authorization; ask only
+   if “uninstall” leaves component/all-Store/SSH scope ambiguous. Inventory and
+   export needed settings, recovery packages and deployment backups first.
+2. Undo patches through supported removal hooks/app controls and follow declared
+   dependency order. A failed deactivation stops the affected removal; never
+   manually delete version folders to bypass it.
+3. For full Store removal, use the selected official/CN installer with the
+   verified vehicle and identity options. Review its enumerated removal plan
+   before execution; `--yes` only when that complete scope is already authorized.
+   The installer can use a reviewed published deploy tool when the installed one
+   lacks `remove-all`. It preserves apps owned by the separate IterioDev manager.
+4. Inspect the actual uninstall result. Follow required normal restart and
+   pending-cleanup instructions (including deferred ID8 removal); a zero exit
+   with “restart to finish” is not completed removal. Verify leftovers/service
+   health before closing the maintenance connection.
+5. Only if requested, disable persistent SSH **last**, using the reviewed
+   [Root tool](root-tool.md) and explicitly selected HU variant. Export access
+   records first. Verify persistence removal and debug/SSH closure separately;
+   do not reflash, rotate keys or erase enrollment data as an uninstall shortcut.
 
-1. Clarify whether the owner wants only the map, a component, all Store-managed software, or SSH itself removed.
-2. Remove map patches through the app when applicable; verify originals and restart state. If removing the app/tool, follow current Store dependency order (normally app, then unused tool).
-3. Use official Store/component removal. Check deactivation success; do not delete version folders manually.
-4. Full official Store uninstall has a larger blast radius and can remove apps/tools, updater data and deployment backups. Inventory/export needed recovery resources first and require that scope in the owner's request.
-5. Remove persistent SSH last, only if requested, after other verification is complete. It may end the remaining maintenance connection.
+Root **v1.3.1** at
+[`1d3ba60`](https://github.com/cauliflowermossgrape/idrive7-8-ssh-root/blob/1d3ba60a9aa8a79fe16e1c26488a89918ec1d928/ssh_enable.py)
+skips persistence removal when identity/access is missing and does not check
+`install_always_on(..., mode='remove')`'s result before its final success line.
+Consequently, `DONE`/exit 0 alone does not prove persistence was removed.
+Review the removal result while access still exists, then use read-only
+diagnostic state and fresh connection probes after the required service/boot
+cycle. An old open session or one failed connection is not conclusive.
+If removal cannot be verified, report **SSH closure/persistence removal
+unverified or partial**, not “Root fully uninstalled”.
 
-只撤销地图补丁、卸载地图组件、移除整套商店和关闭 SSH 是不同范围。先确认终点，按依赖移除，保留必要备份；关闭 SSH 放最后。不能把卸载所有内容作为默认排错动作。
+The reviewed [persistence remover](https://github.com/cauliflowermossgrape/idrive7-8-ssh-root/blob/1d3ba60a9aa8a79fe16e1c26488a89918ec1d928/sshd-always-on.sh)
+removes its own overrides, units and firewall helper; it does not unflash the
+debug package. Store uninstall reference:
+[CN installer at 6ece1e7](https://github.com/Wallezy/mgu-store-cn/blob/6ece1e71e4ff39db4acff0b6ca28e9eb16b0d823/deploy/README.md).
+Recheck changed implementations; these are source reviews, not vehicle tests.
+
+商店支持整套卸载；Root 支持关闭访问、撤销 SSH 常驻，**不等于完全还原原厂**。
+先导出备份并完成商店卸载与重启核验，最后才处理 SSH；不能仅凭 `DONE` 宣布成功。
