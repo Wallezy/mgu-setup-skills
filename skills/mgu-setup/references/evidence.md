@@ -80,6 +80,47 @@ matrix below retains its observed versions.
 本次验证覆盖发布资源、图标、镜像及本地离线转换，不是新版实车测试；
 主分支新增 Root 恢复命令不能当作正式包已有能力。
 
+## Released-source review: 2026-11-14 / 正式更新审阅
+
+Root [v1.4.0](https://github.com/cauliflowermossgrape/idrive7-8-ssh-root/releases/tag/v1.4.0)
+resolves to `6d4928e6dca9812e7882318afdd7cba9840c2d62`. Its `preflight`,
+programming-state commands and removed CLI prompts, previously reviewed on main,
+are now in the formal release. The GUI was redesigned; CLI still defaults to ID7.
+The downloaded Windows ZIP matched the official size and SHA-256 in
+[root-tool.json](root-tool.json); it was not executed. The capture/restore,
+explicit-architecture and independent recovery-check limits remain in
+[root-tool.md](root-tool.md). Earlier review entries describe their dates only.
+
+CN source commits: Store `60585be972822d0a59dfd9931bd3070f857e2d8a`,
+Stable apps `7f5cec7e294d8cb2858eb0214a40703b475ef354`,
+Beta apps `61187c4ee40cb2754773eba6aa573bea38545451`.
+They include upstream Store `9c2360a211cfe75fbe4c2b2db86f84a33b380fb9`
+and apps `f7a678b27693c88a12d2ed4f18ac4652f005bffd`.
+
+| Component | Upstream | CN production | CN Beta |
+| --- | --- | --- | --- |
+| Store | 0.9.40 | 0.9.43 | 0.9.43 |
+| updater | 0.8.45 | 0.8.46 | 0.8.46 |
+| deploy | 0.8.18 | 0.8.20 | 0.8.20 |
+| mgu-render | 0.6.21 | 0.6.22 | 0.6.22 |
+| uplink | 0.7.12 | 0.7.13 | 0.7.13 |
+| cluster-render | 0.5.9 | 0.5.11 | 0.5.12 |
+| Waze app | 0.6.8 | 0.6.12 | 0.6.13 |
+| Waze service | 0.9.14 | 0.9.15 | 0.9.15 |
+
+This records published versions, not permanent installation targets. Release
+records explicitly identify CN revision 1 for each new upstream baseline.
+The Store source includes its current upstream renderer client, which was still
+under Unreleased in the upstream Store changelog; the CN app is built and
+versioned independently. Open upstream PRs were not merged.
+
+Both CN channels passed source checks, independent reproducible builds,
+exact-commit CI and public download verification. Beta keeps parking calibration;
+production does not gain that trial. Ambient and the other localized apps retain
+their published bytes. No new vehicle or head-unit emulator testing was performed.
+Waze documentation updates do not establish a fix for an affected vehicle's
+unavailable Android navigation-card control.
+
 ## Recorded successful session / 已记录成功会话
 
 Environment: macOS, wired ENET through an Ethernet adapter, MGU iDrive 7, firmware family `P18_23w44.2-1-3 mgu-high`.

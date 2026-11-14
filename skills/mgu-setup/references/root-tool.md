@@ -10,7 +10,7 @@ Working SSH and Store/app updates do not require downloading or running Root aga
 ## Select and reuse / 选择并复用
 
 [root-tool.json](root-tool.json) records the reviewed stable release, exact commit
-and official Windows asset metadata: **v1.3.1**, reviewed on **2026-11-08**.
+and official Windows asset metadata: **v1.4.0**, reviewed on **2026-11-14**.
 It is a reviewed baseline, not a permanent claim about the latest release.
 
 For new online preparation, check official stable Releases once. If it still
@@ -25,20 +25,18 @@ without a new release lookup.
 新准备时查询一次最新正式发布；已有本地副本匹配审阅版本就复用。新版本或同版本附件被替换时，
 先审阅变化再锁定，不能把 `main`、预发布或滞后的镜像当成所选版本。离线续作复用已审阅的固定版本，
 不为重复查询“最新”强制联网。检查器仅核验所附基线；采用更高的已审阅版本时，另行记录等效的
-提交与完整性检查，不能把版本不匹配改写成“v1.3.1 校验通过”。
+提交与完整性检查，不能把版本不匹配改写成“v1.4.0 校验通过”。
 
 <a id="coding-capture-limits"></a>
 
 ## Coding capture limits / 编码采集边界
 
-The 2026-11-09 review of upstream commit
-`a43ac32029d9d4f93d1da649042381fb995e7b55` found `mgu7/preflight.py` on
-main, outside the reviewed **v1.3.1** release/Windows bundle. This is a
-version-specific review, not a claim about future releases. Do not switch to
-main or require a new capture for routine Store updates.
+The reviewed **v1.4.0** release at
+`6d4928e6dca9812e7882318afdd7cba9840c2d62` includes `preflight`.
+Its diagnostic reads provide supplemental coding records; they do not establish
+a tested restore path. Routine Store updates do not require a new capture.
 
-该提交的 `preflight` 是补充编码记录，不是已经验证的恢复备份。
-它不在本 Skill 审阅的 v1.3.1 正式包中；后续版本应核对实际实现，不能为了采集而追 main。
+v1.4.0 正式版已包含 `preflight`；它是补充编码记录，不能替代已确认可恢复的备份。
 
 - `_read_did()` returns `None` for both negative and absent responses;
   `_scan()` stops after 16 consecutive such results. A gap of unsupported DIDs
@@ -66,22 +64,19 @@ existing backup can be reused without recapturing it.
 
 ## Programming recovery commands / 编程状态恢复命令
 
-The 2026-11-11 review of main commit
-`b1fca089a679cecad737ef9ce23fb66762700057` found `enter-prog` / `exit-prog`
-outside the reviewed **v1.3.1** release. They change diagnostic/communication
-state; `enter-prog` can reset the ECU. They are not read-only probes or automatic
-fallbacks for a failed SSH connection. A best-effort `exit-prog` returning
-`EXIT_OK` is not proof of recovery: observe actual reachability, boot continuity
-and service health separately.
+The reviewed **v1.4.0** includes `enter-prog` / `exit-prog`. Both change
+diagnostic/communication state and can reset the ECU. They are not read-only
+probes or automatic fallbacks for failed SSH. `exit-prog` attempts programming
+shutdown, the finish routine and reset; its `EXIT_OK` does not prove recovery.
+Verify actual reachability, boot continuity and service health separately.
 
-The same main revision removes CLI confirmation prompts for `flash`, `fix-key`
-and `close`; `--yes` is a compatibility no-op. Required scope, architecture,
-power and backup checks must be established before calling such a reviewed
-version, not delegated to an expected interactive prompt.
+The CLI no longer asks for confirmation for `flash`, `fix-key` or `close`;
+`--yes` is a compatibility no-op. Establish the authorized scope, explicit
+architecture, power and backup conditions before calling it. Do not rely on an
+interactive prompt to enforce those conditions.
 
-以上是主分支行为审阅，不代表 v1.3.1 Windows 正式包已包含。编程状态命令可能改变诊断、
-通信状态或重启 ECU，不能用于只读检查或自动修复 SSH。退出码不证明车机恢复；
-新版 CLI 不再询问确认，也不等于可以省略既有写入条件。
+v1.4.0 已包含这些命令，但不能自动用来修复 SSH；编程状态切换会改变通信状态或重启 ECU。
+新版 CLI 不再询问确认，既有授权和写入条件仍需满足；退出码不能代替实际恢复检查。
 
 ## Prepare source locally / 本地准备源码
 
@@ -98,7 +93,7 @@ Gitee 标签缺失/不同步时，按既有偏好回退官方源或报告缺少�
 Example local preparation, with a new destination chosen for this session:
 
 ```text
-git clone --branch v1.3.1 --depth 1 https://github.com/cauliflowermossgrape/idrive7-8-ssh-root.git <private-root-folder>
+git clone --branch v1.4.0 --depth 1 https://github.com/cauliflowermossgrape/idrive7-8-ssh-root.git <private-root-folder>
 python -m venv <private-runtime-folder>
 <venv-python> -m pip install -r <private-root-folder>/requirements.txt
 <venv-python> <skill-folder>/scripts/check_environment.py --profile root --root-repo <private-root-folder> --json
@@ -135,7 +130,7 @@ Windows 可选官方 ZIP：校验实际下载文件的大小和 SHA-256，保留
 
 ## Apply the reviewed behavior / 使用已审阅行为
 
-- **Explicit architecture:** v1.3.1 GUI requires a selection, but CLI still
+- **Explicit architecture:** v1.4.0 GUI requires a selection, but CLI still
   defaults to `id7`. Always supply the verified `--arch id7`, `id8-bdc3` or
   `id8-bcp` for a Root write. An ID8 family alone does not distinguish BDC3/BCP;
   a VIN or model name alone is insufficient. Do not use `--force` to bypass an

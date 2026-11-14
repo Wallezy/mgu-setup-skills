@@ -295,3 +295,26 @@ claim. The photos have no GPS EXIF tag. They are copied without pixel edits.
   publication are not silently authorized by official mirror synchronization.
 - These are workflow/documentation changes; no vehicle trial or Stable approval
   is established by this Skill revision.
+
+## Reviewed upstream and Root baseline: 2026-11-14
+
+- Root v1.4.0 is pinned to `6d4928e6dca9812e7882318afdd7cba9840c2d62`.
+  A separate clean source checkout passed the local revision/environment check.
+  The downloaded official Windows ZIP matched 19,954,716 bytes and the SHA-256
+  recorded in `root-tool.json`; it was not executed.
+- Reviewed the formal preflight/programming-state commands, CLI prompt removal
+  and GUI changes. Supplemental coding captures do not establish restoration;
+  both programming-state commands are writes and recovery needs independent
+  observation. CLI still requires an explicitly verified architecture.
+- CN Beta and production publication passed exact-commit CI, independent
+  reproducible builds, dependencies and public file checks. Evidence records the
+  upstream/CN versions and preserves Beta's separate parking calibration.
+  Maintenance guidance explains safe-mode retention and input/network behavior;
+  Waze documentation changes are not presented as a new phone-patch fix.
+- Forty-seven helper tests passed. Skill structure, 146 local documentation
+  links, local-only inspection and reproducible standalone packaging passed.
+  The entrypoint and existing edition recommendations remain concise; new
+  version-specific guidance is in the relevant references.
+- No vehicle or head-unit emulator was contacted or tested; no Root action was
+  executed and no desktop application setting was changed. Existing vehicle
+  evidence retains its original versions.

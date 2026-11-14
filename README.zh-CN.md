@@ -38,7 +38,7 @@ AI 需要具备本地文件访问和命令执行能力才能实际安装；只�
 > 使用 $mgu-setup，检查电脑和已连接的车机，推荐适合我的版本，准备备份后完成 root SSH、商店和地图/HUD 应用安装。复用已有的正常连接，逐项验证结果。
 
 Root 工具的正式版本选择、本地版本校验及 Windows 发布包路径见
-[Root 工具准备](skills/mgu-setup/references/root-tool.md)，当前审阅基线为 v1.3.1。
+[Root 工具准备](skills/mgu-setup/references/root-tool.md)，当前审阅基线为 v1.4.0。
 
 其他使用场景：
 

@@ -17,7 +17,7 @@ Run `scripts/check_environment.py` with the Python intended for the SSH source t
 
 For Root work, follow [Root tool preparation](root-tool.md) to select a stable
 release and separate local folder, then use `--profile root --root-repo <prepared-root-source>`
-to check its runtime and revision. The reviewed baseline is v1.3.1; that reference
+to check its runtime and revision. The reviewed baseline is v1.4.0; that reference
 covers source fallback, offline reuse and newer releases. Do not keep using an
 unverified old path or download the same release again.
 
@@ -59,7 +59,7 @@ The current root README documents loss of coding/CAFD and Digital Key pairings o
 
 Try existing authorized credentials against the discovered HU first. If root login works, skip bootstrap.
 
-For an unprovisioned unit, inspect the verified checkout's CLI help and architecture handling. At v1.3.1:
+For an unprovisioned unit, inspect the verified checkout's CLI help and architecture handling. At v1.4.0:
 
 ```text
 python <verified-root-folder>/ssh_enable.py status
@@ -67,7 +67,7 @@ python <verified-root-folder>/ssh_enable.py flash --arch <verified-variant> --vi
 ```
 
 These are workflow examples, not commands for every connection. Select `id7`,
-`id8-bdc3` or `id8-bcp` from verified HU evidence. v1.3.1 GUI requires a selection,
+`id8-bdc3` or `id8-bcp` from verified HU evidence. v1.4.0 GUI requires a selection,
 but CLI still defaults to ID7: always supply `--arch`, never infer it from a
 model/VIN alone. Execute flash only for authorized first setup with prerequisites
 satisfied. GUI “Flash + Enable” and CLI `--persist` already request persistence;

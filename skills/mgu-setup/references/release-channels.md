@@ -106,7 +106,7 @@ online; a root `https.get` failure does not establish that the hotspot is down.
 ## Promotion and maintenance / 晋升与维护
 
 Use the CN Store's selected release tooling and policy:
-[CN-RELEASE-CHANNELS.md at 6ece1e7](https://github.com/Wallezy/mgu-store-cn/blob/6ece1e71e4ff39db4acff0b6ca28e9eb16b0d823/docs/CN-RELEASE-CHANNELS.md).
+[CN-RELEASE-CHANNELS.md at 60585be](https://github.com/Wallezy/mgu-store-cn/blob/60585be972822d0a59dfd9931bd3070f857e2d8a/docs/CN-RELEASE-CHANNELS.md).
 Do not reintroduce the old blanket vehicle-test gate:
 
 | Work | Publication and evidence |
@@ -123,10 +123,14 @@ tools; source pushes, public publication and vehicle operations are separate.
 Review-only releases must retain `fully_vehicle_validated: false`.
 
 When Beta has a separate trial, compare both channel inventories before building.
-Promote only the shared scope and retain the exact current Stable repository
-snapshot with the supported `--stable-base` path. Do not replace the Beta trial,
-move it to Stable implicitly, or broaden a partial promotion beyond tool support.
-Changed Stable baselines require replanning.
+Use the supported `owner-reviewed` route for explicitly authorized dual-channel
+updates with `channel_variants`: pin each full catalog entry for both channels,
+the exact `--stable-base`, and the prepared Stable candidate. Shared components
+must match Beta; unchanged Stable-only components use `retained_components`.
+Retain a whole repository only when none of its components should change.
+Keep the Beta trial in Beta, and publish only the reviewed Stable variant.
+Changed Stable baselines require replanning. All source, dependency, reproducibility,
+CI and public-download checks still apply; this route does not claim vehicle validation.
 
 Keep three-part numeric versions, with upstream version/CN revision in release
 records. Changed published bytes require a new component version, even within

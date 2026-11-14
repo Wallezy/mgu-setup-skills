@@ -52,3 +52,24 @@ Preserve the map's display target, Off state, HUD pop-up preference and active
 driver profile. Consult [map diagnostics](recovery.md#driver-settings-and-map-diagnostics--驾驶员设置与地图诊断)
 only when visual diagnosis is requested or an observed regression needs it.
 保留地图显示目标、关闭状态、HUD 弹窗偏好和驾驶员配置；仅在需要排错时展开诊断。
+
+## Reviewed update behavior / 已审阅的更新行为
+
+The November 14 CN release includes the upstream safe-mode follow-ups. Automatic
+repairs and their automatic rollbacks retain safe mode; a completed repair alone
+does not authorize leaving it. Use the Store's explicit exit action only within
+the requested repair scope and after resolving outstanding migration/recovery
+conditions. The updater requires deploy 0.8.20; let it install dependencies first.
+
+自动修复完成后仍可能处于安全模式，不能因此判为失败或自动退出。保留迁移保护，
+按商店依赖处理更新顺序；确需退出时使用商店已有操作并核对实际状态。
+
+The updated renderer returns input to BMW overlays; a visible factory popup is
+not proof that the Store is frozen. Uplink can recover after the car's Wi-Fi is
+re-enabled; preserve phone/network settings and inspect its state before retrying.
+ETC2 support enables compressed image resources but is not evidence of higher
+map frame rate or support for an untested vehicle. Waze's upstream 0.6.8 app and
+0.9.14 service changes are documentation updates, not new phone-patch algorithms.
+
+原厂弹窗出现时先让原厂界面处理输入；Wi-Fi 恢复后先查看联网状态。压缩图像支持不等于
+导航帧率提升，本次 Waze 说明更新也不代表解决了某车型无法勾选导航卡片的问题。
