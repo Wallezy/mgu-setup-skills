@@ -4,6 +4,24 @@ The environment helper must remain a local-only report: no package installation,
 
 环境检查脚本只生成本地报告，不安装依赖、不联网、不连车、不改配置。独立的镜像脚本可下载 HTTPS 资源和保存本地源偏好，不连接车辆。Skill 校验不证明车辆兼容。
 
+## Offline diagnostic mode / 离线诊断模式
+
+The diagnostic helper reads existing local exports and creates a new private ZIP.
+It has no network/SSH transport, subprocess execution or vehicle write path.
+The input contract and live-collection boundary are in
+[diagnostics.md](skills/mgu-setup/references/diagnostics.md).
+
+The local diagnostic regression suite covers basic/app selection, all three map
+components, dependency cycles, missing/corrupt/oversize manifests, per-component
+capture failures, timestamp boundaries/timezones, empty windows, stale capture,
+read/output/count budgets, UTF-8, nested credential and VIN redaction, PEM fragments,
+source digest retention, traversal/symlink/special-file rejection, private/exclusive
+output creation, unchanged input files and the CLI partial-bundle path.
+
+Tests use synthetic exports on the development computer. No emulator or vehicle
+collection has been validated; no real ECU request or service activation occurs.
+The ambient case establishes collection coverage only, not a cause or a fix.
+
 ## Repeatable local checks
 
 ```sh

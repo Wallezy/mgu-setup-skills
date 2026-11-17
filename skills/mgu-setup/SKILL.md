@@ -1,6 +1,6 @@
 ---
 name: mgu-setup
-description: Set up and maintain an owner-authorized BMW MGU over ENET using SSH and Store tools. Use for environment checks, backup preparation, initial root, Store setup, full-distribution switch preparation and supported migration, map/HUD setup, updates, and supported rollback or removal. Supports Chinese and English.
+description: Set up and maintain an owner-authorized BMW MGU over ENET using SSH and Store tools. Use for environment checks, backup preparation, initial root, Store setup, full-distribution switch preparation and supported migration, map/HUD setup, read-only diagnostic evidence bundles, updates, and supported rollback or removal. Supports Chinese and English.
 license: GPL-3.0-only
 ---
 
@@ -25,11 +25,14 @@ Use the selected distribution's supported tools to complete the requested operat
 | Existing Store/app update or resume | [maintenance-update.md](references/maintenance-update.md); skip first-root preparation |
 | Change edition, including installer and installed components | [store-distributions.md](references/store-distributions.md#switch-distribution) |
 | First root, access repair, Root tool preparation | [root-tool.md](references/root-tool.md); healthy SSH needs no flash/enable/persist |
+| Basic/app diagnostics, diagnostic bundle, ambient or map fault evidence | [diagnostics.md](references/diagnostics.md); default observation only, local export helper, no automatic repair or live fallback |
 | Failure, downgrade or rollback | [recovery.md](references/recovery.md) |
 | Uninstall Store or disable Root/SSH | [removal scope and order](references/recovery.md#removal); SSH removal is not factory firmware restoration |
 | Official backup source or mirror maintenance | [network-mirrors.md](references/network-mirrors.md); not needed for ordinary CN online updates |
 
 Historical versions and validation limits: [evidence.md](references/evidence.md). Never treat a historical version as the current recommendation.
+
+For diagnostic requests, use the diagnostic route and finish with evidence coverage and limits; do not enter setup/update/recovery writes. No vehicle or compatible export means a partial local report, not permission to connect, repair, scan or restart.
 
 ## Execute and verify / 执行与验证
 
