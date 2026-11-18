@@ -140,7 +140,7 @@ Use `--profile store` for direct Store installation prerequisites, `--profile ro
 - [Validation scenarios / 验证场景](VALIDATION.md).
 - [Contributing](CONTRIBUTING.md): translations, tests and sanitized compatibility reports.
 - [Photos / 实车效果图](docs/SHOWCASE.md): app entries, Store, cluster and HUD.
-- [Backup-source maintenance / 备用源维护](docs/DOMESTIC-MIRROR.md): Gitee synchronization and OSS acceptance for maintainers.
+- [Backup-source maintenance / 备用源维护](docs/DOMESTIC-MIRROR.md): Gitee synchronization and self-hosted publication for maintainers.
 
 ## Upstream projects
 

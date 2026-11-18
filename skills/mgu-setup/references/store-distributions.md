@@ -163,7 +163,7 @@ explicit Beta request. It covers reviewed upstream dual-channel publication,
 explicitly authorized small improvements and separate development trials.
 Keep publication evidence separate from actual vehicle tests.
 
-`tools/sync_oss.py` mirrors **unchanged official packages** under `/mgu/mgu-store/`
+`tools/sync_mirror.py` mirrors **unchanged official packages** under `/mgu/mgu-store/`
 and `/mgu/idrive-apps/`; it must not write `/mgu/cn/`. Existing Gitee mappings
 mirror the Skill and official projects, not CN fork releases. CN publication uses
 the CN Store's release tools and independent snapshots. Keep credentials, vehicle

@@ -295,6 +295,8 @@ def main():
     parser.add_argument("--prepared", type=pathlib.Path, help="Previously verified complete snapshot")
     parser.add_argument("--publish", action="store_true", help="Upload and verify; otherwise prepare only")
     args = parser.parse_args()
+    if T.self_hosted():
+        parser.error("Self-hosted mode uses tools/sync_mirror.py; OSS publication is disabled")
     for key in ("ossutil", "config", "work_dir", "cache", "prepared"):
         value = getattr(args, key)
         if value is not None:

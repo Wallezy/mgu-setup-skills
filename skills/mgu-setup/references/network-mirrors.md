@@ -197,20 +197,27 @@ Use `fetch --base-url <实际根地址> --output <新的验收目录> --manifest
 
 Do not report the domestic path publicly available until this remote acceptance succeeds. Preserve TLS verification.
 
-## Update review and upload handoff / 更新检查与上传交接
+## Update review and publication / 更新检查与发布
 
-When reviewing upstream or skill updates, compare both published upstream catalogs with live OSS, including their complete dependencies. A current Gitee checkout or reachable OSS index does not establish that its packages are current or available. Keep unresolved mirror differences visible in later reports.
+Compare both official published catalogs with the verified live backup-source
+snapshot, including dependencies, package/icon digests and source provenance.
+A current Gitee checkout or reachable index does not prove package availability.
+Keep unresolved differences visible. `tools/prepare_oss.py` is a local bundle
+preparer with a historical filename; it does not require OSS.
 
-For an authorized mirror refresh, use the repository's `tools/prepare_oss.py` to generate and verify a new complete snapshot outside the checkout. Compare it with a verified live snapshot to identify uploads. Provide exact object paths, new/replaced files, versions, hashes, cache settings and upload order. Clearly distinguish prepared files from recommendations; never invent paths or checksums. A delta is sufficient only when all omitted files still match on OSS.
+For explicitly authorized maintainer automation, use the source repository's
+`tools/sync_mirror.py --publish` and private `self-hosted` transport configuration.
+It pins the active snapshot, transfers changed bytes directly to A/B, verifies
+both complete snapshots, and selects them at C. Check public acceptance before
+reporting success. A failure preserves or restores the previous entry; inspect
+actual state and retry from the current baseline. Old packages remain available.
+Read `docs/DOMESTIC-MIRROR.md` in the source repository for invocation details.
+The standalone Skill does not bundle the maintainer tool or private driver.
 
-Upload versioned packages, content-addressed PNG icons and source archives first, followed by changed supporting files, both catalogs, and finally `mirror-manifest.json`. Keep old packages for rollback and active downloads. Use `Cache-Control: public,max-age=31536000,immutable` for content-addressed packages/icons and commit-addressed sources, `Content-Type: image/png` for PNGs, and `Cache-Control: no-cache` for catalogs, manifest and other replaced fixed-path files. Verify these headers on all indexed resources, including reused files. The two catalogs and manifest are not an atomic update: avoid installs during publication and complete remote acceptance afterwards. A new snapshot prefix provides stronger isolation.
+Trace installer defaults, updater sources, dependency downloads and external
+runtime assets as well as catalog URLs. Attribution links do not imply required
+network access. Backup packages do not remove the official Store's built-in
+GitHub checks. Keep credentials out of instructions and public artifacts.
 
-Trace later download URLs as well as catalog artifact URLs: check installer defaults, updater sources, dependency downloads and external runtime assets. Distinguish attribution/source links from required network access. Offline preparation and relative OSS artifact URLs do not disable the Store's built-in GitHub checks. Report unverified paths and unsupported source-management controls rather than claiming an entirely offline/domestic workflow.
-
-更新检查必须同时对照官方发布与实时 OSS，列出需要新增或替换的准确路径、版本、哈希、依赖和缓存设置。先完整生成并校验资源，再与已验证的线上快照比较；仅当省略文件在线上仍一致时，才可交付增量上传包。先资源、再目录、最后清单；上传窗口内避免安装，完成后重新远端验收，保留旧包。
-
-还须检查安装器、更新器和运行时的后续下载依赖，区分溯源链接与必需联网路径。镜像目录可用不等于车端所有更新都走 OSS。用户自行上传时，交付文件和步骤，不代为上传、删除或宣称上线成功。
-
-For explicitly authorized maintainer automation, the source repository provides `tools/sync_oss.py --publish` (not bundled in the standalone skill). It accepts an external private ossutil config, verifies live/upstream snapshots, publishes a delta with cache metadata and performs public acceptance; failures attempt restoration of prior mutable indexes. Read the repository's `docs/DOMESTIC-MIRROR.md` for invocation and scope. Keep credentials out of instructions and public artifacts; only report success after the script's remote acceptance. Automation of mirror uploads does not authorize vehicle updates or repository pushes.
-
-维护者明确授权自动上传时，可使用源码仓库的 `tools/sync_oss.py --publish`，配置保存在仓库外，按脚本结果报告同步、验收或回滚状态。独立 Skill 不包含该维护工具，不能假定它已安装。自动镜像同步不等于自动升级车辆。
+维护者同步使用自建 A/B/C，不读写 OSS，也不自动回退到历史 OSS 文件。
+验收通过才报告发布成功；自动镜像同步不等于授权车辆更新、CN 新功能发布或仓库推送。
