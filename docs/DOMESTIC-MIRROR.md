@@ -2,6 +2,9 @@
 
 本文面向维护者。用户只选择[国内版或官方版](../skills/mgu-setup/references/store-distributions.md#choose-edition)；
 官方版按网络使用直连或备用源，不再让用户选择“国内镜像版”。这里的“镜像”仅为内部维护术语。
+
+自建 C 入口、A 主源和 B 备用源的发布接入见
+[维护者发布传输](PUBLICATION-TRANSPORT.md)。过渡期仍向 OSS 提交，A/B/C 验收通过后才记录公开发布成功。
 源码、文档和 Skill 放 GitHub/Gitee，官方原包及目录放 OSS；CN 发行版使用独立发布流程。
 备用源资源不代表实车验证结果。
 

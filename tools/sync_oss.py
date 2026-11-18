@@ -13,6 +13,10 @@ import re
 import subprocess
 import tempfile
 import urllib.parse
+import sys
+
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import publication_transport as T
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("prepare_oss", ROOT / "tools/prepare_oss.py")
@@ -163,7 +167,7 @@ class Remote:
             ["curl", "--fail", "--silent", "--show-error", "--head",
              "--proto", "=https", "--connect-timeout", "10", "--max-time", "30",
              "--dump-header", str(header_file), "--output", os.devnull,
-             "--write-out", "%{http_code}", self.base + rel],
+             "--write-out", "%{http_code}", T.storage_url(self.base + rel)],
             capture_output=True, text=True, timeout=40)
         if result.returncode or result.stdout.strip() != "200":
             raise RuntimeError("Public HEAD failed: " + rel)
@@ -188,7 +192,7 @@ class Remote:
             raise RuntimeError("ossutil upload failed for {} (exit {})".format(rel, result.returncode))
 
     def verify(self, rel, entry, folder):
-        M.download(self.base + rel, folder / rel, entry["size"], entry["sha256"])
+        M.download(T.storage_url(self.base + rel), folder / rel, entry["size"], entry["sha256"])
         if not headers_match(rel, self.headers(rel)):
             raise RuntimeError("Unexpected public cache/content headers: " + rel)
 
@@ -211,7 +215,7 @@ def publish(remote, old_root, new_root, plan, work):
             remote.verify(entry["path"], entry, work / "metadata-check")
         changed_fixed.append("mirror-manifest.json")
         remote.put(new_root, "mirror-manifest.json")
-        M.fetch_remote(remote.base, work / "remote-acceptance",
+        M.fetch_remote(T.storage_url(remote.base), work / "remote-acceptance",
                        manifest_sha256=M.digest(new_root / "mirror-manifest.json"))
         manifest = M.load_json(new_root / "mirror-manifest.json")
         for rel in [e["path"] for e in manifest["files"]] + ["mirror-manifest.json"]:
@@ -231,7 +235,7 @@ def publish(remote, old_root, new_root, plan, work):
         if changed_fixed:
             try:
                 remote.put(old_root, "mirror-manifest.json")
-                M.fetch_remote(remote.base, work / "rollback-acceptance",
+                M.fetch_remote(T.storage_url(remote.base), work / "rollback-acceptance",
                                manifest_sha256=M.digest(old_root / "mirror-manifest.json"))
             except Exception:
                 errors.append("mirror-manifest.json or rollback acceptance")
@@ -246,7 +250,7 @@ def synchronize(args, work):
     remote.verify_binding()
     # Full public acceptance protects both delta reuse and a possible rollback.
     old_root = work / "live-before"
-    M.fetch_remote(base, old_root)
+    M.fetch_remote(T.storage_url(base), old_root)
     old, _ = M.verify_bundle(old_root)
     upstream = {repo: P.upstream_catalog(repo, args.cache) for repo in P.REPOS}
     M.verify_dependencies([c for c, _, _ in upstream.values()])
@@ -303,13 +307,16 @@ def main():
     if os.name != "nt" and args.config.stat().st_mode & 0o077:
         parser.error("ossutil configuration must be readable by its owner only")
     try:
-        with lock(args.work_dir):
+        with T.lock(args.publish), lock(args.work_dir):
             stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
             work = pathlib.Path(tempfile.mkdtemp(prefix=stamp + "-", dir=args.work_dir))
             try:
                 report = synchronize(args, work)
+                if args.publish:
+                    report = T.replicate(report, work)
             except Exception as error:
-                M.write_json(work / "result.json", {"status": "failed", "error": str(error)})
+                if not (work / "result.json").exists():
+                    M.write_json(work / "result.json", {"status": "failed", "error": str(error)})
                 raise
             M.write_json(work / "result.json", report)
             latest = "latest-success.json" if report["status"] != "prepared" else "latest-prepared.json"
