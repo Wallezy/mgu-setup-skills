@@ -207,10 +207,17 @@ preparer with a historical filename; it does not require OSS.
 
 For explicitly authorized maintainer automation, use the source repository's
 `tools/sync_mirror.py --publish` and private `self-hosted` transport configuration.
-It pins the active snapshot, transfers changed bytes directly to A/B, verifies
-both complete snapshots, and selects them at C. Check public acceptance before
-reporting success. A failure preserves or restores the previous entry; inspect
-actual state and retry from the current baseline. Old packages remain available.
+It pins the active snapshot, uploads changed bytes only to A, verifies the
+complete snapshot and selects it at C. Check public acceptance before reporting
+publication success. A then replicates incrementally to B through an immediate
+trigger and a persistent five-minute timer. B verifies all content before
+advancing its complete-snapshot pointer; C can fall back to its previous complete
+snapshot while it catches up. The owner accepts eventual consistency: new
+packages can be temporarily unavailable if A fails before B receives them.
+Record B convergence separately from A/C publication. An A/C publication
+failure preserves or restores the entry; a B synchronization failure preserves
+B's previous snapshot and is retried. Inspect actual state and retry from the
+current baseline. Old packages remain available.
 Read `docs/DOMESTIC-MIRROR.md` in the source repository for invocation details.
 The standalone Skill does not bundle the maintainer tool or private driver.
 
