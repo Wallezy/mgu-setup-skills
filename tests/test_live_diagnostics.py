@@ -235,19 +235,21 @@ class LiveDiagnosticsTests(unittest.TestCase):
                 '{"id":"mgu-render","version":"0.6.0","requires":{},"units":[{"name":"mgu-render.service"}]}'
         }
         harness = """
-const vm = require('vm'), files = JSON.parse(process.argv[1]);
+const vm = require('vm');
 const fds = new Map(); let next=1;
 const fs = {constants:{O_RDONLY:0,O_NONBLOCK:2048},
  openSync(p,flags) {if(!(p in files)) throw Error('missing'); const fd=next++;fds.set(fd,p);return fd;},
  fstatSync(fd){return {isFile:()=>true,size:Buffer.byteLength(files[fds.get(fd)])};},
  readSync(fd,b,off,len){const value=Buffer.from(files[fds.get(fd)]);value.copy(b,off,0,len);return Math.min(value.length,len);},
  closeSync(fd){fds.delete(fd);}};
-vm.runInNewContext(process.argv[2], {require(name){if(name==='fs') return fs;throw Error('unexpected import');},
+vm.runInNewContext(probeSource, {require(name){if(name==='fs') return fs;throw Error('unexpected import');},
  Buffer,process:{version:'v8.16.2'},console});
 """
         source = 'var OPTIONS = {"ids":["ambient_config"]};\n' + live.METADATA
-        result = subprocess.run(['node', '-e', harness, json.dumps(files), source],
-                                capture_output=True, text=True, timeout=10)
+        program = ('const files = ' + json.dumps(files) +
+                   ';\nconst probeSource = ' + json.dumps(source) + ';\n' + harness)
+        result = subprocess.run(['node', '-'], input=program,
+                                capture_output=True, text=True, timeout=15)
         self.assertEqual(result.returncode, 0, result.stderr)
         data = json.loads(result.stdout)
         app = data['components']['ambient_config']
