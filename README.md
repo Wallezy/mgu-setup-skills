@@ -41,8 +41,8 @@ Your agent needs local file access and command execution to perform installation
 
 Other supported requests:
 
-- “Run basic diagnostics from my existing export, without changing the car.”
-- “Diagnose Waze or ambient lighting from the collected logs.”
+- “Connect to my car and export a redacted diagnostic log bundle, read-only.”
+- “Diagnose Waze or ambient lighting and collect related service logs.”
 
 - “The Store disappeared. Diagnose and restore its entry.”
 - “Update only the Store and map app, preserving my settings.”
@@ -62,11 +62,13 @@ records publication and vehicle validation separately.
 
 The agent should execute within the request's scope, not just print a tutorial. Physical display checks and coding-tool operations may still need the owner. Installing this skill does not authorize vehicle writes.
 
-Diagnostic mode builds a bounded, redacted bundle from **existing local exports**,
-with basic/component scope, map dependency association and explicit missing data.
-It does not connect to the car or repair/restart anything. See the
-[diagnostic guide](skills/mgu-setup/references/diagnostics.md) for evidence inputs,
-limits and the live-collection boundary.
+Diagnostic mode **connects over existing verified SSH access** to collect app and
+base-component logs, installed versions, service status and boot context into a
+bounded, redacted ZIP. Basic or selected-app scope includes related map services,
+with missing or timed-out evidence reported explicitly. Existing local exports
+can also be processed. It does not repair, upgrade or restart the car. See the
+[diagnostic guide](skills/mgu-setup/references/diagnostics.md) for connection,
+scope and capture limits.
 
 ## Preparation order
 

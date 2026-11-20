@@ -4,7 +4,7 @@ Use this reference for failures, downgrade, restore or removal. Confirm the curr
 
 故障、降级、还原或卸载时读取本文；执行前核对车上实际工具能力。来源见 [evidence.md](evidence.md)。
 
-For observation-only requests, use [diagnostics.md](diagnostics.md) to create a bounded, redacted bundle from existing exports. Missing evidence is reported without repair, restart or diagnostic scans.
+For observation-only requests, use [diagnostics.md](diagnostics.md) to connect over verified SSH and collect a bounded, redacted bundle, or process existing exports. Missing evidence is reported without repair, restart or diagnostic scans.
 
 ## Diagnose before changing / 先诊断
 

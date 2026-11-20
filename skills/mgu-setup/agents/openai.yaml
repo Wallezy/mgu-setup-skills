@@ -1,4 +1,4 @@
 interface:
   display_name: "MGU Setup / 车机安装"
-  short_description: "Owner-authorized MGU SSH, Store and HUD setup"
-  default_prompt: "Use $mgu-setup to inspect my environment and current head-unit state, then guide the authorized setup or recovery in my language."
+  short_description: "MGU setup, maintenance and live read-only diagnostics"
+  default_prompt: "Use $mgu-setup for my requested MGU setup, maintenance or diagnosis. For a diagnostic request, connect using verified existing SSH access, collect logs read-only and export a redacted bundle in my language."

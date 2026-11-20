@@ -117,7 +117,7 @@ def capture(root):
         return {'components': {}}, type(exc).__name__ + ': capture unavailable or invalid'
 
 
-def selection(app, components):
+def selection(app, components, include_recorded=False):
     chosen = []
     if app:
         app = ALIASES.get(app.lower(), app)
@@ -128,6 +128,10 @@ def selection(app, components):
     for name in chosen:
         entry = components.get(name, {})
         deps = entry.get('requires', {}) if isinstance(entry, dict) else {}
+        if include_recorded and isinstance(entry, dict):
+            recorded = entry.get('recorded_requires', {})
+            if isinstance(recorded, dict):
+                deps = dict(recorded, **(deps if isinstance(deps, dict) else {}))
         if isinstance(deps, dict):
             for dep in deps:
                 if isinstance(dep, str) and ID.fullmatch(dep) and dep not in chosen and len(chosen) < 128:
@@ -185,7 +189,8 @@ def metadata(entry):
     return result
 
 
-def collect(root, app=None, minutes=30, end=None, file_bytes=256*1024, total_bytes=4*1024*1024):
+def collect(root, app=None, minutes=30, end=None, file_bytes=256*1024, total_bytes=4*1024*1024,
+            include_recorded=False):
     root = Path(root).expanduser().resolve()
     observed, error = capture(root)
     end = end or dt.datetime.now(UTC)
@@ -207,7 +212,7 @@ def collect(root, app=None, minutes=30, end=None, file_bytes=256*1024, total_byt
         report['captured_at'] = None
         report['capture_time_in_window'] = False
     payloads, remaining = {}, total_bytes
-    for name in selection(app, observed['components']):
+    for name in selection(app, observed['components'], include_recorded):
         report_id = redact(name)
         archive_id = name if report_id == name else 'redacted-component-{}'.format(len(report['components']))
         entry = observed['components'].get(name)
@@ -271,7 +276,11 @@ def collect(root, app=None, minutes=30, end=None, file_bytes=256*1024, total_byt
 
 def markdown(report):
     lines = ['# MGU 诊断 / Diagnostics', '', '采集状态 / Coverage: **{}**'.format(report['status']),
-             '', '来源：已有本地导出；未连接车辆，未执行修复、重启或写入车机。',
+             '', ('来源：通过 SSH 只读采集车机已有证据；未执行修复、重启或配置写入。'
+                  if report['evidence'] == 'live-ssh' and report['vehicle_contacted'] else
+                  '来源：SSH 采集未建立有效连接；请查看采集失败项。'
+                  if report['evidence'] == 'live-ssh' else
+                  '来源：已有本地导出；未连接车辆，未执行修复、重启或写入车机。'),
              '', '窗口：{} → {}'.format(report['window']['start'], report['window']['end']),
              '采集时间：{}；位于窗口内：{}'.format(report['captured_at'], report['capture_time_in_window']), '',
              '| 组件 | 覆盖 | 版本 | 服务 | 依赖 | 来源 | 日志 |', '|---|---|---|---|---|---|---|']
@@ -286,6 +295,9 @@ def markdown(report):
         values.append(', '.join(str(x['index']) + ':' + x['status'] + (' (' + x['reason'] + ')' if x.get('reason') else '') for x in item.get('logs', [])) or 'unavailable')
         lines.append('| ' + ' | '.join(cell(x) for x in values) + ' |')
     lines.extend(['', '逐文件错误、截断、时间过滤计数与哈希见 report.json。', ''])
+    if report.get('evidence') == 'live-ssh':
+        lines += ['系统观测：' + json.dumps(report.get('context', {}), ensure_ascii=False),
+                  '', '采集失败：' + json.dumps(report.get('collection_failures', []), ensure_ascii=False), '']
     if report['capture_error']:
         lines.append('- ' + report['capture_error'])
     lines.extend('- ' + note for note in report['notes'])

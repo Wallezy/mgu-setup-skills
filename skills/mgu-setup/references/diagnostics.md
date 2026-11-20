@@ -6,25 +6,69 @@ only. It does not authorize repair, upgrades, restarts, service activation, patc
 changes, scans or source changes. Preserve 国内版 / 官方版 and the active source;
 no edition question is needed to inspect existing evidence.
 
-## Current capability / 当前能力
+## Connect and collect / 连接并采集
 
-The bundled [diagnose.py](../scripts/diagnose.py) runs **on the computer**, against
-existing local exports. It produces a private ZIP with `report.md`, `report.json`
-and redacted logs. It has no SSH/network transport or vehicle execution path.
-This is the offline diagnostic implementation; it is not a deployed Store button
-or a live vehicle collector. Do not describe an offline report as live collection.
+Use [collect_diagnostics.py](../scripts/collect_diagnostics.py) on the computer to
+connect over **existing verified SSH access** and create a private ZIP containing
+`report.md`, `report.json` and redacted logs. Reuse the session's literal HU IP,
+port, user, key/SSH agent and verified `known_hosts` file. A diagnostic request
+authorizes this read-only connection; do not ask for the same authorization again.
+Ask for missing connection details only. Verify a new or changed host key through
+the physical ENET/session identity before adding it to a private trust record;
+never disable strict host-key checking or silently replace a trusted key.
 
-本阶段一键入口指 Skill 根据一句请求执行本地诊断整理：已有导出可立即生成诊断包；
-没有证据时仍生成缺失项报告，不连接车辆、不伪造采集成功。用户不需要在车机上执行命令
-或放置文件。自动从实车取得证据的适配器须另行核对权限和只读行为，并通过车机模拟器验证。
+Agent-side invocation from the installed skill directory:
 
-For existing exports, normalize observations into the contract below **locally**.
+```sh
+python3 scripts/collect_diagnostics.py --host <verified-HU-IP> --identity <existing-private-key> --known-hosts <verified-known-hosts> --output <new-private-case.zip>
+python3 scripts/collect_diagnostics.py --host <verified-HU-IP> --identity <existing-private-key> --known-hosts <verified-known-hosts> --output <new-private-waze.zip> --app waze
+python3 scripts/collect_diagnostics.py --host <verified-HU-IP> --identity <existing-private-key> --known-hosts <verified-known-hosts> --output <new-private-updater.zip> --app mgu-updater
+```
+
+Omit `--identity` to use an already unlocked SSH agent. An encrypted key that is
+not available to the agent requires local unlocking; never put its passphrase in
+a command or report. The helper is noninteractive and does not retry authentication,
+change key permissions, enable Root, scan a subnet or install anything.
+Supply verified nondefault `--port` / `--user` when needed.
+
+The helper reads existing app registration, package/component manifests,
+deployment inventory, installation origins, firmware/runtime/boot context,
+updater rollback markers, systemd properties and journals, and known rotating
+log files. It runs a fixed read-only Node probe on stdin; nothing is installed or
+staged on the HU. Journal and updater file-log collection remain available when
+the HU's Node probe cannot run. No installed application JS or deployment wrapper
+is executed. Waze scope includes its app, projection service and cluster renderer.
+
+Windows/macOS/Linux use the local OpenSSH client. SSH configuration, forwarding
+and connection sharing are excluded; host trust remains mandatory. SSH itself
+can create normal server authentication/audit records; “read-only” here means
+no application/configuration writes, service activation or vehicle-state change.
+
+The default overall deadline is **120 seconds**, each command at most **12 seconds**
+and connection setup **5 seconds**. Journals include at most **200 records per
+stream** in the absolute window, without follow or socket activation. The app
+and dependencies are prioritized before base logs; at most **32 components**
+and **4 service units/component** are queried. Remaining work is marked missing,
+timed out or budget limited. Node, journal or file failures preserve other evidence.
+An SSH failure produces a failure report and exit 1; it is never successful
+collection. Review `vehicle_contacted`, stream status, truncation and time coverage.
+
+Use the symptom time for `--until` when appropriate. Compare the computer and
+vehicle clock in the report before interpreting an empty window; do not change
+the HU clock. Current observations do not prove historical component state.
+Default paths cover the reviewed layout; custom paths, DLT-only events, lost
+volatile history or manager-specific logs can remain unavailable.
+
+## Offline evidence / 离线证据
+
+The separate [diagnose.py](../scripts/diagnose.py) processes existing local exports
+with no network or vehicle execution. Normalize observations into the contract below **locally**.
 Use recorded values and timestamps, not the current online catalog as a substitute
 for installed versions. Preserve the raw export privately outside the output.
 Do not download new releases, run an installer, or touch Root desktop settings.
-If no compatible export is available, pass an empty local input directory and
-report which observations are missing. An invalid/missing manifest still produces
-a bundle; an unwritable output is an explicit failure.
+If no connection or compatible export is available, report the missing evidence.
+An invalid/missing export manifest can still produce a partial report, but this is
+not vehicle log collection; an unwritable output is an explicit failure.
 
 ## Entry points / 一键入口
 
@@ -35,7 +79,7 @@ Examples of owner requests:
 - “诊断氛围灯提示车身模块未响应。” → app `ambient`.
 - “诊断 car_vitals。” → exact app ID; include its recorded dependencies.
 
-Agent-side **local** invocations from the installed skill directory:
+For existing exports, agent-side **offline** invocations:
 
 ```sh
 python3 scripts/diagnose.py --input /private/case-export --output /private/basic-diagnostics.zip
@@ -127,26 +171,26 @@ missing observation from a confirmed missing or incompatible dependency.
 ## Passive evidence sources / 采集适配边界
 
 Reviewed path anchors: CN Store commit
-`9fcace755bf5d4c35bfb2b144f9adcc1714bf4e2`, Apps commit
-`626879a0503239cddb0d01f913fcad79c9587f32`. These identify source review, not the
+`146ee917ce36e7dfa491d573de80ff3a3293590d`, Apps commit
+`6aa4cb1ea310dfbe75f0e81e58230364547106d6`. These identify source review, not the
 latest release or the customer's installed version. Verify the actual source
 checkout/installed layout before using a path; do not assume a default project
 directory is current.
 
 | Observation | Candidate evidence and limit |
 |---|---|
-| Installed apps/tools | Existing export of `/var/opt/mgu-deploy/state.json`; use recorded apps/tools versions, distinguish retained payloads from active/registered apps. |
+| Installed apps/tools | `/var/opt/mgu-deploy/state.json` records plus actual registry and installed manifests; distinguish retained payloads from active/registered apps. |
 | Declared dependencies | Matching installed `component.json` / app release metadata; do not use today's catalog to fill an unknown installed manifest. |
 | Source | Existing updater `sources.json` and `state/origins.json` exports; select identity/URL/version/hash fields locally, never copy credential files. An enabled catalog alone does not establish an app's installation origin. |
-| Services | Already-captured systemd unit properties (`LoadState`, `ActiveState`, `SubState`, `Result`, restart count), with actual unit names and timestamps. App manager registration and a tile are separate evidence. |
-| Logs | Existing app, manager and base component logs/journal export. For Waze include capture/patch service and renderer logs if already available; missing streams stay missing. |
+| Services | Passive `systemctl show` properties (`LoadState`, `ActiveState`, `SubState`, `Result`, restart count, exit status), with reviewed or manifest-declared unit names and timestamps. App manager registration and a tile are separate evidence. |
+| Logs | Existing app file logs and base component journals. Waze includes capture/patch service and renderer journals; missing streams stay missing. No Save logs action or logging toggle is invoked. |
 | Context | Existing uptime/boot, observed HU family/firmware, symptom time, selected output, driver shared/own setting; keep identifying context in the private case record, not raw profile files in the bundle. |
 
-**No live fallback in this implementation.** Do not call ordinary deploy `status`,
+**No repair fallback.** Do not call ordinary deploy `status`,
 a wrapper that can fall back to repairing status, guessed daemon arguments,
 service start/restart, logging toggles, map patch probes with unknown side effects,
 UDS/BDC reads or “重新查找” to fill missing data. `status --read-only` requires
-verified vehicle-side support and review; it is not used by this helper.
+verified vehicle-side support and review; it is not used by the collector.
 
 Map **Save logs** is not assumed passive. The reviewed service has socket
 activation and a `Wants=waze-on-cluster-logs-fw.service` relationship; related
@@ -183,12 +227,12 @@ validation. Do not disable rollback, bypass requirements or reinstall repeatedly
 to collect evidence. Default journal/file logs may be lost after a reboot or
 rotation. Record missing earlier events explicitly.
 
-The Store's existing phone management page has a Logs section for the updater
-file log and `mgu-updater`/`mgu-uplink`/`mgu-deploy-verify` journals. If the owner
-already has access, guide them to save the relevant displayed logs locally for
-this offline helper. Do not claim the helper itself connects to that page or
-exports vehicle journals. Enabling the management page or collecting via SSH is
-a separate, explicitly scoped operation; this reference adds no live adapter.
+Use live collection with `--app mgu-updater` for both service journals and rotating
+file logs, rollback markers and installed versions. This path does not depend on
+the updater working or the phone page being enabled. If SSH is unavailable but
+the owner already has access to the Store phone management page, its Logs section
+can supply updater file logs and relevant service journals for the offline helper.
+Do not enable that page silently as a diagnostic fallback.
 
 ## Privacy and reporting / 脱敏与报告
 
@@ -203,10 +247,12 @@ Report scope, capture time and time window first, then observed failures,
 unavailable/truncated evidence, hypotheses and the next useful observation.
 `complete` means the requested evidence fields and nonempty logs were present;
 it is **not** a health verdict. `partial` still yields a usable ZIP. Exit 0 means
-a bundle was written, including partial cases; exit 1 means output/argument work
-failed (argparse usage errors use exit 2). Never report “fixed” from collection.
+a bundle was written, including partial cases; the live collector also requires
+an observed SSH connection. Exit 1 means no verified connection or output/argument
+failure (argparse usage errors use exit 2). Never report “fixed” from collection.
 
-Keep local tests, emulator tests and vehicle results separate. This helper's
-local fixture tests establish selection, bounds, redaction and failure isolation;
-they do not establish live export compatibility, ECU response behavior or visual
-operation. Live collection remains subject to explicit scope and emulator checks.
+Keep local tests, simulation and vehicle results separate. Fixture tests exercise
+the actual filesystem probe against a read-only adapter, bounded SSH process I/O,
+host-key refusal, Node failure, journal/rotation collection, redaction and failure
+isolation. They do not establish actual firmware coverage, ECU response behavior
+or visual operation. This collector does not perform ECU diagnostic requests.
