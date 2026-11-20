@@ -28,6 +28,15 @@ routine maintenance; the Stable default does not silently switch that vehicle.
 Official `mirror_resources.py` snapshots and CN `cn-manifest.json` snapshots
 use different schemas. Validate CN resources with the matched CN tooling.
 
+For maintainer-authorized upstream adaptation, the owner's 2026-11-20 policy
+defaults to identical Beta and Stable payloads after source review, dependency
+and update-order checks, reproducible builds and exact-commit CI. Feature size
+or missing per-app vehicle trials alone does not require a Beta-only stage.
+Resolve concrete defects and failed checks; isolate unresolved components and
+their dependants while independent passing updates can ship. Record unperformed
+vehicle validation explicitly. This does not authorize automatic CN releases
+from monitoring tasks or any vehicle operation.
+
 ## Owner Beta trial / 车主 Beta 实车试验
 
 1. Establish the requested scope and current vehicle architecture, versions,

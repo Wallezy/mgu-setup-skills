@@ -26,6 +26,28 @@ For observation-only requests, use [diagnostics.md](diagnostics.md) to create a 
 
 Avoid invoking an unknown daemon with guessed arguments. In this case `patchd.js status` started another daemon; inspect documented read-only entrypoints instead.
 
+For Windows ENET with a reviewed installer containing upstream commit
+`ab4291c`, let the installer select the interface and check the link-local address.
+Do not inject `ssh -b` as a discovery workaround: Windows OpenSSH binding can
+prevent an otherwise valid connection. Quote local paths containing spaces.
+Separate link/address discovery, SSH reachability and authentication failures.
+
+Windows ENET 优先使用已适配的安装器自动发现，区分网卡地址、SSH 连接和密钥认证；
+不要通过额外添加 `ssh -b` 解决发现失败。安装包路径有空格时保留完整引号。
+
+After a flash, audio faults need their own diagnosis. Upstream Root issue #73
+reports `B7F87B` as an audio-coding mismatch and `B7F500` as missing RAM microphone
+calibration. Confirm the actual fault and equipment first; a reported case is
+not proof that every sound change has the same cause. Coding restoration and
+ISTA calibration are separate from Root access. A Store RAM calibration app
+must positively identify its supported module and preserve its parking,
+confirmation and active-fault checks; it is not a general ISTA replacement.
+Do not reflash or overwrite firmware files to fix these symptoms.
+
+刷写后音效异常先读具体故障：`B7F87B` 排查音响编码是否与硬件一致；
+`B7F500` 排查 RAM 麦克风校准。商店校准应用只处理其明确支持的模块，
+遇当前音频故障先排除故障，不绕过停车和确认步骤。恢复编码或校准不等于重新 Root。
+
 不能猜测守护进程的状态参数。案例中 `patchd.js status` 启动了第二个进程；应使用已确认的查询入口。
 
 ### Read-only status versus repair / 只读检查与修复
