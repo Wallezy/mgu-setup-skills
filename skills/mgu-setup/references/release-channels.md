@@ -118,6 +118,8 @@ Maintainer builds prefer the exact main commit's successful GitHub Actions
 artifact. Use the selected repository's `release/online_build.py fetch` to verify
 the workflow run, attempt, archive digest, catalog and package hashes; use that
 output as the candidate's build input. Reuse unchanged published packages.
+If authenticated `gh` is unavailable, a connected GitHub app can download the
+selected run's artifact; pass that ZIP with `--archive` for the same verification.
 Do not repeat a passed online build locally or start Lima/Docker automatically.
 Expired/unavailable artifacts or failed builds remain explicit blockers; rerun
 online or obtain authenticated artifact access. A local debugging build requires
