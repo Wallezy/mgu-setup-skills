@@ -182,6 +182,13 @@ class LiveDiagnosticsTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             live.SSH('169.254.1.2', None, self.root / 'missing')
 
+    def test_ssh_trust_path_with_spaces_is_one_config_word(self):
+        trust = self.root / 'known hosts'
+        trust.write_text('fixture')
+        ssh = live.SSH('169.254.1.2', None, trust)
+        option = next(arg for arg in ssh.argv if arg.startswith('UserKnownHostsFile='))
+        self.assertEqual(shlex.split(option.split('=', 1)[1]), [trust.resolve().as_posix()])
+
     def test_transport_bounds_remote_output_and_reports_deadline(self):
         ssh = live.SSH('169.254.1.2', None, self.trust)
         ssh.argv = [sys.executable, '-c', "import sys; sys.stdout.buffer.write(b'x'*1000000)"]

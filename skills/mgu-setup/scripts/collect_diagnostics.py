@@ -125,9 +125,15 @@ class SSH:
         for path in (known_hosts, identity):
             if path and not Path(path).expanduser().is_file():
                 raise ValueError('SSH trust/key file is missing')
+        trust_path = Path(known_hosts).expanduser().resolve().as_posix()
+        if any(c in trust_path for c in '\r\n\0'):
+            raise ValueError('invalid SSH trust path')
+        # OpenSSH parses this option as a list of config words in addition to
+        # argv parsing. Quote spaces and Windows paths inside the option itself.
+        trust_option = '"' + trust_path.replace('\\', '\\\\').replace('"', '\\"') + '"'
         self.argv = ['ssh', '-F', 'NUL' if os.name == 'nt' else '/dev/null', '-T',
                      '-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=yes',
-                     '-o', 'UserKnownHostsFile=' + str(Path(known_hosts).expanduser().resolve()),
+                     '-o', 'UserKnownHostsFile=' + trust_option,
                      '-o', 'GlobalKnownHostsFile=' + ('NUL' if os.name == 'nt' else '/dev/null'),
                      '-o', 'UpdateHostKeys=no',
                      '-o', 'ConnectTimeout=5', '-o', 'ConnectionAttempts=1',
