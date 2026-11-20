@@ -114,6 +114,16 @@ online; a root `https.get` failure does not establish that the hotspot is down.
 
 ## Promotion and maintenance / 晋升与维护
 
+Maintainer builds prefer the exact main commit's successful GitHub Actions
+artifact. Use the selected repository's `release/online_build.py fetch` to verify
+the workflow run, attempt, archive digest, catalog and package hashes; use that
+output as the candidate's build input. Reuse unchanged published packages.
+Do not repeat a passed online build locally or start Lima/Docker automatically.
+Expired/unavailable artifacts or failed builds remain explicit blockers; rerun
+online or obtain authenticated artifact access. A local debugging build requires
+an explicit need. Source/installer CI and public acceptance still apply.
+App compilation against the vehicle's SDK donor remains on the vehicle.
+
 Use the CN Store's selected release tooling and policy:
 [CN-RELEASE-CHANNELS.md at 60585be](https://github.com/Wallezy/mgu-store-cn/blob/60585be972822d0a59dfd9931bd3070f857e2d8a/docs/CN-RELEASE-CHANNELS.md).
 Do not reintroduce the old blanket vehicle-test gate:

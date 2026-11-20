@@ -167,6 +167,29 @@ No new diagnostic request, retry, scan or color write is performed.
 超时都写成 `lights: none found`，缺少细分证据时结论是“原因未确定”。这仅是诊断采集
 覆盖；不宣称已经修复初始化失败恢复、重叠扫描或车型协议兼容问题。
 
+## Updater rollback / 更新服务回退
+
+`<new> did not start; <old> kept` means the supervisor restored the old updater
+without a recorded `trial-reason`. It does not identify a network error or prove
+the download failed. Inspect the incident window in the existing
+`mgu-updater.service` journal and `/tmp/mgu-updater.log` plus `.1`, along with
+installed deploy/Python/updater versions, firmware, Node version, boot time and
+service exit/restart observations. Syntax/module errors and failures before the
+updater's file logger may appear only in the service journal. The supervisor can
+also roll back after its trial deadline; preserve the actual timings.
+
+Keep `not kept: <reason>` distinct: it records failed deploy/catalog/network
+validation. Do not disable rollback, bypass requirements or reinstall repeatedly
+to collect evidence. Default journal/file logs may be lost after a reboot or
+rotation. Record missing earlier events explicitly.
+
+The Store's existing phone management page has a Logs section for the updater
+file log and `mgu-updater`/`mgu-uplink`/`mgu-deploy-verify` journals. If the owner
+already has access, guide them to save the relevant displayed logs locally for
+this offline helper. Do not claim the helper itself connects to that page or
+exports vehicle journals. Enabling the management page or collecting via SSH is
+a separate, explicitly scoped operation; this reference adds no live adapter.
+
 ## Privacy and reporting / 脱敏与报告
 
 Redaction is on by default with no raw-output switch: structured sensitive keys,
