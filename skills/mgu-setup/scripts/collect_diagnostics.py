@@ -25,7 +25,10 @@ BASE_UNITS = {
     'mgu-render': ['mgu-render.service', 'mgu-render-hmi.service'],
     'app-privacy': ['app-privacy.service'],
     'waze-on-cluster': ['waze-on-cluster.service', 'waze-on-cluster-patchd.service',
-                        'waze-on-cluster-capture.service'],
+                        'carplay.service', 'aapd.service',
+                        'waze-on-cluster-boot.service', 'waze-on-cluster-aa-boot.service',
+                        'waze-on-cluster-recovery.service', 'waze-on-cluster-capture.service',
+                        'waze-on-cluster-journal.service'],
     'cluster-render': ['cluster-render.service'],
 }
 PROPERTIES = ('LoadState', 'ActiveState', 'SubState', 'Result', 'NRestarts',
@@ -110,6 +113,30 @@ for (var i = 0; i < ids.length && i < 32; i++) {
             ids.indexOf(dep) < 0 && ids.length < 32) ids.push(dep);
     });
     out.components[id] = entry;
+}
+if (ids.indexOf('waze-on-cluster') >= 0) {
+    out.context.map_memory_patch = {};
+    ['carplay', 'aapd'].forEach(function(name) {
+        var rec = obj('/var/opt/waze-on-cluster/inmem-' + name + '.json');
+        var result = obj('/run/woc-preload/' + name + '.result');
+        var summary = {record_present: dict(rec), result_present: dict(result)};
+        if (dict(rec)) {
+            ['enabled', 'needsPlan', 'proven', 'trial'].forEach(function(k) {
+                if (typeof rec[k] === 'boolean') summary[k] = rec[k];
+            });
+            if (typeof rec.at === 'string' && /^\d{4}-\d\d-\d\dT[\d:.]+Z$/.test(rec.at))
+                summary.recorded_at = rec.at.slice(0, 32);
+            summary.error_present = typeof rec.error === 'string' && !!rec.error;
+        }
+        if (dict(result)) {
+            if (typeof result.applied === 'boolean' || result.applied === 0 || result.applied === 1)
+                summary.applied = result.applied;
+            if (typeof result.edits === 'number' && result.edits >= 0 && result.edits <= 10000)
+                summary.edits = result.edits;
+            summary.reason_present = typeof result.why === 'string' && !!result.why;
+        }
+        out.context.map_memory_patch[name] = summary;
+    });
 }
 console.log(JSON.stringify(out));
 """
@@ -299,8 +326,9 @@ def collect_live(transport, output, app=None, minutes=30, until=None,
             entry['logs'] = []
             declared = entry.get('units', [])
             declared = declared if isinstance(declared, list) else []
+            unit_limit = 12 if name == 'waze-on-cluster' else 4
             units = list(dict.fromkeys(BASE_UNITS.get(name, []) + [
-                u for u in declared if isinstance(u, str) and UNIT.fullmatch(u)]))[:4]
+                u for u in declared if isinstance(u, str) and UNIT.fullmatch(u)]))[:unit_limit]
             observations = []
             for unit in units:
                 state = transport.run('systemctl show --no-pager ' + shlex.quote(unit) + ' ' +
@@ -323,7 +351,7 @@ def collect_live(transport, output, app=None, minutes=30, until=None,
                          int(start.timestamp()), int(end.timestamp()), shlex.quote(unit))) for unit in units]
             jobs += [(path, 'iso-lines', file_command(path, file_bytes + 1))
                      for path in plan_files(name, entry)]
-            for label, fmt, command in jobs[:8]:
+            for label, fmt, command in jobs[:unit_limit + 4]:
                 if remaining <= 0:
                     entry['logs'].append({'status': 'failed'})
                     captures.append({'component': name, 'stream': label, 'status': 'budget-exhausted'})

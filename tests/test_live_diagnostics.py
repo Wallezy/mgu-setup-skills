@@ -114,6 +114,9 @@ class LiveDiagnosticsTests(unittest.TestCase):
         self.assertTrue(all(name in ids for name in live.diag.MAP))
         self.assertTrue(any('waze-on-cluster-patchd.service' in c for c in vehicle.calls))
         self.assertTrue(any('cluster-render.service' in c for c in vehicle.calls))
+        for unit in ('carplay.service', 'aapd.service', 'waze-on-cluster-boot.service',
+                     'waze-on-cluster-aa-boot.service', 'waze-on-cluster-recovery.service'):
+            self.assertTrue(any(c.startswith('journalctl') and unit in c for c in vehicle.calls), unit)
         for command in vehicle.calls:
             words = shlex.split(command)
             self.assertNotIn('restart', words)
@@ -239,7 +242,12 @@ class LiveDiagnosticsTests(unittest.TestCase):
             '/var/opt/mgu-updater/state/origins.json':
                 '{"ambient_config":{"source":"walle/apps","requires":{"mgu-render":"0.6.0"}}}',
             '/var/opt/mgu-render/current/component.json':
-                '{"id":"mgu-render","version":"0.6.0","requires":{},"units":[{"name":"mgu-render.service"}]}'
+                '{"id":"mgu-render","version":"0.6.0","requires":{},"units":[{"name":"mgu-render.service"}]}',
+            '/var/opt/waze-on-cluster/inmem-carplay.json': json.dumps({
+                'enabled': True, 'trial': True, 'args': ['PRIVATE-ARGS'],
+                'planSha256': 'PRIVATE-HASH', 'error': 'PRIVATE-ERROR'}),
+            '/run/woc-preload/carplay.result':
+                '{"applied":1,"edits":5,"why":"PRIVATE-REASON","pid":123}'
         }
         harness = """
 const vm = require('vm');
@@ -252,7 +260,7 @@ const fs = {constants:{O_RDONLY:0,O_NONBLOCK:2048},
 vm.runInNewContext(probeSource, {require(name){if(name==='fs') return fs;throw Error('unexpected import');},
  Buffer,process:{version:'v8.16.2'},console});
 """
-        source = 'var OPTIONS = {"ids":["ambient_config"]};\n' + live.METADATA
+        source = 'var OPTIONS = {"ids":["ambient_config","waze-on-cluster"]};\n' + live.METADATA
         program = ('const files = ' + json.dumps(files) +
                    ';\nconst probeSource = ' + json.dumps(source) + ';\n' + harness)
         result = subprocess.run(['node', '-'], input=program,
@@ -264,6 +272,12 @@ vm.runInNewContext(probeSource, {require(name){if(name==='fs') return fs;throw E
         self.assertEqual(app['deployment_record']['version'], 'old-retained')
         self.assertNotIn('requires', app)  # No manufactured manifest requirements.
         self.assertIn('mgu-render', data['components'])
+        summary = data['context']['map_memory_patch']
+        self.assertTrue(summary['carplay']['enabled'])
+        self.assertEqual(summary['carplay']['applied'], 1)
+        self.assertEqual(summary['carplay']['edits'], 5)
+        self.assertFalse(summary['aapd']['record_present'])
+        self.assertNotIn('PRIVATE-', result.stdout)
 
 
 if __name__ == '__main__':
